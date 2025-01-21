@@ -1,4 +1,4 @@
-{ ... }:
+{ host, ... }:
 {
   programs.fish = {
     enable = true;
@@ -16,17 +16,19 @@
       cat = "bat";
       top = "btop";
       mkdir = "mkdir -p";
-      home-rebuild = "home-manager switch --flake /etc/nixos#elliot";
-      system-rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos-pc";
+      system-rebuild = "sudo nixos-rebuild switch --flake ~/dotfiles#${host}";
     };
 
     plugins = [
       # { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
     ];
 
-    shellInitLast = ''
+    shellInit= ''
       set fish_greeting
-      pfetch
+    '';
+
+    interactiveShellInit = ''
+      nitch
     '';
   };
 }
