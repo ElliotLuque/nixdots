@@ -2,7 +2,7 @@
 {
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
   stylix.enable = true;
-  stylix.image = ../../wallpaper/mocha/galaxy-waves.jpg;
+  stylix.autoEnable = true;
   stylix.polarity = "dark";
   stylix.fonts = {
     monospace = {
