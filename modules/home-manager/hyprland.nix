@@ -5,6 +5,7 @@
 
     plugins = [ 
       pkgs.hyprlandPlugins.hypr-dynamic-cursors
+      pkgs.hyprlandPlugins.hyprsplit
     ];
 
     settings = {
@@ -47,7 +48,12 @@
     };
 
     plugin = {
-      "dynamic-cursors" = {
+      hyprsplit = {
+        num_workspaces = 4;
+	persisent_workspaces = true;
+      };
+
+      dynamic-cursors = {
          enabled = "true";
          mode = "tilt";
 
@@ -136,15 +142,8 @@
       "HDMI-A-1,3840x2160@60,1920x0,2"
     ];
 
-    workspace = [
-      "1, monitor:HDMI-A-2, persistent, default:true"
-      "2, monitor:HDMI-A-1, persistent"
-      "3, monitor:HDMI-A-2, persistent, default:true"
-      "4, monitor:HDMI-A-1, persistent"
-    ];
-
-    master = {
-      new_status = "master";
+    dwindle = {
+      preserve_split = "true";
     };
 
     input = {
@@ -165,22 +164,33 @@
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, V, togglefloating"
+        "$mod, F, fullscreen"
         "$mod, R, exec, $menu"
         "$mod, J, togglesplit"
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
+        "$mod, 1, split:workspace, 1"
+        "$mod, 2, split:workspace, 2"
+        "$mod, 3, split:workspace, 3"
+        "$mod, 4, split:workspace, 4"
 
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
+        "$mod SHIFT, 1, split:movetoworkspace, 1"
+        "$mod SHIFT, 2, split:movetoworkspace, 2"
+        "$mod SHIFT, 3, split:movetoworkspace, 3"
+        "$mod SHIFT, 4, split:movetoworkspace, 4"
+
+        "$mod CTRL, 1, split:movetoworkspacesilent, 1"
+        "$mod CTRL, 2, split:movetoworkspacesilent, 2"
+        "$mod CTRL, 3, split:movetoworkspacesilent, 3"
+        "$mod CTRL, 4, split:movetoworkspacesilent, 4"
 
         "$mod, left, movefocus, l"
         "$mod, right, movefocus, r"
         "$mod, up, movefocus, u"
         "$mod, down, movefocus, d"
+
+        "$mod SHIFT, left, movewindow, l"
+        "$mod SHIFT, right, movewindow, r"
+        "$mod SHIFT, up, movewindow, u"
+        "$mod SHIFT, down, swapwindow, d"
       ];
 
       bindm = [
