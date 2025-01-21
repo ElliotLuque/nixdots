@@ -8,7 +8,7 @@
   };
   services.xserver.videoDrivers = [ "nvidia" ]; 
   hardware.nvidia = {
-    modesettings.enable = true;
+    modesetting.enable = true;
     powerManagement.enable = false;
     powerManagement.finegrained = false;
     open = false;
@@ -28,7 +28,7 @@
       LIBVA_DRIVER_NAME = "nvidia";
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
       NVD_BACKEND = "direct";
-    }
+    };
   };
 }
 
