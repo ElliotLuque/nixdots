@@ -1,4 +1,4 @@
-{ ... }
+{ pkgs, inputs, ... }:
 {
   programs.spicetify =
    let
@@ -6,7 +6,23 @@
    in
    {
      enable = true;
-     theme = spicePkgs.themes.catppuccin;
-     colorScheme = "mocha";
-   }
+
+     enabledExtensions = with spicePkgs.extensions; [
+       loopyLoop
+       hidePodcasts
+       keyboardShortcut
+     ];
+
+     enabledCustomApps = with spicePkgs.apps; [
+       reddit
+       lyricsPlus
+     ];
+
+     enabledSnippets = with spicePkgs.snippets; [
+       rotatingCoverart
+     ];
+
+     theme = spicePkgs.themes.text;
+     colorScheme = "CatppuccinMocha";
+   };
 }

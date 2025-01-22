@@ -1,13 +1,14 @@
-{ pkgs, inputs, host, username, catppuccin, ... }:
+{ pkgs, inputs, host, username, catppuccin, spicetify-nix, ... }:
 {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
-    extraSpecialArgs = { inherit inputs host username catppuccin; };
+    extraSpecialArgs = { inherit inputs host username catppuccin spicetify-nix; };
     users.${username} = {
       imports = [ 
         ../../modules/home-manager 
 	catppuccin.homeManagerModules.catppuccin
+	inputs.spicetify-nix.homeManagerModules.default
       ];
       home.username = "${username}";
       home.homeDirectory = "/home/${username}";

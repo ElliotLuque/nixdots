@@ -19,7 +19,7 @@
     };
   };
 
-  outputs = { nixpkgs, self, catppuccin, ... }@inputs:
+  outputs = { nixpkgs, self, catppuccin, spicetify-nix, ... }@inputs:
     let 
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -37,7 +37,7 @@
 	  ];
   	  specialArgs = { 
 	    host = "nixos-pc";
-	    inherit self inputs username catppuccin; 
+	    inherit self inputs username catppuccin spicetify-nix; 
 	  };
         };
       };
