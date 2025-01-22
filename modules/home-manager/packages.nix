@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, nixvim, ... }:
 {
   home.packages = with pkgs; [
+    nixvim.packages.x86_64-linux.default
     btop
     bat
     eza
@@ -11,6 +12,8 @@
     pfetch-rs
     nerdfetch
     fastfetch
+		grim
+		slurp
     nitch
     cowsay
     pipes-rs

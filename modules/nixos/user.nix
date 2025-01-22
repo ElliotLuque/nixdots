@@ -1,9 +1,9 @@
-{ pkgs, inputs, host, username, catppuccin, spicetify-nix, ... }:
+{ pkgs, inputs, host, username, catppuccin, spicetify-nix, nixvim, ... }:
 {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
-    extraSpecialArgs = { inherit inputs host username catppuccin spicetify-nix; };
+    extraSpecialArgs = { inherit inputs host username catppuccin spicetify-nix nixvim; };
     users.${username} = {
       imports = [ 
         ../../modules/home-manager 
