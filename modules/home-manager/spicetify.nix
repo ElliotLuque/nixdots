@@ -10,7 +10,6 @@
      enabledExtensions = with spicePkgs.extensions; [
        loopyLoop
        hidePodcasts
-       keyboardShortcut
      ];
 
      enabledCustomApps = with spicePkgs.apps; [
@@ -19,7 +18,7 @@
      ];
 
      enabledSnippets = with spicePkgs.snippets; [
-       rotatingCoverart
+       # rotatingCoverart
      ];
 
      theme = spicePkgs.themes.text;
