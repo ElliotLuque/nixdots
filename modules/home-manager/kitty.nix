@@ -9,7 +9,7 @@
 
     # Extra
     settings = {
-      cursor_trail = "3";
+      cursor_trail = "1";
       disable_ligatures = "always";
     }; 
 
