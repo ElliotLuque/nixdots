@@ -1,16 +1,21 @@
-{ pkgs, lib, inputs, username, catppuccin, ... }:
+{ pkgs, inputs, host, username, catppuccin, ... }:
 {
   home-manager = {
-    extraSpecialArgs = { inherit inputs username host; };
+    useUserPackages = true;
+    useGlobalPkgs = true;
+    extraSpecialArgs = { inherit inputs host username catppuccin; };
     users.${username} = {
-      imports = [ ../../modules/home-manager ];
+      imports = [ 
+        ../../modules/home-manager 
+	catppuccin.homeManagerModules.catppuccin
+      ];
       home.username = "${username}";
       home.homeDirectory = "/home/${username}";
       home.stateVersion = "24.11";
       home.sessionVariables = {
         EDITOR = "nvim";
+	PF_INFO = "ascii title os cpu uptime pkgs memory shell";
       };
-      home.file = { };
       programs.home-manager.enable = true;
     };
   };

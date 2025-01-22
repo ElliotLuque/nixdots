@@ -2,6 +2,7 @@
 {
   imports = [
     ./system.nix
+    ./stylix.nix
     ./boot.nix
     ./user.nix
     ./locale.nix

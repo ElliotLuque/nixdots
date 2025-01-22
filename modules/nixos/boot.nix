@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 {
   boot = {
     loader.systemd-boot.enable = true;
@@ -18,7 +18,7 @@
 
     plymouth = {
       enable = true;
-      theme = "breeze";
+      theme = lib.mkForce "bgrt";
     };
   };
 }
