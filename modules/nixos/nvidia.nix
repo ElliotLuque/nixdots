@@ -21,6 +21,7 @@
     systemPackages = with pkgs; [
       egl-wayland
       nvidia-vaapi-driver
+      wl-clipboard
     ];
     
     sessionVariables = {
