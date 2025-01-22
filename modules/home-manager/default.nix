@@ -7,6 +7,7 @@
     ./catppuccin.nix
     ./starship.nix
     ./git.nix
+    ./spicetify.nix
     # ./ncspot.nix
     ./gtk.nix
     ./waybar.nix
