@@ -75,7 +75,7 @@
       border_size = "3";
 
       "col.active_border" = "rgb(cba6f7)";
-      "col.inactive_border" = "rgb(313244)";
+      "col.inactive_border" = "rgba(313244aa)";
 
       resize_on_border = "false";
       allow_tearing = "false";
