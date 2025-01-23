@@ -1,12 +1,12 @@
 { pkgs, ... }:
 {
-  stylix = {  
+  stylix = {
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
     enable = true;
     autoEnable = false;
 
-    image = ../../wallpaper/mocha/galaxy-waves.jpg ;
+    image = ../../wallpaper/mocha/galaxy-waves.jpg;
 
     polarity = "dark";
 
@@ -21,9 +21,11 @@
       };
     };
 
-    cursor.name = "Bibata-Original-Classic";
-    cursor.size = 22;
-    cursor.package = pkgs.bibata-cursors;
+    cursor = {
+      name = "Bibata-Original-Classic";
+      size = 22;
+      package = pkgs.bibata-cursors;
+    };
 
     targets.gtk.enable = true;
   };
