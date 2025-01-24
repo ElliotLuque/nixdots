@@ -1,4 +1,4 @@
-{ pkgs, lib, inputs, catppuccin, ... }:
+{ ... }:
 {
   imports = [
     ./packages.nix
@@ -11,10 +11,10 @@
     # ./ncspot.nix
     ./gtk.nix
     ./waybar.nix
-    ./hyprland.nix
+    ./hyprland/main.nix
+    ./lf/lf.nix
     ./bat.nix
     ./btop.nix
     ./cava.nix
   ];
 }
-
