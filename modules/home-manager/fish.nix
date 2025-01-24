@@ -17,13 +17,14 @@
       top = "btop";
       mkdir = "mkdir -p";
       system-rebuild = "sudo nixos-rebuild switch --flake ~/dotfiles/nixdots#${host}";
+      wallpaper_random = "bash ~/dotfiles/nixdots/modules/home-manager/hyprland/scripts/swww_randomize.sh ~/dotfiles/nixdots/wallpaper/mocha/";
     };
 
     plugins = [
       # { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
     ];
 
-    shellInit= ''
+    shellInit = ''
       set fish_greeting
     '';
 
