@@ -1,4 +1,3 @@
-{ self, pkgs, lib, config, inputs, username, host, ... }:
 {
   imports = [
     ./system.nix

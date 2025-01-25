@@ -2,7 +2,7 @@
 ###  NixOS Desktop PC Config  ###
 #################################
 
-{ config, lib, inputs, pkgs, username, ... }:
+{ inputs, ... }:
 
 {
   imports = [
@@ -14,4 +14,3 @@
 
   powerManagement.cpuFreqGovernor = "performance";
 }
-
