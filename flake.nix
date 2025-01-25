@@ -24,26 +24,39 @@
     };
   };
 
-  outputs = { nixpkgs, self, catppuccin, spicetify-nix, nixvim, ... }@inputs:
-    let 
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+  outputs =
+    {
+      nixpkgs,
+      self,
+      catppuccin,
+      spicetify-nix,
+      nixvim,
+      ...
+    }@inputs:
+    let
       username = "elliot";
     in
     {
       nixosConfigurations = {
         nixos-pc = nixpkgs.lib.nixosSystem {
-	  modules = [ 
-	    inputs.home-manager.nixosModules.default
-	    inputs.stylix.nixosModules.stylix
-	    inputs.spicetify-nix.nixosModules.default
-	    catppuccin.nixosModules.catppuccin
-	    ./hosts/nixos-pc 
-	  ];
-  	  specialArgs = { 
-	    host = "nixos-pc";
-	    inherit self inputs username catppuccin spicetify-nix nixvim; 
-	  };
+          modules = [
+            inputs.home-manager.nixosModules.default
+            inputs.stylix.nixosModules.stylix
+            inputs.spicetify-nix.nixosModules.default
+            catppuccin.nixosModules.catppuccin
+            ./hosts/nixos-pc
+          ];
+          specialArgs = {
+            host = "nixos-pc";
+            inherit
+              self
+              inputs
+              username
+              catppuccin
+              spicetify-nix
+              nixvim
+              ;
+          };
         };
       };
     };
