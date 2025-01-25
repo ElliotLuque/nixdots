@@ -9,11 +9,11 @@
     ./git.nix
     ./spicetify.nix
     # ./ncspot.nix
-    ./gtk.nix
     ./waybar.nix
     ./hyprland/main.nix
     ./lf/lf.nix
     ./bat.nix
+    ./stylix.nix
     ./btop.nix
     ./cava.nix
   ];

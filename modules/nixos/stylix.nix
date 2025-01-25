@@ -4,9 +4,9 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
     enable = true;
-    autoEnable = false;
+    autoEnable = true;
 
-    image = ../../wallpaper/mocha/galaxy-waves.jpg;
+    image = ../../wallpaper/mocha/pixel-car.png;
 
     polarity = "dark";
 
@@ -27,7 +27,14 @@
       package = pkgs.bibata-cursors;
     };
 
-    targets.gtk.enable = true;
+    targets = {
+      chromium.enable = false;
+      console.enable = false;
+      fish.enable = false;
+      nixvim.enable = false;
+      plymouth.enable = false;
+      spicetify.enable = false;
+    };
   };
   # wayland.windowManager.hyprland.settings.general."col.active-border" =
   #   lib.mkForce "rgb(${config.stylix.base16Scheme.base0F})";
