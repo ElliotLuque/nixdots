@@ -9,11 +9,14 @@
     tofi
     lazygit
     cmake
+    qt5Full
+    jq
+    glow
     pfetch-rs
     nerdfetch
     fastfetch
-		grim
-		slurp
+    grim
+    slurp
     nitch
     cowsay
     pipes-rs
