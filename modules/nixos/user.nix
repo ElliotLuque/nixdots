@@ -35,7 +35,6 @@
         sessionVariables = {
           EDITOR = "nvim";
           PF_INFO = "ascii title os cpu uptime pkgs memory shell";
-          QT_STYLE_OVERRIDE = "kvantum";
         };
       };
       programs.home-manager.enable = true;
