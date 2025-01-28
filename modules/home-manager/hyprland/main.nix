@@ -10,8 +10,12 @@
 
     settings = {
       exec-once = [
-        "swww-daemon && wallpaper_random"
+        "swww-daemon"
         "waybar"
+      ];
+
+      exec = [
+        "wallpaper_random ~/dotfiles/nixdots/wallpaper/mocha &"
       ];
 
       env = [
@@ -85,8 +89,8 @@
       decoration = {
         rounding = "10";
 
-        active_opacity = "0.85";
-        inactive_opacity = "0.7";
+        active_opacity = "1.0";
+        inactive_opacity = "0.95";
 
         shadow = {
           enabled = "true";
@@ -193,6 +197,7 @@
       windowrulev2 = [
         "suppressevent maximize, class:.*"
         "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
+        "opacity 0.85 override 0.7 override 0.85 override, class:kitty"
       ];
     };
   };

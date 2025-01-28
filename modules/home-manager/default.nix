@@ -13,6 +13,7 @@
     ./hyprland/main.nix
     ./lf/lf.nix
     ./bat.nix
+    ./scripts.nix
     ./stylix.nix
     ./btop.nix
     ./cava.nix
