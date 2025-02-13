@@ -2,6 +2,7 @@
 {
   home.packages = with pkgs; [
     nixvim.packages.x86_64-linux.default
+    tokei
     btop
     bat
     eza
@@ -9,7 +10,6 @@
     tofi
     lazygit
     cmake
-    qt5Full
     jq
     glow
     pfetch-rs
