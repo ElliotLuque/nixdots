@@ -10,13 +10,13 @@
 
     settings = {
       exec-once = [
-        "swww-daemon"
+        "swww-daemon && swww img ~/dotfiles/nixdots/wallpaper/mocha/cottages-river.png"
         "waybar"
       ];
 
-      exec = [
-        "wallpaper_random ~/dotfiles/nixdots/wallpaper/mocha &"
-      ];
+      # exec = [
+      #   "wallpaper_random ~/dotfiles/nixdots/wallpaper/mocha &"
+      # ];
 
       env = [
         "XCURSOR_SIZE,22"
