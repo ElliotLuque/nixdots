@@ -28,6 +28,7 @@
     '';
 
     interactiveShellInit = ''
+      eval (ssh-agent -c) > /dev/null
       nitch
     '';
   };

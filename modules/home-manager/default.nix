@@ -17,5 +17,6 @@
     ./stylix.nix
     ./btop.nix
     ./cava.nix
+    ./ssh.nix
   ];
 }

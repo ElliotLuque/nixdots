@@ -10,5 +10,6 @@
     ./programs.nix
     ./networking.nix
     ./graphics.nix
+    ./ssh.nix
   ];
 }
