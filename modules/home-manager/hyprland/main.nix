@@ -151,7 +151,8 @@
 
       "$mod" = "SUPER";
       "$terminal" = "kitty";
-      "$menu" = "tofi-drun --drun-launch=true --output HDMI-A-2";
+      # "$menu" = "tofi-drun --drun-launch=true --output HDMI-A-2";
+      "$menu" = "anyrun";
 
       bind = [
         "$mod, Return, exec, $terminal"

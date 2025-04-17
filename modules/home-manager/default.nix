@@ -18,5 +18,6 @@
     ./btop.nix
     ./cava.nix
     ./ssh.nix
+    ./anyrun.nix
   ];
 }

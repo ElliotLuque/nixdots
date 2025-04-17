@@ -6,6 +6,7 @@
   catppuccin,
   spicetify-nix,
   nixvim,
+  anyrun,
   ...
 }:
 {
@@ -20,12 +21,13 @@
         catppuccin
         spicetify-nix
         nixvim
+        anyrun
         ;
     };
     users.${username} = {
       imports = [
         ../../modules/home-manager
-        catppuccin.homeManagerModules.catppuccin
+        catppuccin.homeModules.catppuccin
         inputs.spicetify-nix.homeManagerModules.default
       ];
       home = {
