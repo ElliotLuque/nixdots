@@ -7,7 +7,6 @@
     bat
     eza
     lf
-    tofi
     lazygit
     cmake
     jq
