@@ -7,5 +7,6 @@
     bat.enable = false;
     btop.enable = false;
     cava.enable = false;
+    starship.enable = false;
   };
 }
