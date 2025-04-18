@@ -1,7 +1,7 @@
 { pkgs, nixvim, ... }:
 {
   home.packages = with pkgs; [
-    nixvim.packages.x86_64-linux.default
+    nixvim.packages.${pkgs.system}.default
     tokei
     btop
     bat
