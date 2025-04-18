@@ -11,6 +11,7 @@
     # ./ncspot.nix
     ./waybar.nix
     ./hyprland/main.nix
+    ./hyprpanel/main.nix
     ./lf/lf.nix
     ./bat.nix
     ./scripts.nix
@@ -19,7 +20,6 @@
     ./cava.nix
     ./ssh.nix
     ./anyrun.nix
-    ./hyprpanel.nix
     ./sops.nix
   ];
 }
