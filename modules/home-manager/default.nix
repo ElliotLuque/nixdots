@@ -20,5 +20,6 @@
     ./ssh.nix
     ./anyrun.nix
     ./hyprpanel.nix
+    ./sops.nix
   ];
 }

@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    sops-nix.url = "github:Mic92/sops-nix";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -36,8 +37,8 @@
 
   outputs =
     {
-      nixpkgs,
       self,
+      nixpkgs,
       catppuccin,
       spicetify-nix,
       nixvim,

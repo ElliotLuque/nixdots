@@ -7,6 +7,7 @@
     bat
     eza
     lf
+    sops
     lazygit
     cmake
     jq
