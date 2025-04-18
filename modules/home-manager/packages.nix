@@ -25,6 +25,7 @@
     google-chrome
     zathura
     swww
+    libnotify
     noto-fonts-emoji
     nerd-fonts.jetbrains-mono
   ];

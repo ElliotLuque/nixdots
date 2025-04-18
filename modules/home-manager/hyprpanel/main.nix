@@ -4,9 +4,10 @@ let
   font-size = "${toString config.stylix.fonts.sizes.desktop}";
 
   workspace-active = "#${config.lib.stylix.colors.base05}";
-  workspace-occupied = "#${config.lib.stylix.colors.base02}";
+  workspace-occupied = "#${config.lib.stylix.colors.base04}";
 
   background = "#${config.lib.stylix.colors.base02}";
+  accent = "#${config.lib.stylix.colors.base0E}";
 
   dashboard-color = "#${config.lib.stylix.colors.base0D}";
   volume-color = "#${config.lib.stylix.colors.base0B}";
@@ -14,6 +15,7 @@ let
   bluetooth-color = "#${config.lib.stylix.colors.base0C}";
   clock-color = "#${config.lib.stylix.colors.base0E}";
   notifications-color = "#${config.lib.stylix.colors.base0F}";
+  notification-title-color = "#${config.lib.stylix.colors.base0D}";
 in
 {
   programs.hyprpanel = {
@@ -69,6 +71,12 @@ in
     };
 
     override = {
+      "theme.bar.border.location" = "bottom";
+      "theme.bar.border.color" = "${accent}";
+      "theme.bar.opacity" = 80;
+      "theme.bar.border.width" = "0.1em";
+      "theme.bar.border.enableShadow" = true;
+      "theme.bar.shadow" = "0px 1px 2px 1px ${accent}";
       "theme.bar.outer_spacing" = "0.4em";
       "theme.bar.buttons.style" = "split";
       "theme.bar.buttons.background_hover_opacity" = 85;
@@ -76,6 +84,7 @@ in
       "theme.bar.buttons.notifications.icon" = "${notifications-color}";
       "theme.bar.buttons.dashboard.icon" = "${dashboard-color}";
 
+      "theme.bar.buttons.workspaces.hover" = "${accent}";
       "theme.bar.buttons.workspaces.active" = "${workspace-active}";
       "theme.bar.buttons.workspaces.occupied" = "${workspace-occupied}";
 
@@ -99,6 +108,11 @@ in
       "theme.bar.menus.menu.clock.calendar.weekdays" = "${clock-color}";
       "theme.bar.menus.menu.clock.calendar.paginator" = "${clock-color}";
       "theme.bar.menus.menu.clock.calendar.currentday" = "${clock-color}";
+
+      "theme.notification.label" = "${notification-title-color}";
+
+      "notifications.active_monitor" = false;
+      "notifications.monitor" = 1;
     };
   };
 }
