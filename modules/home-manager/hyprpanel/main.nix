@@ -74,7 +74,7 @@
           military = true;
         };
         weather = {
-          key = builtins.readFile ./weather_key;
+          # key = builtins.readFile ./weather_key;
           # enabled = true;
           # location = "Valencia, Spain";
           # unit = "metric";
