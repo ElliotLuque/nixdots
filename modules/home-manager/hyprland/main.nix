@@ -11,7 +11,7 @@
     settings = {
       exec-once = [
         "swww-daemon && swww img ~/dotfiles/nixdots/wallpaper/mocha/cottages-river.png"
-        "waybar"
+        "hyprpanel"
       ];
 
       # exec = [
@@ -132,8 +132,8 @@
       };
 
       monitor = [
-        "HDMI-A-2,3840x2160@60,0x0,2"
-        "HDMI-A-1,3840x2160@60,1920x0,2"
+        "HDMI-A-2,3840x2160@60,0x0,1.5"
+        "HDMI-A-1,3840x2160@60,2560x0,1.5"
       ];
 
       dwindle = {

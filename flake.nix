@@ -10,6 +10,11 @@
     };
 
     hyprland.url = "github:hyprwm/Hyprland";
+    hyprpanel = {
+      url = "github:Jas-SinghFSU/HyprPanel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix.url = "github:danth/stylix";
     catppuccin.url = "github:catppuccin/nix";
 
@@ -50,6 +55,7 @@
             inputs.stylix.nixosModules.stylix
             inputs.spicetify-nix.nixosModules.default
             catppuccin.nixosModules.catppuccin
+            { nixpkgs.overlays = [ inputs.hyprpanel.overlay ]; }
             ./hosts/nixos-pc
           ];
           specialArgs = {

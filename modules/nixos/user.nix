@@ -13,6 +13,7 @@
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
+    backupFileExtension = "backup";
     extraSpecialArgs = {
       inherit
         inputs
@@ -29,6 +30,7 @@
         ../../modules/home-manager
         catppuccin.homeModules.catppuccin
         inputs.spicetify-nix.homeManagerModules.default
+        inputs.hyprpanel.homeManagerModules.hyprpanel
       ];
       home = {
         username = "${username}";

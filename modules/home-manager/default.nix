@@ -19,5 +19,6 @@
     ./cava.nix
     ./ssh.nix
     ./anyrun.nix
+    ./hyprpanel.nix
   ];
 }
