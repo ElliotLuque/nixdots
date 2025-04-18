@@ -31,6 +31,7 @@
         catppuccin.homeModules.catppuccin
         inputs.spicetify-nix.homeManagerModules.default
         inputs.hyprpanel.homeManagerModules.hyprpanel
+        inputs.sops-nix.homeManagerModules.sops
       ];
       home = {
         username = "${username}";
