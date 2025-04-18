@@ -53,6 +53,7 @@
       "networkmanager"
       "wheel"
       "audio"
+      "bluetooth"
     ];
   };
   nix.settings.allowed-users = [ "${username}" ];

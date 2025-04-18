@@ -11,5 +11,6 @@
     ./networking.nix
     ./graphics.nix
     ./ssh.nix
+    ./bluetooth.nix
   ];
 }
