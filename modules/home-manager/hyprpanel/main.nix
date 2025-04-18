@@ -1,95 +1,104 @@
-# *.nix
-{ config, ... }:
+{ pkgs, config, ... }:
+let
+  font = "${config.stylix.fonts.serif.name}";
+  font-size = "${toString config.stylix.fonts.sizes.desktop}";
+
+  workspace-active = "#${config.lib.stylix.colors.base05}";
+  workspace-occupied = "#${config.lib.stylix.colors.base02}";
+
+  background = "#${config.lib.stylix.colors.base02}";
+
+  dashboard-color = "#${config.lib.stylix.colors.base0D}";
+  volume-color = "#${config.lib.stylix.colors.base0B}";
+  network-color = "#${config.lib.stylix.colors.base0D}";
+  bluetooth-color = "#${config.lib.stylix.colors.base0C}";
+  clock-color = "#${config.lib.stylix.colors.base0E}";
+  notifications-color = "#${config.lib.stylix.colors.base0F}";
+in
 {
   programs.hyprpanel = {
-
-    # Enable the module.
-    # Default: false
     enable = true;
 
-    # Automatically restart HyprPanel with systemd.
-    # Useful when updating your config so that you
-    # don't need to manually restart it.
-    # Default: false
-    # systemd.enable = true;
-
-    # # Add '/nix/store/.../hyprpanel' to your
-    # # Hyprland config 'exec-once'.
-    # # Default: false
-    # hyprland.enable = true;
-    #
-    # # Fix the overwrite issue with HyprPanel.
-    # # See below for more information.
-    # # Default: false
-    # overwrite.enable = true;
-    #
-    # # Import a theme from './themes/*.json'.
-    # # Default: ""
-    # theme = "";
-
-    # # Override the final config with an arbitrary set.
-    # # Useful for overriding colors in your selected theme.
-    # # Default: {}
-    # override = {
-    #   theme.bar.menus.text = "#123ABC";
-    # };
-    #
-    # # Configure bar layouts for monitors.
-    # # See 'https://hyprpanel.com/configuration/panel.html'.
-    # # Default: null
-    # layout = {
-    #   "bar.layouts" = {
-    #     "0" = {
-    #       left = [
-    #         "dashboard"
-    #         "workspaces"
-    #       ];
-    #       middle = [ "media" ];
-    #       right = [
-    #         "volume"
-    #         "systray"
-    #         "notifications"
-    #       ];
-    #     };
-    #   };
-    # };
-    #
-    # # Configure and theme almost all options from the GUI.
-    # # Options that require '{}' or '[]' are not yet implemented,
-    # # except for the layout above.
-    # # See 'https://hyprpanel.com/configuration/settings.html'.
-    # # Default: <same as gui>
     settings = {
+      scalingPriority = "both";
 
-      # menus.clock.weather.key = "";
-      # bar.launcher.autoDetectIcon = true;
-      # bar.workspaces.show_icons = true;
+      theme = {
+        font = {
+          name = "${font}";
+          size = "${font-size}";
+          weight = 600;
+        };
+      };
+
+      layout = {
+        "bar.layouts" = {
+          "*" = {
+            "left" = [
+              "dashboard"
+              "workspaces"
+            ];
+            "middle" = [
+              "media"
+            ];
+            "right" = [
+              "systray"
+              "volume"
+              "bluetooth"
+              "network"
+              "clock"
+              "notifications"
+              "power"
+            ];
+          };
+        };
+      };
       bar = {
+        launcher = {
+          autoDetectIcon = true;
+        };
         clock = {
-          format = "%a %b %d %I:%M";
+          format = "%a %d %b %H:%M";
         };
       };
       menus.clock = {
         time = {
           military = true;
         };
-        weather = {
-          # key = builtins.readFile ./weather_key;
-          # enabled = true;
-          # location = "Valencia, Spain";
-          # unit = "metric";
-        };
+        weather.enabled = false;
       };
-      #
-      # menus.dashboard.directories.enabled = false;
-      # menus.dashboard.stats.enable_gpu = true;
-      #
-      # theme.bar.transparent = true;
-      #
-      # theme.font = {
-      #   name = "CaskaydiaCove NF";
-      #   size = "16px";
-      # };
+    };
+
+    override = {
+      "theme.bar.outer_spacing" = "0.4em";
+      "theme.bar.buttons.style" = "split";
+      "theme.bar.buttons.background_hover_opacity" = 85;
+
+      "theme.bar.buttons.notifications.icon" = "${notifications-color}";
+      "theme.bar.buttons.dashboard.icon" = "${dashboard-color}";
+
+      "theme.bar.buttons.workspaces.active" = "${workspace-active}";
+      "theme.bar.buttons.workspaces.occupied" = "${workspace-occupied}";
+
+      "theme.bar.buttons.volume.text" = "${volume-color}";
+      "theme.bar.buttons.volume.icon" = "${background}";
+      "theme.bar.buttons.volume.icon_background" = "${volume-color}";
+
+      "theme.bar.buttons.bluetooth.text" = "${bluetooth-color}";
+      "theme.bar.buttons.bluetooth.icon" = "${background}";
+      "theme.bar.buttons.bluetooth.icon_background" = "${bluetooth-color}";
+
+      "theme.bar.buttons.network.text" = "${network-color}";
+      "theme.bar.buttons.network.icon" = "${background}";
+      "theme.bar.buttons.network.icon_background" = "${network-color}";
+
+      "theme.bar.buttons.clock.text" = "${clock-color}";
+      "theme.bar.buttons.clock.icon" = "${background}";
+      "theme.bar.buttons.clock.icon_background" = "${clock-color}";
+
+      "theme.bar.menus.menu.clock.time.time" = "${clock-color}";
+      "theme.bar.menus.menu.clock.calendar.weekdays" = "${clock-color}";
+      "theme.bar.menus.menu.clock.calendar.paginator" = "${clock-color}";
+      "theme.bar.menus.menu.clock.calendar.currentday" = "${clock-color}";
     };
   };
 }

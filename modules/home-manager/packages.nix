@@ -26,7 +26,6 @@
     zathura
     swww
     noto-fonts-emoji
-    jetbrains-mono
     nerd-fonts.jetbrains-mono
   ];
 }
