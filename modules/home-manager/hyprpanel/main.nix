@@ -62,24 +62,30 @@ in
           format = "%a %d %b %H:%M";
         };
       };
-      menus.clock = {
-        time = {
-          military = true;
+      menus = {
+        clock = {
+          time = {
+            military = true;
+          };
+          weather.enabled = false;
         };
-        weather.enabled = false;
+
+        dashboard = {
+          stats.enable_gpu = true;
+        };
       };
     };
 
     override = {
       "theme.bar.border.location" = "bottom";
       "theme.bar.border.color" = "${accent}";
-      "theme.bar.opacity" = 80;
+      "theme.bar.opacity" = 85;
       "theme.bar.border.width" = "0.1em";
       "theme.bar.border.enableShadow" = true;
       "theme.bar.shadow" = "0px 1px 2px 1px ${accent}";
       "theme.bar.outer_spacing" = "0.4em";
       "theme.bar.buttons.style" = "split";
-      "theme.bar.buttons.background_hover_opacity" = 85;
+      "theme.bar.buttons.background_hover_opacity" = 75;
 
       "theme.bar.buttons.notifications.icon" = "${notifications-color}";
       "theme.bar.buttons.dashboard.icon" = "${dashboard-color}";
@@ -113,6 +119,7 @@ in
 
       "notifications.active_monitor" = false;
       "notifications.monitor" = 1;
+      "notifications.clearDelay" = 200;
     };
   };
 }
