@@ -15,14 +15,6 @@
         package = pkgs.jetbrains-mono;
         name = "JetBrainsMono Nerd Font Propo";
       };
-      sansSerif = {
-        package = pkgs.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font Propo";
-      };
-      serif = {
-        package = pkgs.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font Propo";
-      };
       emoji = {
         package = pkgs.noto-fonts-emoji;
         name = "Noto Color Emoji";
@@ -30,6 +22,7 @@
 
       sizes = {
         desktop = 16;
+        terminal = 14;
       };
     };
 

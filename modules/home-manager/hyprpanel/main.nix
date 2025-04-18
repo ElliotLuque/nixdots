@@ -1,6 +1,6 @@
 { pkgs, config, ... }:
 let
-  font = "${config.stylix.fonts.serif.name}";
+  font = "${config.stylix.fonts.monospace.name}";
   font-size = "${toString config.stylix.fonts.sizes.desktop}";
 
   workspace-active = "#${config.lib.stylix.colors.base05}";
@@ -25,7 +25,7 @@ in
       theme = {
         font = {
           name = "${font}";
-          size = "${font-size}";
+          size = "${font-size}px";
           weight = 600;
         };
       };
@@ -41,11 +41,11 @@ in
               "media"
             ];
             "right" = [
-              "systray"
               "volume"
               "bluetooth"
               "network"
               "clock"
+              "systray"
               "notifications"
               "power"
             ];
