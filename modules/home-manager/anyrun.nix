@@ -16,7 +16,7 @@
       ignoreExclusiveZones = false;
       layer = "overlay";
       hidePluginInfo = true;
-      closeOnClick = false;
+      closeOnClick = true;
       showResultsImmediately = false;
       maxEntries = null;
 
@@ -24,11 +24,7 @@
         anyrun.packages.${pkgs.system}.applications
         anyrun.packages.${pkgs.system}.rink
         anyrun.packages.${pkgs.system}.translate
-        anyrun.packages.${pkgs.system}.shell
-        # An array of all the plugins you want, which either can be paths to the .so files, or their packages
-        # inputs.anyrun.packages.${pkgs.system}.applications
-        # ./some_plugin.so
-        # "${inputs.anyrun.packages.${pkgs.system}.anyrun-with-all-plugins}/lib/kidex"
+        anyrun.packages.${pkgs.system}.websearch
       ];
     };
 
@@ -37,12 +33,16 @@
 
     extraCss = # css
       ''
-              .some_class {
-                background: red;
-              }
-        			window {
-        				background: transparent;
-        			}
+                                window {
+                        					background: transparent;
+                        					border: none;
+                                }
+                                entry {
+                        					border-color: #CBA6F7;
+                                }
+                                box {
+        													border-radius: 12px;
+                                }
       '';
 
     # extraConfigFiles."some-plugin.ron".text = ''
