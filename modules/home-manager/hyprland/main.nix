@@ -161,7 +161,7 @@
         "$mod, S, exec, grim -g \"$(slurp -d)\" - | wl-copy"
         "$mod, V, togglefloating"
         "$mod, F, fullscreen"
-        "$mod, L, exec, hyprlock"
+        "$mod SHIFT, L, exec, hyprlock"
         "$mod, R, exec, $menu"
         "$mod, J, togglesplit"
         "$mod, 1, split:workspace, 1"
