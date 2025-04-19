@@ -6,7 +6,6 @@
   catppuccin,
   spicetify-nix,
   nixvim,
-  anyrun,
   ...
 }:
 {
@@ -22,7 +21,6 @@
         catppuccin
         spicetify-nix
         nixvim
-        anyrun
         ;
     };
     users.${username} = {

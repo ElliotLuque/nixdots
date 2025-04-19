@@ -20,7 +20,8 @@
     ./btop.nix
     ./cava.nix
     ./ssh.nix
-    ./anyrun.nix
+    # ./anyrun.nix
     ./sops.nix
+    ./wofi.nix
   ];
 }

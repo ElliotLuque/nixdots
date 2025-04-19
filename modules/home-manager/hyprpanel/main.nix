@@ -98,6 +98,18 @@ in
                 tooltip = "Google Chrome";
                 icon = "";
               };
+              shortcut2 = {
+                command = "spotify";
+              };
+            };
+
+            right = {
+              shortcut1 = {
+                command = "sleep 0.25 && color-picker";
+              };
+              shortcut3 = {
+                command = "screenshot-area";
+              };
             };
           };
         };

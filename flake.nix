@@ -28,11 +28,6 @@
       url = "github:ElliotLuque/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    anyrun = {
-      url = "github:anyrun-org/anyrun";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -42,7 +37,6 @@
       catppuccin,
       spicetify-nix,
       nixvim,
-      anyrun,
       ...
     }@inputs:
     let
@@ -68,7 +62,6 @@
               catppuccin
               spicetify-nix
               nixvim
-              anyrun
               ;
           };
         };

@@ -152,13 +152,14 @@
       "$mod" = "SUPER";
       "$terminal" = "kitty";
       # "$menu" = "tofi-drun --drun-launch=true --output HDMI-A-2";
-      "$menu" = "anyrun";
+      # "$menu" = "anyrun";
+      "$menu" = "wofi --show drun -o HDMI-A-2";
 
       bind = [
         "$mod, Return, exec, $terminal"
         "$mod, Q, killactive"
         "$mod, M, exit"
-        "$mod, S, exec, grim -g \"$(slurp -d)\" - | wl-copy"
+        "$mod, S, exec, screenshot-area"
         "$mod, V, togglefloating"
         "$mod, F, fullscreen"
         "$mod SHIFT, L, exec, hyprlock"

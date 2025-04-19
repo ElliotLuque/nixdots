@@ -10,6 +10,7 @@
     sops
     lazygit
     cmake
+    hyprpicker
     jq
     glow
     pfetch-rs

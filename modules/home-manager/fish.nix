@@ -16,7 +16,7 @@
       cat = "bat";
       top = "btop";
       mkdir = "mkdir -p";
-      system-rebuild = "sudo nixos-rebuild switch --flake ~/dotfiles/nixdots#${host}";
+      system-rebuild = "sudo nixos-rebuild switch --flake ~/dotfiles/nixdots#${host} && notify-send \"NixOS Rebuild\" \"System rebuilt!\"";
     };
 
     plugins = [
