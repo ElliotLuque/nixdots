@@ -9,6 +9,7 @@
     };
     targets = {
       hyprland.enable = false;
+      hyprlock.enable = false;
       kitty.enable = false;
       fish.enable = false;
       spicetify.enable = false;

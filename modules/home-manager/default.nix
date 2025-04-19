@@ -11,6 +11,7 @@
     # ./ncspot.nix
     ./waybar.nix
     ./hyprland/main.nix
+    ./hyprlock.nix
     ./hyprpanel/main.nix
     ./lf/lf.nix
     ./bat.nix

@@ -6,7 +6,7 @@
     enable = true;
     autoEnable = true;
 
-    image = ../../wallpaper/mocha/pixel-car.png;
+    image = ../../wallpaper/mocha/cottages-river.png;
 
     polarity = "dark";
 

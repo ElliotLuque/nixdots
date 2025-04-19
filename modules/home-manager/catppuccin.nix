@@ -4,5 +4,6 @@
     flavor = "mocha";
     accent = "mauve";
     kvantum.enable = false;
+    hyprlock.enable = false;
   };
 }
