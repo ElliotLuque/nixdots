@@ -5,5 +5,6 @@
     accent = "mauve";
     kvantum.enable = false;
     hyprlock.enable = false;
+    rofi.enable = false;
   };
 }

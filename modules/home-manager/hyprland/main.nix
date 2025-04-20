@@ -151,9 +151,7 @@
 
       "$mod" = "SUPER";
       "$terminal" = "kitty";
-      # "$menu" = "tofi-drun --drun-launch=true --output HDMI-A-2";
-      # "$menu" = "anyrun";
-      "$menu" = "wofi --show drun -o HDMI-A-2";
+      "$menu" = "rofi -show drun -monitor HDMI-A-2";
 
       bind = [
         "$mod, Return, exec, $terminal"
@@ -196,10 +194,15 @@
         "$mod, mouse:273, resizewindow"
       ];
 
+      layerrule = [
+        "blur,rofi"
+      ];
+
       windowrulev2 = [
         "suppressevent maximize, class:.*"
         "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
         "opacity 0.85 override 0.7 override 0.85 override, class:kitty"
+        "opacity 0.85 override 0.7 override 0.85 override, class:rofi"
       ];
     };
   };
