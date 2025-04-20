@@ -23,5 +23,7 @@
     # ./anyrun.nix
     ./sops.nix
     ./wofi.nix
+    ./yazi.nix
+    ./xdg.nix
   ];
 }
