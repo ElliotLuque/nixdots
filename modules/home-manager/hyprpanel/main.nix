@@ -105,7 +105,7 @@ in
 
             right = {
               shortcut1 = {
-                command = "sleep 0.5 && color-picker";
+                command = "color-picker";
               };
               shortcut3 = {
                 command = "screenshot-area";

@@ -25,7 +25,7 @@ let
     		done
   '';
   screenshotScript = pkgs.writeShellScriptBin "screenshot-area" ''
-    timestamp=$(date +"%Y/%m/%d_%H:%M:%S")
+    timestamp=$(date +"%Y-%m-%d_%H:%M:%S")
     filename="$HOME/Pictures/Screenshots/snapshot_$timestamp.png"
     mkdir -p "$HOME/Pictures/Screenshots"
     geometry=$(slurp -d) || exit 1
@@ -42,19 +42,24 @@ let
       pkgs.gnugrep
     ];
     text = ''
-      #!/usr/bin/env bash
       set -euo pipefail
 
-      color=$(hyprpicker -a 2>&1 | grep '^#' | head -n1 | tr -d '\n\r')
+      sleep 0.5  # tiempo para que se cierre el dashboard
 
+      # Ejecutar hyprpicker con autocopy y salida limpia
+      color=$(hyprpicker -a 2>/dev/null | grep '^#' | head -n1 | tr -d '\n\r' || true)
+
+      # Si no se seleccionó ningún color, no hacemos nada más
       if [[ -z "$color" ]]; then
         notify-send "Hyprpicker" "No se seleccionó ningún color"
-        exit 1
+        exit 0
       fi
 
-      icon_path="/tmp/color-icon-$RANDOM.png"
+      # Crear icono del color
+      icon_path=$(mktemp --suffix=.png /tmp/color-icon-XXXXXX)
       magick -size 64x64 "xc:$color" "$icon_path"
 
+      # Notificar con el color seleccionado
       notify-send -i "$icon_path" "Hyprpicker" "$color"
     '';
   };
