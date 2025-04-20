@@ -39,12 +39,13 @@ let
       pkgs.imagemagick
       pkgs.libnotify
       pkgs.coreutils
+      pkgs.gnugrep
     ];
     text = ''
       #!/usr/bin/env bash
       set -euo pipefail
 
-      color=$(hyprpicker -a | tr -d '\n\r')
+      color=$(hyprpicker -a 2>&1 | grep '^#' | head -n1 | tr -d '\n\r')
 
       if [[ -z "$color" ]]; then
         notify-send "Hyprpicker" "No se seleccionó ningún color"

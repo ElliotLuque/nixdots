@@ -11,6 +11,11 @@
     lazygit
     cmake
     hyprpicker
+    wf-recorder
+    nomacs
+    celluloid
+    feh
+    ffmpeg
     jq
     glow
     pfetch-rs

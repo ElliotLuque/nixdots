@@ -17,6 +17,7 @@
       btop.enable = false;
       cava.enable = false;
       starship.enable = false;
+      yazi.enable = false;
     };
   };
 }
