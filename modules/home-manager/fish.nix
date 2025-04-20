@@ -13,10 +13,11 @@
       "..." = "cd ../..";
       "...." = "cd ../../..";
       vim = "nvim";
-      cat = "bat";
+      cat = "bat -p";
       top = "btop";
       mkdir = "mkdir -p";
       system-rebuild = "sudo nixos-rebuild switch --flake ~/dotfiles/nixdots#${host} && notify-send \"NixOS Rebuild\" \"System rebuilt!\"";
+      fm = "yazi";
     };
 
     plugins = [
