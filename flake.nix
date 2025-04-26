@@ -65,6 +65,28 @@
               ;
           };
         };
+
+        nixos-laptop = nixpkgs.lib.nixosSystem {
+          modules = [
+            inputs.home-manager.nixosModules.default
+            inputs.stylix.nixosModules.stylix
+            inputs.spicetify-nix.nixosModules.default
+            catppuccin.nixosModules.catppuccin
+            { nixpkgs.overlays = [ inputs.hyprpanel.overlay ]; }
+            ./hosts/nixos-laptop
+          ];
+          specialArgs = {
+            host = "nixos-laptop";
+            inherit
+              self
+              inputs
+              username
+              catppuccin
+              spicetify-nix
+              nixvim
+              ;
+          };
+        };
       };
     };
 }
