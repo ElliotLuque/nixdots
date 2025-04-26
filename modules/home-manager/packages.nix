@@ -17,6 +17,7 @@
     feh
     ffmpeg
     jq
+    jetbrains.rider
     glow
     pfetch-rs
     nerdfetch
