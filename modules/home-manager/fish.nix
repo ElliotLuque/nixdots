@@ -6,12 +6,13 @@
 
     shellAliases = {
       gg = "lazygit";
-      ls = "eza -lh --icons";
-      lsa = "eza -lah --icons";
-      tree = "eza --tree --icons";
+      ls = "eza -lh --icons --group-directories-first";
+      lsa = "eza -lah --icons --group-directories-first";
+      tree = "eza --tree --icons --group-directories-first";
       ".." = "cd ..";
       "..." = "cd ../..";
       "...." = "cd ../../..";
+      "....." = "cd ../../../..";
       vim = "nvim";
       cat = "bat -p";
       top = "btop";
