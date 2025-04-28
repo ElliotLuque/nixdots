@@ -38,6 +38,7 @@
         sessionVariables = {
           EDITOR = "nvim";
           PF_INFO = "ascii title os cpu uptime pkgs memory shell";
+          DOTNET_ROOT = "${pkgs.dotnetCorePackages.dotnet_8.sdk}/bin";
         };
       };
       programs.home-manager.enable = true;

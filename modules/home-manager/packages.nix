@@ -35,5 +35,6 @@
     libnotify
     noto-fonts-emoji
     nerd-fonts.jetbrains-mono
+    dotnetCorePackages.dotnet_8.sdk # Necessary for rider + omnisharp lsp
   ];
 }

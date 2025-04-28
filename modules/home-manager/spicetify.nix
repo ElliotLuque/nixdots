@@ -1,27 +1,27 @@
 { pkgs, inputs, ... }:
 {
   programs.spicetify =
-   let
-     spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
-   in
-   {
-     enable = true;
+    let
+      spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
+    in
+    {
+      enable = true;
 
-     enabledExtensions = with spicePkgs.extensions; [
-       loopyLoop
-       hidePodcasts
-     ];
+      enabledExtensions = with spicePkgs.extensions; [
+        loopyLoop
+        hidePodcasts
+      ];
 
-     enabledCustomApps = with spicePkgs.apps; [
-       reddit
-       lyricsPlus
-     ];
+      enabledCustomApps = with spicePkgs.apps; [
+        reddit
+        lyricsPlus
+      ];
 
-     enabledSnippets = with spicePkgs.snippets; [
-       # rotatingCoverart
-     ];
+      enabledSnippets = with spicePkgs.snippets; [
+        # rotatingCoverart
+      ];
 
-     theme = spicePkgs.themes.text;
-     colorScheme = "CatppuccinMocha";
-   };
+      theme = spicePkgs.themes.text;
+      colorScheme = "CatppuccinMocha";
+    };
 }
