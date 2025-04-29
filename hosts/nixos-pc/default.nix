@@ -13,5 +13,7 @@
     ../../modules/nixos/nvidia.nix # This is a NVIDIA PC so we'll import it
   ];
 
+  hardware.nvidia.open = true;
+
   powerManagement.cpuFreqGovernor = "performance";
 }

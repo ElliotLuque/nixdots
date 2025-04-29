@@ -11,21 +11,21 @@
         enable = true;
 
         settings = {
-          # render = {
-          #   explicit_sync = "2";
-          #   explicit_sync_kms = "0";
-          # };
+          render = {
+            explicit_sync = "2";
+            explicit_sync_kms = "0";
+          };
 
           debug = {
             damage_tracking = "0";
           };
 
-          cursor = {
-            # default_monitor = "HDMI-A-2";
-          };
-
           monitor = [
             ", preferred, auto, 1"
+          ];
+
+          env = [
+            "AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0"
           ];
 
           input = {

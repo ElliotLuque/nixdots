@@ -6,13 +6,12 @@
       "nomodeset"
     ];
   };
-  services.xserver.videoDrivers = [ "nvidia" ]; 
+  services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = false;
     powerManagement.finegrained = false;
-    open = false;
-    nvidiaSettings = false;
+    nvidiaSettings = true;
 
     package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
@@ -23,7 +22,7 @@
       nvidia-vaapi-driver
       wl-clipboard
     ];
-    
+
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
       LIBVA_DRIVER_NAME = "nvidia";
@@ -32,4 +31,3 @@
     };
   };
 }
-
