@@ -26,13 +26,9 @@
       ];
 
       misc = {
-        vrr = "0";
+        vfr = "0";
         disable_hyprland_logo = "true";
         font_family = "JetBrains Mono Nerd Font";
-      };
-
-      debug = {
-        damage_tracking = "0";
       };
 
       cursor = {
