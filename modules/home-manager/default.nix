@@ -8,9 +8,8 @@
     ./starship.nix
     ./git.nix
     ./spicetify.nix
-    # ./ncspot.nix
-    ./waybar.nix
-    ./hyprland/main.nix
+    ./ncspot.nix
+    ./hyprland
     ./hyprlock.nix
     ./hyprpanel/main.nix
     ./lf/lf.nix

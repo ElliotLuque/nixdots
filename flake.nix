@@ -41,8 +41,11 @@
     }@inputs:
     let
       username = "elliot";
+      pkgs = nixpkgs.legacyPackages."x86_64-linux";
     in
     {
+      devShells."x86_64-linux".default = import ./shells/dotnet_shell.nix { inherit pkgs; };
+
       nixosConfigurations = {
         nixos-pc = nixpkgs.lib.nixosSystem {
           modules = [
