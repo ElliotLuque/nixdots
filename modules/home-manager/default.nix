@@ -9,8 +9,7 @@
     ./git.nix
     ./spicetify.nix
     # ./ncspot.nix
-    ./waybar.nix
-    ./hyprland/main.nix
+    ./hyprland
     ./hyprlock.nix
     ./hyprpanel/main.nix
     ./lf/lf.nix

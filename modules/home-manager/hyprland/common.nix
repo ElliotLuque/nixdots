@@ -25,17 +25,8 @@
         "HYPRCURSOR_THEME,hypr_Bibata-Original-Classic"
       ];
 
-      render = {
-        explicit_sync = "2";
-        explicit_sync_kms = "0";
-      };
-
-      opengl = {
-        nvidia_anti_flicker = "0";
-      };
-
       misc = {
-        vfr = "0";
+        vrr = "0";
         disable_hyprland_logo = "true";
         font_family = "JetBrains Mono Nerd Font";
       };
@@ -46,7 +37,6 @@
 
       cursor = {
         no_hardware_cursors = "true";
-        default_monitor = "HDMI-A-2";
         enable_hyprcursor = "true";
       };
 
@@ -131,27 +121,11 @@
         ];
       };
 
-      monitor = [
-        "HDMI-A-2,3840x2160@60,0x0,1.5"
-        "HDMI-A-1,3840x2160@60,2560x0,1.5"
-      ];
-
       dwindle = {
         preserve_split = "true";
       };
 
-      input = {
-        kb_layout = "es";
-        kb_options = "caps:super";
-
-        follow_mouse = "1";
-
-        sensitivity = "-1.0";
-      };
-
-      "$mod" = "SUPER";
       "$terminal" = "kitty";
-      "$menu" = "rofi -show drun -monitor HDMI-A-2";
 
       bind = [
         "$mod, Return, exec, $terminal"
