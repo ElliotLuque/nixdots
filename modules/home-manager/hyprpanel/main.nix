@@ -4,7 +4,8 @@ let
   font-size = "${toString config.stylix.fonts.sizes.desktop}";
 
   workspace-active = "#${config.lib.stylix.colors.base07}";
-  workspace-occupied = "#${config.lib.stylix.colors.base04}";
+  workspace-occupied = "#${config.lib.stylix.colors.base07}";
+  workspace-available = "#${config.lib.stylix.colors.base04}";
 
   background = "#${config.lib.stylix.colors.base02}";
   accent = "#${config.lib.stylix.colors.base0E}";
@@ -137,6 +138,7 @@ in
       "theme.bar.buttons.workspaces.hover" = "${accent}";
       "theme.bar.buttons.workspaces.active" = "${workspace-active}";
       "theme.bar.buttons.workspaces.occupied" = "${workspace-occupied}";
+      "theme.bar.buttons.workspaces.available" = "${workspace-available}";
 
       "theme.bar.buttons.volume.text" = "${volume-color}";
       "theme.bar.buttons.volume.icon" = "${background}";
