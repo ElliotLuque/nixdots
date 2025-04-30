@@ -39,7 +39,7 @@
       plugin = {
         hyprsplit = {
           num_workspaces = 4;
-          persisent_workspaces = true;
+          persistent_workspaces = true;
         };
 
         dynamic-cursors = {
