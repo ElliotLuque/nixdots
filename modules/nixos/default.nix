@@ -12,5 +12,6 @@
     ./graphics.nix
     ./ssh.nix
     ./bluetooth.nix
+    ./virtualization.nix
   ];
 }

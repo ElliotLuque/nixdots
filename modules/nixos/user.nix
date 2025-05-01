@@ -54,6 +54,7 @@
       "wheel"
       "audio"
       "bluetooth"
+      "docker"
     ];
   };
   nix.settings.allowed-users = [ "${username}" ];
