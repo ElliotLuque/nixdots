@@ -1,7 +1,7 @@
 { pkgs, nixvim, ... }:
 {
   home.packages = with pkgs; [
-    nixvim.packages.${pkgs.system}.default
+    nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default
     tokei
     btop
     bat
@@ -31,10 +31,13 @@
     ncspot
     google-chrome
     zathura
-    swww
     libnotify
-    noto-fonts-emoji
+    hyprpanel
+    opencode
+    noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
+    nodejs_24
+    pnpm
     dotnetCorePackages.dotnet_8.sdk # Necessary for rider + omnisharp lsp
   ];
 }

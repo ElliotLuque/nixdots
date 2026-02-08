@@ -1,23 +1,21 @@
 {
   programs.git = {
     enable = true;
-    userName = "ElliotLuque";
-    userEmail = "elliotluque@gmail.com";
 
-    delta = {
-      enable = true;
-      options = {
-        line-numbers = true;
-        side-by-side = true;
-        diff-so-fancy = true;
-        navigate = true;
+    settings = {
+      user = {
+        name = "ElliotLuque";
+        email = "git@elliotluque.com";
       };
-    };
-
-    extraConfig = {
       init.defaultBranch = "main";
-      merge.conflictstyle = "diff3";
-      diff.colorMoved = "default";
+      url = {
+        "https://github.com/" = {
+          insteadOf = [
+            "gh:"
+            "github:"
+          ];
+        };
+      };
     };
   };
 }

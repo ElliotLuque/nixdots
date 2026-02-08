@@ -2,7 +2,7 @@
 {
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
+    package = pkgs.rofi;
     theme = ./drun.rasi;
 
     extraConfig = {
