@@ -13,5 +13,6 @@
     ./ssh.nix
     ./bluetooth.nix
     ./virtualization.nix
+    ./nix-ld.nix
   ];
 }
