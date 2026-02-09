@@ -9,15 +9,6 @@
     ];
 
     settings = {
-      exec-once = [
-        "swww-daemon && swww img ~/dotfiles/nixdots/wallpaper/mocha/cottages-river.png"
-        "hyprpanel"
-      ];
-
-      # exec = [
-      #   "wallpaper_random ~/dotfiles/nixdots/wallpaper/mocha &"
-      # ];
-
       env = [
         "XCURSOR_SIZE,22"
         "XCURSOR_THEME,Bibata-Original-Classic"
@@ -57,7 +48,7 @@
       };
 
       general = {
-        gaps_in = "8";
+        gaps_in = "6";
         gaps_out = "10";
 
         border_size = "3";
@@ -165,14 +156,14 @@
       ];
 
       layerrule = [
-        "blur,rofi"
+        "blur on, match:namespace rofi"
       ];
 
-      windowrulev2 = [
-        "suppressevent maximize, class:.*"
-        "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
-        "opacity 0.85 override 0.7 override 0.85 override, class:kitty"
-        "opacity 0.85 override 0.7 override 0.85 override, class:rofi"
+      windowrule = [
+        "suppress_event maximize, match:class .*"
+        # "no_focus on, match:class ^$, match:title ^$, match:xwayland 1, match:floating 1, match: fullscreen 0, match:pinned 0"
+        "opacity 0.85 override 0.7 override 0.85 override, match:class kitty"
+        "opacity 0.85 override 0.7 override 0.85 override, match:class rofi"
       ];
     };
   };

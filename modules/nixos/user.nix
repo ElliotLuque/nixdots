@@ -28,8 +28,8 @@
         ../../modules/home-manager
         catppuccin.homeModules.catppuccin
         inputs.spicetify-nix.homeManagerModules.default
-        inputs.hyprpanel.homeManagerModules.hyprpanel
         inputs.sops-nix.homeManagerModules.sops
+        inputs.caelestia-shell.homeManagerModules.default
       ];
       home = {
         username = "${username}";

@@ -2,6 +2,9 @@
 {
   home.packages = with pkgs; [
     nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default
+    wiremix
+    bluetui
+    impala
     tokei
     btop
     bat

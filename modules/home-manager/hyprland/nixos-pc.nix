@@ -11,11 +11,6 @@
         enable = true;
 
         settings = {
-          render = {
-            explicit_sync = "2";
-            explicit_sync_kms = "0";
-          };
-
           opengl = {
             nvidia_anti_flicker = "0";
           };
@@ -43,7 +38,7 @@
           };
 
           "$mod" = "SUPER";
-          "$menu" = "rofi -show drun -monitor HDMI-A-2";
+          "$menu" = "caelestia shell drawers toggle launcher";
         };
       };
     };

@@ -11,11 +11,6 @@
         enable = true;
 
         settings = {
-          render = {
-            explicit_sync = "2";
-            explicit_sync_kms = "0";
-          };
-
           debug = {
             damage_tracking = "0";
           };
@@ -38,7 +33,7 @@
           };
 
           "$mod" = "SUPER";
-          "$menu" = "rofi -show drun";
+          "$menu" = "caelestia shell drawers toggle launcher";
         };
       };
     };

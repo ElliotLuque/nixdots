@@ -11,10 +11,6 @@
     };
 
     hyprland.url = "github:hyprwm/Hyprland";
-    hyprpanel = {
-      url = "github:Jas-SinghFSU/HyprPanel";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     stylix.url = "github:danth/stylix";
     catppuccin.url = "github:catppuccin/nix";
@@ -26,6 +22,11 @@
 
     nixvim = {
       url = "github:ElliotLuque/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -53,7 +54,6 @@
             inputs.stylix.nixosModules.stylix
             inputs.spicetify-nix.nixosModules.default
             catppuccin.nixosModules.catppuccin
-            { nixpkgs.overlays = [ inputs.hyprpanel.overlay ]; }
             ./hosts/nixos-pc
           ];
           specialArgs = {
@@ -75,7 +75,6 @@
             inputs.stylix.nixosModules.stylix
             inputs.spicetify-nix.nixosModules.default
             catppuccin.nixosModules.catppuccin
-            { nixpkgs.overlays = [ inputs.hyprpanel.overlay ]; }
             ./hosts/nixos-laptop
           ];
           specialArgs = {

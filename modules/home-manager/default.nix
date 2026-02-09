@@ -10,8 +10,8 @@
     ./spicetify.nix
     ./ncspot.nix
     ./hyprland
-    ./hyprlock.nix
-    ./hyprpanel/main.nix
+    ./gh.nix
+    ./caelestia.nix
     ./lf/lf.nix
     ./bat.nix
     ./scripts.nix
