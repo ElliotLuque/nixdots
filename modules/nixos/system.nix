@@ -1,4 +1,9 @@
-{ pkgs, lib, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 {
   nix = {
     settings = {
@@ -19,7 +24,10 @@
     home-manager
   ];
 
-  time.timeZone = "Europe/Madrid";
+  time = {
+    timeZone = "Europe/Madrid";
+    hardwareClockInLocalTime = false;
+  };
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "24.11";
 }
