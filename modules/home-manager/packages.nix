@@ -10,6 +10,11 @@
     bat
     eza
     lf
+    fd
+    fzf
+    ripgrep
+    ncdu
+    duf
     sops
     lazygit
     cmake
