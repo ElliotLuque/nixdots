@@ -44,6 +44,7 @@
     opencode
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
+    make
     nodejs_24
     pnpm
     dotnetCorePackages.dotnet_8.sdk # Necessary for rider + omnisharp lsp
