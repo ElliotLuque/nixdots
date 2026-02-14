@@ -5,9 +5,9 @@
     text = ''
     export const NotificationPlugin = async ({ $ }) => {
       const notify = async (message) => {
-        const script = `if command -v notify-send >/dev/null 2>&1; then notify-send "OpenCode" "${message}"; elif command -v dunstify >/dev/null 2>&1; then dunstify "OpenCode" "${message}"; fi`
+        const script = `if command -v notify-send >/dev/null 2>&1; then notify-send "OpenCode" "''${message}"; elif command -v dunstify >/dev/null 2>&1; then dunstify "OpenCode" "''${message}"; fi`
         try {
-          await $`sh -lc ${script}`
+          await $`sh -lc ''${script}`
         } catch {}
       }
 
