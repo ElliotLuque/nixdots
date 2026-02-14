@@ -23,5 +23,6 @@
     ./rofi
     ./yazi.nix
     ./xdg.nix
+    ./opencode.nix
   ];
 }
