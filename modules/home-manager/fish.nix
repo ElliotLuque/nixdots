@@ -30,6 +30,8 @@
     '';
 
     interactiveShellInit = ''
+      set -gx HISTSIZE 10000000
+      set -gx SAVEHIST 10000000
       eval (ssh-agent -c) > /dev/null
       nitch
     '';
