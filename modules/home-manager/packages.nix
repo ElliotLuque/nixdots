@@ -18,6 +18,7 @@
     sops
     lazygit
     cmake
+    gcc
     hyprpicker
     wf-recorder
     nomacs
