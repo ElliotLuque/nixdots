@@ -80,7 +80,7 @@
           ];
           specialArgs = {
             host = "nixos-laptop";
-            hyprlandLowPerformance = true;
+            hyprlandLowPerformance = false;
             inherit
               self
               inputs
