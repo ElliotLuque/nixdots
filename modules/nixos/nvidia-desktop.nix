@@ -1,0 +1,3 @@
+{
+  boot.kernelParams = [ "nomodeset" ];
+}

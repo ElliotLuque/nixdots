@@ -3,7 +3,6 @@
   boot = {
     kernelParams = [
       "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-      "nomodeset"
     ];
   };
   services.xserver.videoDrivers = [ "nvidia" ];

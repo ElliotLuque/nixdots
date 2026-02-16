@@ -14,7 +14,7 @@
     ../../modules/nixos/nvidia-prime.nix # NVIDIA Laptop
   ];
 
-  hardware.nvidia.open = false;
+  hardware.nvidia.open = true;
 
   powerManagement.cpuFreqGovernor = "performance";
 }
