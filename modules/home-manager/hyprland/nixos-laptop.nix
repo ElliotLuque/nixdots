@@ -43,7 +43,7 @@
     }
     (lib.mkIf hyprlandLowPerformance {
       home-manager.users.${username}.wayland.windowManager.hyprland.settings = {
-        animations.enabled = lib.mkForce "no";
+        # animations.enabled = lib.mkForce "no";
 
         decoration = {
           active_opacity = lib.mkForce "1.0";
