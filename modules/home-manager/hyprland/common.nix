@@ -16,6 +16,10 @@
         "HYPRCURSOR_THEME,hypr_Bibata-Original-Classic"
       ];
 
+      debug = {
+        disable_logs = false;
+      };
+
       misc = {
         vfr = "0";
         disable_hyprland_logo = "true";
