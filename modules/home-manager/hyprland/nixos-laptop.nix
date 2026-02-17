@@ -23,7 +23,7 @@
             ];
 
             env = [
-              "AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card0"
+              "AQ_DRM_DEVICES,/dev/dri/card0:/dev/dri/card1"
             ];
 
             input = {

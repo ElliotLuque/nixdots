@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
 {
   boot = {
     kernelParams = [
@@ -24,9 +24,9 @@
 
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
-      LIBVA_DRIVER_NAME = "nvidia";
-      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-      NVD_BACKEND = "direct";
+      LIBVA_DRIVER_NAME = lib.mkDefault "nvidia";
+      __GLX_VENDOR_LIBRARY_NAME = lib.mkDefault "nvidia";
+      NVD_BACKEND = lib.mkDefault "direct";
     };
   };
 }
