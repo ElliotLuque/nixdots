@@ -39,10 +39,56 @@ let
       notify-send -i "$icon_path" "Hyprpicker" "$color"
     '';
   };
+  brightnessStep = pkgs.writeShellApplication {
+    name = "brightness-step";
+    runtimeInputs = [
+      pkgs.brightnessctl
+      pkgs.coreutils
+      pkgs.gawk
+    ];
+    text = ''
+      set -euo pipefail
+
+      direction="''${1:-}"
+
+      if [[ "$direction" != "up" && "$direction" != "down" ]]; then
+        echo "uso: brightness-step <up|down>" >&2
+        exit 2
+      fi
+
+      current=$(brightnessctl g)
+      max=$(brightnessctl m)
+
+      # Limite inferior para no apagar la pantalla por completo.
+      min_raw=$(awk -v m="$max" 'BEGIN {
+        v = int(m * 0.03)
+        if (v < 1) v = 1
+        print v
+      }')
+
+      # Paso multiplicativo: perceptualmente mas cercano a una escala logaritmica.
+      new=$(awk -v c="$current" -v m="$max" -v minv="$min_raw" -v dir="$direction" 'BEGIN {
+        factor = 1.18
+
+        if (dir == "up") {
+          n = int(c * factor)
+        } else {
+          n = int(c / factor)
+        }
+
+        if (n < minv) n = minv
+        if (n > m) n = m
+        print n
+      }')
+
+      brightnessctl set "$new"
+    '';
+  };
 in
 {
   home.packages = [
     screenshotScript
     colorPickerNotifier
+    brightnessStep
   ];
 }

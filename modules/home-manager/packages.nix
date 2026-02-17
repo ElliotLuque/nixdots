@@ -47,6 +47,8 @@
     libnotify
     hyprpanel
     opencode
+    pamixer
+    brightnessctl
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
     gnumake

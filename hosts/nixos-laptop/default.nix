@@ -15,5 +15,9 @@
     ../../modules/nixos/nvidia-prime.nix # NVIDIA Laptop PRIME offload
   ];
 
-  hardware.nvidia.open = true;
+  boot.kernelParams = [
+    "nvidia.NVreg_DynamicPowerManagement=0x02"
+  ];
+
+  hardware.nvidia.open = false;
 }

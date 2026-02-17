@@ -1,6 +1,6 @@
-{ sops, ... }:
+{ lib, config, ... }:
 {
-  sops = {
+  sops = lib.mkIf config.programs.hyprpanel.enable {
     age.keyFile = "/home/elliot/.config/sops/age/keys.txt";
     defaultSopsFile = ../../secrets/secrets.yaml;
     secrets."hyprpanel/weather_key" = {

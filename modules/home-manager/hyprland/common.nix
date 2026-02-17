@@ -161,6 +161,17 @@
         "$mod CTRL, down, resizeactive, 0 40"
       ];
 
+      bindel = [
+        ",XF86AudioRaiseVolume, exec, pamixer -i 5"
+        ",XF86AudioLowerVolume, exec, pamixer -d 5"
+        ",XF86MonBrightnessUp, exec, brightness-step up"
+        ",XF86MonBrightnessDown, exec, brightness-step down"
+      ];
+
+      bindl = [
+        ",XF86AudioMute, exec, pamixer -t"
+      ];
+
       bindm = [
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
