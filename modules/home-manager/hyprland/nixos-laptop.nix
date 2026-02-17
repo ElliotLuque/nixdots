@@ -32,7 +32,7 @@
 
               follow_mouse = "1";
 
-              sensitivity = "1.0";
+              sensitivity = "0.5";
             };
 
             "$mod" = "SUPER";
