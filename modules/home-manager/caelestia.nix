@@ -27,7 +27,7 @@ let
     bar = {
       status = {
         showBattery = true;
-        showKbLayout = true;
+        showKbLayout = false;
         showWifi = false;
         showAudio = true;
         showLockStatus = false;
