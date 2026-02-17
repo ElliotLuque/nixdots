@@ -7,7 +7,7 @@
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.greetd}/bin/agretty --cmd start-hyprland";
+          command = "${pkgs.greetd}/bin/agreety --cmd start-hyprland";
         };
         initial_session = {
           command = "start-hyprland";
