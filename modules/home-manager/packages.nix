@@ -1,7 +1,13 @@
-{ pkgs, nixvim, ... }:
+{
+  pkgs,
+  nixvim,
+  inputs,
+  ...
+}:
 {
   home.packages = with pkgs; [
     nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     wiremix
     bluetui
     impala

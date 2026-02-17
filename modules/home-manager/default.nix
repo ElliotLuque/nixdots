@@ -24,5 +24,7 @@
     ./yazi.nix
     ./xdg.nix
     ./opencode.nix
+    ./atuin.nix
+    ./zoxide.nix
   ];
 }
