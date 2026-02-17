@@ -16,6 +16,7 @@
     lf
     fd
     fzf
+    localsend
     ripgrep
     ncdu
     duf
