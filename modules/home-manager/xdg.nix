@@ -1,11 +1,10 @@
 {
-  inputs,
-  pkgs,
+  config,
   ...
 }:
 {
   xdg.mimeApps = let
-    zenDesktop = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default.meta.desktopFileName;
+    zenDesktop = config.programs.zen-browser.package.meta.desktopFileName;
   in {
     enable = true;
     defaultApplications = {
