@@ -50,6 +50,7 @@
     opencode
     pamixer
     brightnessctl
+    whisper-cpp
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
     gnumake

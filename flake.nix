@@ -44,6 +44,7 @@
       catppuccin,
       spicetify-nix,
       nixvim,
+      sops-nix,
       ...
     }@inputs:
     let
@@ -60,6 +61,7 @@
             inputs.stylix.nixosModules.stylix
             inputs.spicetify-nix.nixosModules.default
             catppuccin.nixosModules.catppuccin
+            sops-nix.nixosModules.sops
             ./hosts/nixos-pc
           ];
           specialArgs = {
@@ -72,6 +74,7 @@
               catppuccin
               spicetify-nix
               nixvim
+              sops-nix
               ;
           };
         };
@@ -82,6 +85,7 @@
             inputs.stylix.nixosModules.stylix
             inputs.spicetify-nix.nixosModules.default
             catppuccin.nixosModules.catppuccin
+            sops-nix.nixosModules.sops
             ./hosts/nixos-laptop
           ];
           specialArgs = {
@@ -94,6 +98,7 @@
               catppuccin
               spicetify-nix
               nixvim
+              sops-nix
               ;
           };
         };
