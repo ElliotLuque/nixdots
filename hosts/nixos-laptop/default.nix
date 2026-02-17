@@ -10,11 +10,10 @@
     inputs.home-manager.nixosModules.default
     ./hardware-configuration.nix
     ../../modules/nixos
+    ../../modules/nixos/power-laptop.nix
     ../../modules/nixos/nvidia.nix # This is a NVIDIA PC so we'll import it
     ../../modules/nixos/nvidia-prime.nix # NVIDIA Laptop
   ];
 
   hardware.nvidia.open = true;
-
-  powerManagement.cpuFreqGovernor = "performance";
 }

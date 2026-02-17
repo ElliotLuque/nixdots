@@ -40,6 +40,18 @@
               sensitivity = "-1.0";
             };
 
+            layerrule = [
+              # shell
+              "no_anim true, match:namespace ^caelestia-(launcher|osd|notifications|border-exclusion|area-picker)$"
+              "animation fade, match:namespace ^caelestia-(drawers|background)$"
+              "order 1, match:namespace ^caelestia-border-exclusion$"
+              "order 2, match:namespace ^caelestia-bar$"
+              "xray 1, match:namespace ^caelestia-(border|launcher|bar|sidebar|navbar|mediadisplay|screencorners)$"
+              "blur true, match:namespace ^caelestia-.*"
+              "blur true, match:namespace ^qs-.*"
+              "ignore_alpha 0.57, match:namespace ^caelestia-.*"
+            ];
+
             "$mod" = "SUPER";
             "$menu" = "caelestia shell drawers toggle launcher";
           };

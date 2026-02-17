@@ -5,13 +5,6 @@
 }:
 let
   baseSettings = {
-    appearance = {
-      transparency = {
-        enabled = true;
-        base = "0.6";
-        layers = "0.2";
-      };
-    };
     general = {
       apps = {
         terminal = [ "kitty" ];
@@ -65,6 +58,13 @@ let
   hostSettings = {
     nixos-pc = {
       bar.status.showBattery = false;
+      appearance = {
+        transparency = {
+          enabled = true;
+          base = "0.6";
+          layers = "0.2";
+        };
+      };
     };
 
     nixos-laptop = {
