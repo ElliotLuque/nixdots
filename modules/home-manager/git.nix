@@ -8,6 +8,7 @@
         email = "git@elliotluque.com";
       };
       init.defaultBranch = "main";
+      pull.rebase = false;
       url = {
         "https://github.com/" = {
           insteadOf = [
