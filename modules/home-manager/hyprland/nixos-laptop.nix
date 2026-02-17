@@ -32,8 +32,23 @@
 
               follow_mouse = "1";
 
-              sensitivity = "0.5";
+              touchpad = {
+                natural_scroll = "true";
+              };
+
+              sensitivity = "0";
             };
+
+            device = [
+              {
+                name = "type:touchpad";
+                sensitivity = "0.5";
+              }
+              {
+                name = "type:mouse";
+                sensitivity = "0";
+              }
+            ];
 
             "$mod" = "SUPER";
             "$menu" = "caelestia shell drawers toggle launcher";
