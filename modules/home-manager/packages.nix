@@ -32,6 +32,7 @@
     ffmpeg
     jq
     jetbrains.rider
+    jetbrains.idea
     glow
     pfetch-rs
     nerdfetch

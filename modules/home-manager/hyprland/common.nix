@@ -14,6 +14,7 @@
         "XCURSOR_THEME,Bibata-Original-Classic"
         "HYPRCURSOR_SIZE,22"
         "HYPRCURSOR_THEME,hypr_Bibata-Original-Classic"
+        "JDK_JAVA_OPTIONS,-Dawt.toolkit.name=WLToolkit"
       ];
 
       debug = {

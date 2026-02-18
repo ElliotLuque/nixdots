@@ -25,6 +25,7 @@
     ./rofi
     ./yazi.nix
     ./xdg.nix
+    ./jetbrains.nix
     ./opencode.nix
     ./atuin.nix
     ./zoxide.nix
