@@ -33,6 +33,9 @@
     jq
     jetbrains.rider
     jetbrains.idea
+    protonvpn-gui
+    proton-pass
+    proton-pass-cli
     glow
     pfetch-rs
     nerdfetch
@@ -58,5 +61,8 @@
     nodejs_24
     pnpm
     dotnetCorePackages.dotnet_8.sdk # Necessary for rider + omnisharp lsp
+    jdk21
+    maven
+    gradle
   ];
 }

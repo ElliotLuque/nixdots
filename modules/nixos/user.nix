@@ -39,6 +39,7 @@
           EDITOR = "nvim";
           PF_INFO = "ascii title os cpu uptime pkgs memory shell";
           DOTNET_ROOT = "${pkgs.dotnetCorePackages.dotnet_8.sdk}/bin";
+          JAVA_HOME = "${pkgs.jdk21}/lib/openjdk";
           JDK_JAVA_OPTIONS = "-Dawt.toolkit.name=WLToolkit";
         };
       };
