@@ -1,4 +1,23 @@
-{ host, ... }:
+{ host, pkgs, ... }:
+let
+  fasterWhisperPython =
+    (pkgs.python3.override {
+      packageOverrides = final: prev: {
+        ctranslate2 = prev.ctranslate2.override {
+          ctranslate2-cpp = pkgs.ctranslate2.override {
+            withCUDA = true;
+            withCuDNN = true;
+          };
+        };
+      };
+    }).withPackages
+      (
+        ps: with ps; [
+          faster-whisper
+          ctranslate2
+        ]
+      );
+in
 {
   programs.fish = {
     enable = true;
@@ -221,56 +240,109 @@
       '';
 
       clase_transcribir = ''
-        if test (count $argv) -ne 1
-          echo "Uso: clase_transcribir <audio.m4a|audio.wav|...>"
-          return 1
-        end
+                if test (count $argv) -ne 1
+                  echo "Uso: clase_transcribir <audio.m4a|audio.wav|...>"
+                  return 1
+                end
 
-        set -l audio $argv[1]
-        if not test -f "$audio"
-          echo "No existe el audio: $audio"
-          return 1
-        end
+                set -l audio $argv[1]
+                if not test -f "$audio"
+                  echo "No existe el audio: $audio"
+                  return 1
+                end
 
-        set -l stem (string replace -r '\\.[^.]+$' "" -- $audio)
-        set -l txt "$stem.txt"
+                set -l stem (string replace -r '\\.[^.]+$' "" -- $audio)
+                set -l txt "$stem.txt"
+                set -l fw_model large-v3
+                set -l fw_lang es
+                set -l fw_compute float16
+                set -l fw_device cuda
+                set -l fw_python "${fasterWhisperPython}/bin/python3"
+                set -l fw_log "$stem.faster-whisper.log"
+                set -l fw_tmp_log "$fw_log.tmp"
 
-        if command -q whisper-cli
-          set -l model "$HOME/.cache/whisper/ggml-base.bin"
-          if set -q WHISPER_MODEL
-            set model "$WHISPER_MODEL"
-          end
+                if set -q FASTER_WHISPER_MODEL
+                  set fw_model "$FASTER_WHISPER_MODEL"
+                end
 
-          if not test -f "$model"
-            echo "No se encontró modelo local de Whisper"
-            echo "Define WHISPER_MODEL o coloca un modelo en $HOME/.cache/whisper/"
-            return 1
-          end
+                if set -q FASTER_WHISPER_LANG
+                  set fw_lang "$FASTER_WHISPER_LANG"
+                end
 
-          whisper-cli -m "$model" -f "$audio" -otxt -of "$stem"
-        else if set -q OPENAI_API_KEY
-          curl -sS https://api.openai.com/v1/audio/transcriptions \
-            -H "Authorization: Bearer $OPENAI_API_KEY" \
-            -F "file=@$audio" \
-            -F "model=gpt-4o-mini-transcribe" \
-            -F "response_format=text" > "$txt"
-        else
-          echo "No hay motor de transcripción disponible"
-          echo "Opciones: instalar whisper-cli o exportar OPENAI_API_KEY"
-          return 1
-        end
+                if set -q FASTER_WHISPER_COMPUTE
+                  set fw_compute "$FASTER_WHISPER_COMPUTE"
+                end
 
-        if test $status -ne 0
-          echo "Fallo la transcripción"
-          return 1
-        end
+                if set -q FASTER_WHISPER_DEVICE
+                  set fw_device "$FASTER_WHISPER_DEVICE"
+                end
 
-        set -l prompt "$stem.prompt.md"
-        printf "Resume la clase en 8-12 puntos clave, identifica formulas o conceptos importantes, y cierra con 5 posibles preguntas de examen.\\n\\nTranscripcion:\\n\\n" > "$prompt"
-        command cat "$txt" >> "$prompt"
+                if not test -x "$fw_python"
+                  echo "No se encontró Python declarativo para faster-whisper"
+                  return 1
+                end
 
-        echo "Transcripción guardada en: $txt"
-        echo "Prompt para LLM guardado en: $prompt"
+                echo "Transcribiendo con faster-whisper ($fw_model, $fw_device, $fw_compute)..."
+                rm -f "$fw_tmp_log"
+
+                "$fw_python" -c '
+        import os
+        import sys
+        import traceback
+
+        audio = sys.argv[1]
+        txt = sys.argv[2]
+        model_name = sys.argv[3]
+        language = sys.argv[4]
+        compute_type = sys.argv[5]
+        device = sys.argv[6]
+
+        try:
+            from faster_whisper import WhisperModel
+        except Exception:
+            traceback.print_exc()
+            sys.exit(2)
+
+        if not os.path.isfile(audio):
+            print(f"No existe el audio: {audio}", file=sys.stderr)
+            sys.exit(3)
+
+        try:
+            model = WhisperModel(model_name, device=device, compute_type=compute_type)
+            segments, _ = model.transcribe(audio, language=language, vad_filter=True, beam_size=5, temperature=0.0)
+        except Exception:
+            traceback.print_exc()
+            sys.exit(3)
+
+        with open(txt, "w", encoding="utf-8") as out:
+            for segment in segments:
+                line = segment.text.strip()
+                if line:
+                    out.write(line + "\\n")
+        ' "$audio" "$txt" "$fw_model" "$fw_lang" "$fw_compute" "$fw_device" 2> "$fw_tmp_log"
+
+                set -l rc $status
+
+                if test $rc -eq 2
+                  mv "$fw_tmp_log" "$fw_log"
+                  echo "Revisa log: $fw_log"
+                  return 1
+                else if test $rc -ne 0
+                  mv "$fw_tmp_log" "$fw_log"
+                  echo "Falló la transcripción (device=$fw_device, compute=$fw_compute)"
+                  echo "Prueba temporal: set -gx FASTER_WHISPER_DEVICE cpu"
+                  echo "Revisa log: $fw_log"
+                  return 1
+                end
+
+                rm -f "$fw_tmp_log"
+
+                if not test -s "$txt"
+                  echo "La transcripción quedó vacía"
+                  return 1
+                end
+
+                echo "Transcripción guardada en: $txt"
       '';
     };
 

@@ -33,6 +33,7 @@
     jq
     jetbrains.rider
     jetbrains.idea
+    signal-desktop
     protonvpn-gui
     proton-pass
     proton-pass-cli
@@ -48,6 +49,7 @@
     cava
     ncspot
     google-chrome
+    firefox
     zathura
     libnotify
     hyprpanel
