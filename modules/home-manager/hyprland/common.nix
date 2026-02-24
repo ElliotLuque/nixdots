@@ -32,6 +32,10 @@
         enable_hyprcursor = "true";
       };
 
+      exec-once = [
+        "protonvpn-app"
+      ];
+
       plugin = {
         hyprsplit = {
           num_workspaces = 4;
