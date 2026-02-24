@@ -182,16 +182,9 @@
         "$mod, mouse:273, resizewindow"
       ];
 
-      layerrule = [
-        "blur on, match:namespace firefox"
-      ];
-
       windowrule = [
         "suppress_event maximize, match:class .*"
-        # "no_focus on, match:class ^$, match:title ^$, match:xwayland 1, match:floating 1, match: fullscreen 0, match:pinned 0"
         "opacity 0.85 override 0.7 override 0.85 override, match:class kitty"
-        "opacity 0.85 override 0.7 override 0.85 override, match:class rofi"
-        "opacity 0.9 override 0.8 override 0.9 override, match:class firefox"
       ];
     };
   };
