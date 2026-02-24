@@ -22,6 +22,7 @@
     ./sops.nix
     ./rofi
     ./yazi.nix
+    ./lazygit.nix
     ./xdg.nix
     ./jetbrains.nix
     ./opencode.nix

@@ -21,8 +21,8 @@
     ncdu
     duf
     sops
-    lazygit
     cmake
+    delta
     gcc
     hyprpicker
     wf-recorder
