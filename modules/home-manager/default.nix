@@ -1,9 +1,7 @@
-{ inputs, ... }:
+{ ... }:
 {
   imports = [
-    inputs.zen-browser.homeModules.beta
     ./packages.nix
-    ./zen.nix
     ./kitty.nix
     ./fish.nix
     ./catppuccin.nix

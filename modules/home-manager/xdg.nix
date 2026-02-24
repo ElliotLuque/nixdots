@@ -1,19 +1,14 @@
+{ ... }:
 {
-  config,
-  ...
-}:
-{
-  xdg.mimeApps = let
-    zenDesktop = config.programs.zen-browser.package.meta.desktopFileName;
-  in {
+  xdg.mimeApps = {
     enable = true;
     defaultApplications = {
       "application/pdf" = "org.pwmt.zathura.desktop";
-      "text/html" = zenDesktop;
-      "x-scheme-handler/http" = zenDesktop;
-      "x-scheme-handler/https" = zenDesktop;
-      "x-scheme-handler/about" = zenDesktop;
-      "x-scheme-handler/unknown" = zenDesktop;
+      "text/html" = "firefox.desktop";
+      "x-scheme-handler/http" = "firefox.desktop";
+      "x-scheme-handler/https" = "firefox.desktop";
+      "x-scheme-handler/about" = "firefox.desktop";
+      "x-scheme-handler/unknown" = "firefox.desktop";
       "image/jpeg" = "feh.desktop";
       "image/png" = "feh.desktop";
       "image/gif" = "feh.desktop";
