@@ -167,8 +167,8 @@
       ];
 
       bindel = [
-        ",XF86AudioRaiseVolume, exec, pamixer -i 5"
-        ",XF86AudioLowerVolume, exec, pamixer -d 5"
+        ",XF86AudioRaiseVolume, exec, pamixer --set-limit 140 -i 5"
+        ",XF86AudioLowerVolume, exec, pamixer --set-limit 140 -d 5"
         ",XF86MonBrightnessUp, exec, brightness-step up"
         ",XF86MonBrightnessDown, exec, brightness-step down"
       ];
