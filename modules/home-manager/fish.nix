@@ -25,6 +25,7 @@ in
 
     shellAliases = {
       gg = "lazygit";
+      oc = "opencode";
       ls = "eza -lh --icons --group-directories-first";
       lsa = "eza -lah --icons --group-directories-first";
       tree = "eza --tree --icons --group-directories-first";
