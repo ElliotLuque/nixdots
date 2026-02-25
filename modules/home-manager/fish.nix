@@ -19,6 +19,13 @@ let
       );
 in
 {
+  xdg.configFile."fish/completions/oc.fish" = {
+    force = true;
+    text = ''
+      complete -c oc -w opencode
+    '';
+  };
+
   programs.fish = {
     enable = true;
     generateCompletions = true;
