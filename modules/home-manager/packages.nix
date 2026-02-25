@@ -50,6 +50,7 @@
     ncspot
     google-chrome
     firefox
+    obsidian
     zathura
     libnotify
     hyprpanel
