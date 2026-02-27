@@ -200,14 +200,13 @@ in
         end
 
         set -l fecha (date +"%d-%m-%y")
-        set -l base "$slug"_"$fecha"
-        set -l outdir "$HOME/Universidad/Clases"
+        set -l outdir "$HOME/Universidad/Clases/$slug"
         mkdir -p "$outdir"
 
-        set -l audio "$outdir/$base.m4a"
+        set -l audio "$outdir/$fecha.m4a"
         set -l n 1
         while test -e "$audio"
-          set audio "$outdir/$base"_"$n.m4a"
+          set audio "$outdir/$fecha"_"$n.m4a"
           set n (math $n + 1)
         end
 
