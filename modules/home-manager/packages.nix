@@ -52,6 +52,9 @@
     firefox
     obsidian
     zathura
+    claude-code
+    codex
+    k6
     libnotify
     hyprpanel
     opencode
