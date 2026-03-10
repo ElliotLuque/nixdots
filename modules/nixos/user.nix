@@ -35,6 +35,9 @@
         username = "${username}";
         homeDirectory = "/home/${username}";
         stateVersion = "24.11";
+        sessionPath = [
+          "$HOME/.local/bin"
+        ];
         sessionVariables = {
           EDITOR = "nvim";
           PF_INFO = "ascii title os cpu uptime pkgs memory shell";
