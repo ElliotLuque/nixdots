@@ -23,7 +23,7 @@
             };
 
             cursor = {
-              default_monitor = "HDMI-A-2";
+              default_monitor = "HDMI-A-1";
             };
 
             monitor = [

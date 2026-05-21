@@ -24,6 +24,8 @@
     cmake
     delta
     gcc
+    zip
+    zapzap
     hyprpicker
     wf-recorder
     nomacs
@@ -65,6 +67,7 @@
     nerd-fonts.jetbrains-mono
     gnumake
     nodejs_24
+    godot
     pnpm
     dotnetCorePackages.dotnet_8.sdk # Necessary for rider + omnisharp lsp
     jdk21
