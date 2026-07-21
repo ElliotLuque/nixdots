@@ -132,7 +132,6 @@
         "$mod, F, fullscreen"
         "$mod SHIFT, L, exec, hyprlock"
         "$mod, R, exec, $menu"
-        "$mod, J, togglesplit"
         "$mod, 1, split:workspace, 1"
         "$mod, 2, split:workspace, 2"
         "$mod, 3, split:workspace, 3"
