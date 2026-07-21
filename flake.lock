@@ -500,6 +500,29 @@
         "type": "github"
       }
     },
+    "hyprsplit": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1781205112,
+        "narHash": "sha256-PaoUtmk+qIP/ESdxkxnY7mUMpMHjix88qu22R5GLQqE=",
+        "owner": "shezdy",
+        "repo": "hyprsplit",
+        "rev": "6b00b677d8905fb38779c91e12d6294e0e586a44",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shezdy",
+        "repo": "hyprsplit",
+        "type": "github"
+      }
+    },
     "hyprtoolkit": {
       "inputs": {
         "aquamarine": [
@@ -765,11 +788,11 @@
         "nixvim": "nixvim_2"
       },
       "locked": {
-        "lastModified": 1784651417,
-        "narHash": "sha256-1XQPWld+ao2kCkxieWUaMyCZz82Aofqd1S7Fh31ni0E=",
+        "lastModified": 1784654741,
+        "narHash": "sha256-rRlkf62cJ+3N2U9sklqG9EEPcm9D+ltKG/JOwOOFga4=",
         "owner": "ElliotLuque",
         "repo": "nixvim",
-        "rev": "82e81b73f4329fa27bb28e0cc67f55607d71b6cc",
+        "rev": "28042e4feb969d719b9795da12aee7030caf81c5",
         "type": "github"
       },
       "original": {
@@ -872,6 +895,7 @@
         "catppuccin": "catppuccin",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
+        "hyprsplit": "hyprsplit",
         "nixpkgs": "nixpkgs_3",
         "nixvim": "nixvim",
         "sops-nix": "sops-nix",

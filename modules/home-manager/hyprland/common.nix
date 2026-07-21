@@ -1,190 +1,195 @@
-{ config, pkgs, ... }:
+{ config, inputs, pkgs, host, ... }:
+let
+  hyprsplit = inputs.hyprsplit.packages.${pkgs.stdenv.hostPlatform.system}.hyprsplitlua;
+  dynamicCursors = pkgs.hyprlandPlugins.hypr-dynamic-cursors;
+  hostConfig =
+    if host == "nixos-pc" then
+      ''
+        hl.monitor({ output = "HDMI-A-2", mode = "3840x2160@60", position = "0x0", scale = 1.5 })
+        hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60", position = "2560x0", scale = 1.5 })
+
+        hl.config({
+          cursor = { default_monitor = "HDMI-A-1" },
+          debug = { damage_tracking = 0 },
+          input = { kb_layout = "es", kb_options = "caps:super", follow_mouse = 1, sensitivity = -1 },
+          opengl = { nvidia_anti_flicker = 0 },
+        })
+      ''
+    else
+      ''
+        hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+
+        hl.env("AQ_DRM_DEVICES", "/dev/dri/card0:/dev/dri/card1")
+        hl.config({
+          debug = { damage_tracking = 0 },
+          input = {
+            kb_layout = "es",
+            kb_options = "caps:super",
+            follow_mouse = 1,
+            sensitivity = 0,
+            touchpad = { natural_scroll = true },
+          },
+          device = {
+            { name = "type:touchpad", sensitivity = 0.5 },
+            { name = "type:mouse", sensitivity = 0 },
+          },
+          decoration = {
+            active_opacity = 1,
+            inactive_opacity = 1,
+            blur = { enabled = false },
+            shadow = { enabled = false },
+          },
+        })
+      '';
+in
 {
-  wayland.windowManager.hyprland = {
-    enable = true;
+  # Home Manager's settings serializer does not yet produce valid Lua for all
+  # Hyprland keywords, so manage the native Lua configuration directly.
+  wayland.windowManager.hyprland.enable = false;
 
-    plugins = [
-      pkgs.hyprlandPlugins.hypr-dynamic-cursors
-      pkgs.hyprlandPlugins.hyprsplit
-    ];
+  xdg.configFile = {
+    "systemd/user/hyprland-session.target".text = ''
+      [Unit]
+      Description=Hyprland compositor session
+      Wants=graphical-session.target
+      Before=graphical-session.target
+    '';
+    "hypr/hyprsplit/init.lua".source = "${hyprsplit}/share/hyprsplit/init.lua";
+    "hypr/hyprsplit-config.lua".text = ''
+      local hs = require("hyprsplit")
 
-    settings = {
-      env = [
-        "XCURSOR_SIZE,22"
-        "XCURSOR_THEME,Bibata-Original-Classic"
-        "HYPRCURSOR_SIZE,22"
-        "HYPRCURSOR_THEME,hypr_Bibata-Original-Classic"
-        "JDK_JAVA_OPTIONS,-Dawt.toolkit.name=WLToolkit"
-      ];
+      hs.config({ num_workspaces = 4, persistent_workspaces = true })
 
-      debug = {
-        disable_logs = false;
-      };
+      local function move_to_workspace(workspace, follow)
+        return function()
+          local target = hs.get_workspace_string(tostring(workspace))
+          hl.dispatch(hl.dsp.window.move({ workspace = target, follow = false }))
 
-      misc = {
-        vfr = "0";
-        disable_hyprland_logo = "true";
-        font_family = "JetBrains Mono Nerd Font";
-      };
+          if follow then
+            hl.dispatch(hl.dsp.focus({ workspace = target, on_current_monitor = true }))
+          end
+        end
+      end
 
-      cursor = {
-        no_hardware_cursors = "true";
-        enable_hyprcursor = "true";
-      };
+      local function move_to_monitor(direction)
+        return function()
+          local current = hl.get_active_monitor()
+          if current == nil then
+            return
+          end
 
-      exec-once = [
-        "protonvpn-app"
-      ];
+          local current_x = current.x + current.width / 2
+          local current_y = current.y + current.height / 2
+          local target = nil
+          local best_distance = math.huge
 
-      plugin = {
-        hyprsplit = {
-          num_workspaces = 4;
-          persistent_workspaces = true;
-        };
+          for _, monitor in ipairs(hl.get_monitors()) do
+            if monitor.id ~= current.id and not monitor.is_mirror then
+              local dx = monitor.x + monitor.width / 2 - current_x
+              local dy = monitor.y + monitor.height / 2 - current_y
+              local matches = (direction == "left" and dx < 0)
+                or (direction == "right" and dx > 0)
+                or (direction == "up" and dy < 0)
+                or (direction == "down" and dy > 0)
 
-        dynamic-cursors = {
-          enabled = "true";
-          mode = "tilt";
-          tilt = {
-            limit = "3500";
-            function = "quadratic";
-          };
+              if matches then
+                local distance = dx * dx + dy * dy
+                if distance < best_distance then
+                  target = monitor
+                  best_distance = distance
+                end
+              end
+            end
+          end
 
-          hyprcursor = {
-            enabled = "true";
-          };
-        };
-      };
+          if target and target.active_workspace then
+            hl.dispatch(hl.dsp.window.move({ workspace = target.active_workspace, follow = false }))
+            hl.dispatch(hl.dsp.focus({ monitor = target }))
+          end
+        end
+      end
 
-      general = {
-        gaps_in = "6";
-        gaps_out = "10";
+      for i = 1, 4 do
+        hl.bind("SUPER + " .. i, hs.dsp.focus({ workspace = i }))
+        hl.bind("SUPER + SHIFT + " .. i, move_to_workspace(i, true))
+        hl.bind("SUPER + CTRL + " .. i, move_to_workspace(i, false))
+      end
 
-        border_size = "3";
+      hl.bind("SUPER + SHIFT + left", move_to_monitor("left"))
+      hl.bind("SUPER + SHIFT + right", move_to_monitor("right"))
+      hl.bind("SUPER + SHIFT + up", move_to_monitor("up"))
+      hl.bind("SUPER + SHIFT + down", move_to_monitor("down"))
+    '';
+    "hypr/hyprland.lua".text = ''
+      -- Generated from the Nix configuration. This is a native Hyprland Lua config.
+      local config_home = os.getenv("XDG_CONFIG_HOME") or "${config.home.homeDirectory}/.config"
+      package.path = config_home .. "/hypr/?.lua;" .. config_home .. "/hypr/?/init.lua;" .. package.path
 
-        "col.active_border" = "rgb(cba6f7)";
-        "col.inactive_border" = "rgba(313244aa)";
+      hl.plugin.load("${dynamicCursors}/lib/libhypr-dynamic-cursors.so")
+      require("hyprsplit-config")
 
-        resize_on_border = "false";
-        allow_tearing = "false";
+      hl.env("XCURSOR_SIZE", "22")
+      hl.env("XCURSOR_THEME", "Bibata-Original-Classic")
+      hl.env("HYPRCURSOR_SIZE", "22")
+      hl.env("HYPRCURSOR_THEME", "hypr_Bibata-Original-Classic")
+      hl.env("JDK_JAVA_OPTIONS", "-Dawt.toolkit.name=WLToolkit")
 
-        layout = "dwindle";
-      };
+      ${hostConfig}
 
-      decoration = {
-        rounding = "10";
+      hl.config({
+        cursor = { no_hardware_cursors = true, enable_hyprcursor = true },
+        debug = { disable_logs = false },
+        misc = { disable_hyprland_logo = true, font_family = "JetBrains Mono Nerd Font" },
+        general = {
+          gaps_in = 6,
+          gaps_out = 10,
+          border_size = 3,
+          col = { active_border = "rgb(cba6f7)", inactive_border = "rgba(313244aa)" },
+          resize_on_border = false,
+          allow_tearing = false,
+          layout = "dwindle",
+        },
+        decoration = {
+          rounding = 10,
+          active_opacity = 1,
+          inactive_opacity = 0.95,
+          shadow = { enabled = true, range = 12, render_power = 2, color = "rgba(cba6f7bb)", color_inactive = "rgba(313244aa)" },
+          blur = { enabled = true, size = 6, passes = 3, vibrancy = 0.1696 },
+        },
+        dwindle = { preserve_split = true },
+      })
 
-        active_opacity = "1.0";
-        inactive_opacity = "0.95";
+      hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
+      hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
+      hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
+      hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 } } })
+      hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
+      hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "windows", enabled = true, speed = 4.79, bezier = "easeOutQuint" })
+      hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "easeOutQuint", style = "slide" })
 
-        shadow = {
-          enabled = "true";
-          range = "12";
-          render_power = "2";
-          color = "rgba(cba6f7bb)";
-          color_inactive = "rgba(313244aa)";
-        };
+      hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
+      hl.bind("SUPER + Q", hl.dsp.window.close())
+      hl.bind("SUPER + S", hl.dsp.exec_cmd("screenshot-area"))
+      hl.bind("SUPER + R", hl.dsp.exec_cmd("caelestia shell drawers toggle launcher"))
+      hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
+      hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
+      hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }))
+      hl.bind("SUPER + down", hl.dsp.focus({ direction = "down" }))
+      hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pamixer --set-limit 140 -i 5"), { locked = true, repeating = true })
+      hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pamixer --set-limit 140 -d 5"), { locked = true, repeating = true })
+      hl.bind("XF86AudioMute", hl.dsp.exec_cmd("pamixer -t"), { locked = true })
+      hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightness-step up"), { locked = true, repeating = true })
+      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightness-step down"), { locked = true, repeating = true })
 
-        blur = {
-          enabled = "true";
-          size = "6";
-          passes = "3";
-          vibrancy = "0.1696";
-        };
-      };
+      hl.window_rule({ name = "suppress-maximize", match = { class = ".*" }, suppress_event = "maximize" })
+      hl.window_rule({ name = "kitty-opacity", match = { class = "kitty" }, opacity = "0.85 override 0.7 override 0.85 override" })
 
-      animations = {
-        # Default
-        enabled = "yes, please :)";
-
-        bezier = [
-          "easeOutQuint,0.23,1,0.32,1"
-          "easeInOutCubic,0.65,0.05,0.36,1"
-          "linear,0,0,1,1"
-          "almostLinear,0.5,0.5,0.75,1.0"
-          "quick,0.15,0,0.1,1"
-        ];
-
-        animation = [
-          "border, 1, 5.39, easeOutQuint"
-          "windows, 1, 4.79, easeOutQuint"
-          "windowsIn, 1, 4.1, easeOutQuint, popin 70%"
-          "windowsOut, 1, 1.49, linear, popin 70%"
-          "fadeIn, 1, 1.73, almostLinear"
-          "fadeOut, 1, 1.46, almostLinear"
-          "fade, 1, 3.03, quick"
-          "workspaces, 1, 5, easeOutQuint, slide"
-        ];
-      };
-
-      dwindle = {
-        preserve_split = "true";
-      };
-
-      "$terminal" = "kitty";
-
-      bind = [
-        "$mod, Return, exec, $terminal"
-        "$mod, Q, killactive"
-        "$mod, M, exit"
-        "$mod, S, exec, screenshot-area"
-        "$mod, V, togglefloating"
-        "$mod, F, fullscreen"
-        "$mod SHIFT, L, exec, hyprlock"
-        "$mod, R, exec, $menu"
-        "$mod, 1, split:workspace, 1"
-        "$mod, 2, split:workspace, 2"
-        "$mod, 3, split:workspace, 3"
-        "$mod, 4, split:workspace, 4"
-
-        "$mod SHIFT, 1, split:movetoworkspace, 1"
-        "$mod SHIFT, 2, split:movetoworkspace, 2"
-        "$mod SHIFT, 3, split:movetoworkspace, 3"
-        "$mod SHIFT, 4, split:movetoworkspace, 4"
-
-        "$mod CTRL, 1, split:movetoworkspacesilent, 1"
-        "$mod CTRL, 2, split:movetoworkspacesilent, 2"
-        "$mod CTRL, 3, split:movetoworkspacesilent, 3"
-        "$mod CTRL, 4, split:movetoworkspacesilent, 4"
-
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
-
-        "$mod SHIFT, left, movewindow, l"
-        "$mod SHIFT, right, movewindow, r"
-        "$mod SHIFT, up, movewindow, u"
-        "$mod SHIFT, down, swapwindow, d"
-      ];
-
-      binde = [
-        "$mod CTRL, left, resizeactive, -40 0"
-        "$mod CTRL, right, resizeactive, 40 0"
-        "$mod CTRL, up, resizeactive, 0 -40"
-        "$mod CTRL, down, resizeactive, 0 40"
-      ];
-
-      bindel = [
-        ",XF86AudioRaiseVolume, exec, pamixer --set-limit 140 -i 5"
-        ",XF86AudioLowerVolume, exec, pamixer --set-limit 140 -d 5"
-        ",XF86MonBrightnessUp, exec, brightness-step up"
-        ",XF86MonBrightnessDown, exec, brightness-step down"
-      ];
-
-      bindl = [
-        ",XF86AudioMute, exec, pamixer -t"
-      ];
-
-      bindm = [
-        "$mod, mouse:272, movewindow"
-        "$mod, mouse:273, resizewindow"
-      ];
-
-      windowrule = [
-        "suppress_event maximize, match:class .*"
-        "opacity 0.85 override 0.7 override 0.85 override, match:class kitty"
-      ];
-    };
+      hl.on("hyprland.start", function()
+        hl.exec_cmd("dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE && systemctl --user start hyprland-session.target")
+        hl.exec_cmd("protonvpn-app")
+      end)
+    '';
   };
 }

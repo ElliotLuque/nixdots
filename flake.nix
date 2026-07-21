@@ -11,6 +11,11 @@
     };
 
     hyprland.url = "github:hyprwm/Hyprland";
+    hyprsplit = {
+      url = "github:shezdy/hyprsplit";
+      inputs.hyprland.follows = "hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     stylix.url = "github:danth/stylix";
     catppuccin.url = "github:catppuccin/nix";
