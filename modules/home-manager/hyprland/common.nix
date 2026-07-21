@@ -71,54 +71,16 @@ in
         end
       end
 
-      local function move_to_monitor(direction)
-        return function()
-          local current = hl.get_active_monitor()
-          if current == nil then
-            return
-          end
-
-          local current_x = current.x + current.width / 2
-          local current_y = current.y + current.height / 2
-          local target = nil
-          local best_distance = math.huge
-
-          for _, monitor in ipairs(hl.get_monitors()) do
-            if monitor.id ~= current.id and not monitor.is_mirror then
-              local dx = monitor.x + monitor.width / 2 - current_x
-              local dy = monitor.y + monitor.height / 2 - current_y
-              local matches = (direction == "left" and dx < 0)
-                or (direction == "right" and dx > 0)
-                or (direction == "up" and dy < 0)
-                or (direction == "down" and dy > 0)
-
-              if matches then
-                local distance = dx * dx + dy * dy
-                if distance < best_distance then
-                  target = monitor
-                  best_distance = distance
-                end
-              end
-            end
-          end
-
-          if target and target.active_workspace then
-            hl.dispatch(hl.dsp.window.move({ workspace = target.active_workspace, follow = false }))
-            hl.dispatch(hl.dsp.focus({ monitor = target }))
-          end
-        end
-      end
-
       for i = 1, 4 do
         hl.bind("SUPER + " .. i, hs.dsp.focus({ workspace = i }))
         hl.bind("SUPER + SHIFT + " .. i, move_to_workspace(i, true))
         hl.bind("SUPER + CTRL + " .. i, move_to_workspace(i, false))
       end
 
-      hl.bind("SUPER + SHIFT + left", move_to_monitor("left"))
-      hl.bind("SUPER + SHIFT + right", move_to_monitor("right"))
-      hl.bind("SUPER + SHIFT + up", move_to_monitor("up"))
-      hl.bind("SUPER + SHIFT + down", move_to_monitor("down"))
+      hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
+      hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+      hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
+      hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
     '';
     "hypr/hyprland.lua".text = ''
       -- Generated from the Nix configuration. This is a native Hyprland Lua config.
