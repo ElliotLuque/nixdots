@@ -1,5 +1,17 @@
-{ ... }:
+{ config, ... }:
 {
+  xdg.desktopEntries.orca = {
+    name = "Orca";
+    genericName = "Agentic IDE";
+    comment = "Next-gen IDE for parallel agentic development";
+    exec = ''"${config.home.homeDirectory}/Downloads/orca-linux.AppImage" --no-sandbox %U'';
+    icon = "applications-development";
+    terminal = false;
+    categories = [ "Development" ];
+    mimeType = [ "x-scheme-handler/orca" ];
+    settings.StartupWMClass = "orca";
+  };
+
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
