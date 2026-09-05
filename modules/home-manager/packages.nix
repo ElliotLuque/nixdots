@@ -10,6 +10,7 @@
     bluetui
     impala
     tokei
+    termdown
     btop
     bat
     eza
@@ -17,6 +18,9 @@
     fd
     fzf
     localsend
+    reaper
+    alsa-utils
+    sfizz-ui
     ripgrep
     ncdu
     duf
