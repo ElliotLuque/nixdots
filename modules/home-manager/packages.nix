@@ -11,6 +11,7 @@
     impala
     tokei
     termdown
+    timr-tui
     btop
     bat
     eza
