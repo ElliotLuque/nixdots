@@ -41,7 +41,7 @@
     jetbrains.rider
     jetbrains.idea
     signal-desktop
-    protonvpn-gui
+    proton-vpn
     proton-pass
     proton-pass-cli
     glow
@@ -63,7 +63,6 @@
     codex
     k6
     libnotify
-    hyprpanel
     opencode
     pamixer
     brightnessctl

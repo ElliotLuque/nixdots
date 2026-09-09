@@ -1,4 +1,10 @@
-{ config, inputs, pkgs, host, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  host,
+  ...
+}:
 let
   hyprsplit = inputs.hyprsplit.packages.${pkgs.stdenv.hostPlatform.system}.hyprsplitlua;
   dynamicCursors = pkgs.hyprlandPlugins.hypr-dynamic-cursors;
