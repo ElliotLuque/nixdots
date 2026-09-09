@@ -57,6 +57,7 @@
     ncspot
     google-chrome
     firefox
+    vscode
     obsidian
     zathura
     claude-code
