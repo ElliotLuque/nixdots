@@ -10,7 +10,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland";
+    hyprland.url = "github:hyprwm/Hyprland/34eb03bd8da01024596c367fba66485a8c9b8ca7";
+    hypr-dynamic-cursors = {
+      url = "github:VirtCode/hypr-dynamic-cursors";
+      inputs.hyprland.follows = "hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     hyprsplit = {
       url = "github:shezdy/hyprsplit";
       inputs.hyprland.follows = "hyprland";
@@ -31,7 +36,7 @@
     };
 
     caelestia-shell = {
-      url = "github:caelestia-dots/shell";
+      url = "github:caelestia-dots/shell/6d3e6a96492b0e9c668464875ac34150113ede5f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

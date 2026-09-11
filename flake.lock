@@ -135,16 +135,17 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1789127989,
-        "narHash": "sha256-rF8F9qYIlkAFW+kALJJ60gQ67A8V8/bAN0emqBpAb40=",
+        "lastModified": 1788681429,
+        "narHash": "sha256-uLw4ceDzmYKeRIDVDyvQeloqVgOf3brybYZl97B9iRg=",
         "owner": "caelestia-dots",
         "repo": "shell",
-        "rev": "d8ee1e8b41226fcfb77982a7913e83d81130cc8e",
+        "rev": "6d3e6a96492b0e9c668464875ac34150113ede5f",
         "type": "github"
       },
       "original": {
         "owner": "caelestia-dots",
         "repo": "shell",
+        "rev": "6d3e6a96492b0e9c668464875ac34150113ede5f",
         "type": "github"
       }
     },
@@ -314,6 +315,29 @@
         "type": "github"
       }
     },
+    "hypr-dynamic-cursors": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788508268,
+        "narHash": "sha256-v+7e4T412K3Hi/qb+v7sZh2/2k1jFB9AY4AusVXr58I=",
+        "owner": "VirtCode",
+        "repo": "hypr-dynamic-cursors",
+        "rev": "b9739b1db4a48616d66af29239ab0fe2756d28f6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "VirtCode",
+        "repo": "hypr-dynamic-cursors",
+        "type": "github"
+      }
+    },
     "hyprcursor": {
       "inputs": {
         "hyprlang": [
@@ -389,16 +413,17 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1789046904,
-        "narHash": "sha256-wWPN/kmzwp4kHBtC6JmVUJHg2Np2VtyfS53mFrI90us=",
+        "lastModified": 1788692456,
+        "narHash": "sha256-lRRgvJwnXupqt7DVUJJ4E1sUgubTs4BxO6iDXdn4irE=",
         "owner": "hyprwm",
         "repo": "Hyprland",
-        "rev": "f05d73f35795ded80d7e1264a37e41b461625f9f",
+        "rev": "34eb03bd8da01024596c367fba66485a8c9b8ca7",
         "type": "github"
       },
       "original": {
         "owner": "hyprwm",
         "repo": "Hyprland",
+        "rev": "34eb03bd8da01024596c367fba66485a8c9b8ca7",
         "type": "github"
       }
     },
@@ -901,6 +926,7 @@
         "caelestia-shell": "caelestia-shell",
         "catppuccin": "catppuccin",
         "home-manager": "home-manager",
+        "hypr-dynamic-cursors": "hypr-dynamic-cursors",
         "hyprland": "hyprland",
         "hyprsplit": "hyprsplit",
         "nixpkgs": "nixpkgs_3",

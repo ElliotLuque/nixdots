@@ -7,7 +7,33 @@
 }:
 let
   hyprsplit = inputs.hyprsplit.packages.${pkgs.stdenv.hostPlatform.system}.hyprsplitlua;
-  dynamicCursors = pkgs.hyprlandPlugins.hypr-dynamic-cursors;
+  dynamicCursors = inputs.hypr-dynamic-cursors.packages.${pkgs.stdenv.hostPlatform.system}.hypr-dynamic-cursors;
+  bibataHyprcursor = pkgs.stdenvNoCC.mkDerivation {
+    pname = "bibata-original-classic-hyprcursor";
+    version = "1.0.0";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "rtgiskard";
+      repo = "bibata_cursor";
+      rev = "f4ccfe8abb63fddc7b3ce51a866fd8378395cb3d";
+      hash = "sha256-p36pHyoVOcDPm/tbk8YKsL+ItTaVKrGTfQ8zp022mGA=";
+    };
+
+    nativeBuildInputs = [ pkgs.python3 ];
+
+    buildPhase = ''
+      runHook preBuild
+      python3 src/cursor_utils.py --hypr --theme Bibata-Original-Classic --out-dir out
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/share/icons
+      cp -r out/Bibata-Original-Classic $out/share/icons/
+      runHook postInstall
+    '';
+  };
   hostConfig =
     if host == "nixos-pc" then
       ''
@@ -51,6 +77,8 @@ in
 {
   # Home Manager's settings serializer does not yet produce valid Lua for all
   # Hyprland keywords, so manage the native Lua configuration directly.
+  home.packages = [ bibataHyprcursor ];
+
   wayland.windowManager.hyprland.enable = false;
 
   xdg.configFile = {
@@ -99,7 +127,7 @@ in
       hl.env("XCURSOR_SIZE", "22")
       hl.env("XCURSOR_THEME", "Bibata-Original-Classic")
       hl.env("HYPRCURSOR_SIZE", "22")
-      hl.env("HYPRCURSOR_THEME", "hypr_Bibata-Original-Classic")
+      hl.env("HYPRCURSOR_THEME", "Bibata-Original-Classic")
       hl.env("JDK_JAVA_OPTIONS", "-Dawt.toolkit.name=WLToolkit")
 
       ${hostConfig}
@@ -126,6 +154,24 @@ in
         },
         dwindle = { preserve_split = true },
       })
+
+      if hl.plugin.dynamic_cursors then
+        hl.config({ plugin = { dynamic_cursors = {
+          enabled = true,
+          mode = "tilt",
+          tilt = { limit = 8000, activation = "quadratic", window = 100, full = 15 },
+          shake = {
+            enabled = true,
+            threshold = 6.0,
+            base = 4.0,
+            speed = 4.0,
+            limit = 6.0,
+            timeout = 1200,
+            effects = false,
+          },
+          hyprcursor = { enabled = true, nearest = 1, resolution = -1, fallback = "clientside" },
+        }}})
+      end
 
       hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
       hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
