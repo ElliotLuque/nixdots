@@ -159,7 +159,7 @@ in
         hl.config({ plugin = { dynamic_cursors = {
           enabled = true,
           mode = "tilt",
-          tilt = { limit = 8000, activation = "quadratic", window = 100, full = 15 },
+          tilt = { limit = 8000, activation = "quadratic", window = 100, full = 22 },
           shake = {
             enabled = true,
             threshold = 6.0,
