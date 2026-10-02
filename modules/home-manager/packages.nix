@@ -30,7 +30,6 @@
     delta
     gcc
     zip
-    zapzap
     hyprpicker
     wf-recorder
     nomacs
