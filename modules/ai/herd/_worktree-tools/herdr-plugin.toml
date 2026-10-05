@@ -1,0 +1,14 @@
+id = "nixdots.worktree-tools"
+name = "Worktree Tools"
+version = "0.1.0"
+min_herdr_version = "0.9.3"
+description = "Merge the selected worktree into the main checkout, then remove it safely"
+platforms = ["linux", "macos"]
+
+[[panes]]
+id = "merge-delete"
+title = "Merge & delete worktree"
+placement = "popup"
+width = "80%"
+height = "70%"
+command = ["@command@"]

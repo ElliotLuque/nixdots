@@ -1,0 +1,123 @@
+--- a/src/client/shell/context_menu.rs
++++ b/src/client/shell/context_menu.rs
+@@ -1,5 +1,71 @@
+ use super::*;
+ 
++#[cfg(test)]
++mod merge_delete_tests {
++    use super::*;
++
++    fn menu(is_git: bool, linked: bool, children: bool) -> ClientContextMenuOverlay {
++        ClientContextMenuOverlay {
++            target: ClientContextMenuTarget::Workspace {
++                workspace_id: "ws_clicked".into(),
++                is_git,
++                is_linked_worktree: linked,
++                has_worktree_children: children,
++                collapsed: false,
++            },
++            x: 0,
++            y: 0,
++            highlighted: 0,
++        }
++    }
++
++    #[test]
++    fn merge_delete_is_only_in_linked_worktree_menu() {
++        for (is_git, linked, children) in [
++            (false, false, false),
++            (true, false, false),
++            (true, false, true),
++            (true, true, false),
++        ] {
++            let actions = menu(is_git, linked, children).items();
++            assert_eq!(
++                actions.iter().any(|item| {
++                    item.action == ClientContextMenuAction::MergeDeleteWorktree
++                }),
++                linked,
++            );
++            if linked {
++                assert!(actions.iter().any(|item| {
++                    item.action == ClientContextMenuAction::RemoveWorktree
++                }));
++            }
++        }
++    }
++
++    #[test]
++    fn merge_delete_passes_clicked_workspace_not_focused_workspace() {
++        let mut state = ClientShellState::new(ClientShellConfig::from_config(&Config::default()));
++        state.set_snapshot(Box::new(super::super::tests::snapshot()));
++        state.overlay = Some(ClientShellOverlay::ContextMenu(menu(true, true, false)));
++        let index = menu(true, true, false)
++            .items()
++            .iter()
++            .position(|item| item.action == ClientContextMenuAction::MergeDeleteWorktree)
++            .expect("merge action");
++        let mut outcome = ClientShellInput::default();
++        state.activate_context_menu_item(index, &mut outcome);
++        let [ClientShellAction::Endpoint { request, .. }] = &outcome.actions[..] else {
++            panic!("expected a plugin pane request");
++        };
++        let crate::api::schema::Method::PluginPaneOpen(params) = &request.method else {
++            panic!("expected plugin.pane.open");
++        };
++        assert_eq!(params.plugin_id, "nixdots.worktree-tools");
++        assert_eq!(params.entrypoint, "merge-delete");
++        assert_eq!(params.env["HERDR_MERGE_WORKSPACE_ID"], "ws_clicked");
++    }
++}
++
+ impl ClientContextMenuOverlay {
+     pub(super) fn items(&self) -> Vec<ClientContextMenuItem> {
+         use ClientContextMenuAction as Action;
+@@ -25,6 +91,7 @@
+             } => vec![
+                 item("Rename", Action::Rename),
+                 item("Close", Action::Close),
++                item("Merge & delete worktree...", Action::MergeDeleteWorktree),
+                 item("Delete worktree checkout...", Action::RemoveWorktree),
+             ],
+             ClientContextMenuTarget::Workspace {
+@@ -269,6 +336,30 @@
+             ClientContextMenuAction::RemoveWorktree => {
+                 self.begin_worktree_action_for(KeybindAction::RemoveWorktree, workspace_id, outcome)
+             }
++            ClientContextMenuAction::MergeDeleteWorktree => {
++                use crate::api::schema::{Method, PluginPaneOpenParams};
++
++                // Popup context follows focus in 0.9.3. Pass the clicked
++                // workspace explicitly so an unfocused worktree is safe.
++                self.push_endpoint_method(
++                    Method::PluginPaneOpen(PluginPaneOpenParams {
++                        plugin_id: "nixdots.worktree-tools".into(),
++                        entrypoint: "merge-delete".into(),
++                        placement: None,
++                        width: None,
++                        height: None,
++                        workspace_id: None,
++                        target_pane_id: None,
++                        direction: None,
++                        cwd: None,
++                        focus: true,
++                        env: [("HERDR_MERGE_WORKSPACE_ID".into(), workspace_id)]
++                            .into_iter()
++                            .collect(),
++                    }),
++                    outcome,
++                );
++            }
+             ClientContextMenuAction::ToggleGroup => {
+                 let key = self.snapshot.as_deref().and_then(|snapshot| {
+                     snapshot
+--- a/src/client/shell/state.rs
++++ b/src/client/shell/state.rs
+@@ -515,6 +515,7 @@
+     NewWorktree,
+     OpenWorktree,
+     RemoveWorktree,
++    MergeDeleteWorktree,
+     ToggleGroup,
+     NewTab,
+     RenamePane,

@@ -3,7 +3,7 @@
   flake.modules.homeManager.hunk-review =
     { pkgs, ... }:
     let
-      herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      herdr = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.herdr;
       # Hunk refuses watch mode with Bun 1.3.13 (watcher shutdown deadlock).
       # Remove this local override when nixpkgs ships Bun >= 1.3.14.
       bun = pkgs.bun.overrideAttrs (_: {

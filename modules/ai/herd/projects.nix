@@ -3,7 +3,7 @@
   flake.modules.homeManager.herdr-projects =
     { pkgs, lib, ... }:
     let
-      herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      herdr = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.herdr;
       version = "0.2.34";
       releases = {
         x86_64-linux = {
