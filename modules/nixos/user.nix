@@ -3,41 +3,38 @@
   inputs,
   host,
   username,
-  catppuccin,
-  spicetify-nix,
-  nixvim,
   ...
 }:
+
 {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
     backupFileExtension = "backup";
-    extraSpecialArgs = {
+
+    extraSpecialArgs = inputs // {
       inherit
         inputs
         host
         username
-        catppuccin
-        spicetify-nix
-        nixvim
         ;
     };
+
     users.${username} = {
       imports = [
         ../../modules/home-manager
-        catppuccin.homeModules.catppuccin
-        inputs.spicetify-nix.homeManagerModules.default
-        inputs.sops-nix.homeManagerModules.sops
-        inputs.caelestia-shell.homeManagerModules.default
       ];
+
       home = {
-        username = "${username}";
+        inherit username;
+
         homeDirectory = "/home/${username}";
         stateVersion = "24.11";
+
         sessionPath = [
           "$HOME/.local/bin"
         ];
+
         sessionVariables = {
           EDITOR = "nvim";
           PF_INFO = "ascii title os cpu uptime pkgs memory shell";
@@ -46,14 +43,16 @@
           JDK_JAVA_OPTIONS = "-Dawt.toolkit.name=WLToolkit";
         };
       };
+
       programs.home-manager.enable = true;
     };
   };
 
   users.users.${username} = {
     isNormalUser = true;
-    description = "${username}";
+    description = username;
     shell = pkgs.fish;
+
     extraGroups = [
       "networkmanager"
       "wheel"
@@ -62,5 +61,6 @@
       "docker"
     ];
   };
-  nix.settings.allowed-users = [ "${username}" ];
+
+  nix.settings.allowed-users = [ username ];
 }

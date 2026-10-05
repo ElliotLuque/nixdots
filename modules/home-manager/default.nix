@@ -1,6 +1,14 @@
-{ ... }:
+{ inputs, ... }:
 {
   imports = [
+    # external modules
+    inputs.catppuccin.homeModules.catppuccin
+    inputs.spicetify-nix.homeManagerModules.default
+    inputs.sops-nix.homeManagerModules.sops
+    inputs.caelestia-shell.homeManagerModules.default
+    inputs.agent-skills.homeManagerModules.default
+
+    # local modules
     ./packages.nix
     ./kitty.nix
     ./fish.nix

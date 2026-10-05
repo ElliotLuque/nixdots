@@ -1,83 +1,109 @@
 {
   pkgs,
-  nixvim,
   inputs,
   ...
 }:
+
+let
+  system = pkgs.stdenv.hostPlatform.system;
+in
 {
   home.packages = with pkgs; [
-    nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default
-    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.nixvim.packages.${system}.default
+    inputs.herdr.packages.${system}.default
+
     wiremix
     bluetui
     impala
     tokei
     termdown
     timr-tui
+
     btop
     bat
     eza
     lf
     fd
     fzf
+    ripgrep
+    ncdu
+    duf
+
     localsend
     reaper
     alsa-utils
     sfizz-ui
-    ripgrep
-    ncdu
-    duf
+
     sops
+
     cmake
-    delta
     gcc
+    gnumake
+    maven
+    gradle
+
+    delta
     zip
+    jq
+
     hyprpicker
     wf-recorder
+    grim
+    slurp
+
     nomacs
     celluloid
     feh
     ffmpeg
-    jq
+
     jetbrains.rider
     jetbrains.idea
+    vscode
+
     signal-desktop
+    obsidian
+
     proton-vpn
     proton-pass
     proton-pass-cli
+
     glow
     pfetch-rs
     nerdfetch
     fastfetch
-    grim
-    slurp
     nitch
+
     cowsay
     pipes-rs
     cava
     ncspot
+
     google-chrome
     firefox
-    vscode
-    obsidian
+
     zathura
+
     claude-code
     codex
+    opencode
+
     k6
     libnotify
-    opencode
+
     pamixer
     brightnessctl
+
     whisper-cpp
+
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono
-    gnumake
+
     nodejs_24
-    godot
     pnpm
-    dotnetCorePackages.dotnet_8.sdk # Necessary for rider + omnisharp lsp
+
+    godot
+
+    dotnetCorePackages.dotnet_8.sdk
     jdk21
-    maven
-    gradle
   ];
 }

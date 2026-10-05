@@ -1,7 +1,7 @@
 { inputs, pkgs, ... }:
 {
   home.packages = [
-    inputs.pi.packages.${pkgs.system}.default
+    inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   home.file.".pi/agent/models.json".text = builtins.toJSON {

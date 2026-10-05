@@ -6,12 +6,11 @@
 
 {
   imports = [
-    ../../modules/home-manager/hyprland/nixos-pc.nix
-    inputs.home-manager.nixosModules.default
     ./hardware-configuration.nix
+
     ../../modules/nixos
-    ../../modules/nixos/nvidia.nix # This is a NVIDIA PC so we'll import it
-    ../../modules/nixos/nvidia-desktop.nix # Desktop-specific NVIDIA quirks
+    ../../modules/nixos/nvidia.nix # this is a NVIDIA PC
+    ../../modules/nixos/nvidia-desktop.nix # desktop-specific NVIDIA quirks
     ../../modules/nixos/ollama.nix
   ];
 

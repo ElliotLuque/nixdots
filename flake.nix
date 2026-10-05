@@ -1,21 +1,26 @@
 {
-  description = "nixos config";
+  description = "nixos configuration";
 
   inputs = {
+    # core
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    sops-nix.url = "github:Mic92/sops-nix";
 
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    sops-nix.url = "github:Mic92/sops-nix";
+
+    # desktop
     hyprland.url = "github:hyprwm/Hyprland/34eb03bd8da01024596c367fba66485a8c9b8ca7";
+
     hypr-dynamic-cursors = {
       url = "github:VirtCode/hypr-dynamic-cursors";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     hyprsplit = {
       url = "github:shezdy/hyprsplit";
       inputs.hyprland.follows = "hyprland";
@@ -25,6 +30,12 @@
     stylix.url = "github:danth/stylix";
     catppuccin.url = "github:catppuccin/nix";
 
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell/6d3e6a96492b0e9c668464875ac34150113ede5f";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # applications
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,11 +43,6 @@
 
     nixvim = {
       url = "github:ElliotLuque/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    caelestia-shell = {
-      url = "github:caelestia-dots/shell/6d3e6a96492b0e9c668464875ac34150113ede5f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -55,81 +61,55 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    taste-skill = {
-      url = "github:Leonxlnx/taste-skill";
-      flake = false;
-    };
-
-    impeccable = {
-      url = "github:pbakaus/impeccable";
-      flake = false;
-    };
+    # agent skills
+    agent-skills.url = "path:./agent-skills";
   };
 
   outputs =
-    {
-      self,
+    inputs@{
       nixpkgs,
-      catppuccin,
-      spicetify-nix,
-      nixvim,
-      sops-nix,
       ...
-    }@inputs:
+    }:
     let
+      system = "x86_64-linux";
       username = "elliot";
-      pkgs = nixpkgs.legacyPackages."x86_64-linux";
-    in
-    {
-      devShells."x86_64-linux".default = import ./shells/dotnet_shell.nix { inherit pkgs; };
 
-      nixosConfigurations = {
-        nixos-pc = nixpkgs.lib.nixosSystem {
-          modules = [
-            inputs.home-manager.nixosModules.default
-            inputs.stylix.nixosModules.stylix
-            inputs.spicetify-nix.nixosModules.default
-            catppuccin.nixosModules.catppuccin
-            sops-nix.nixosModules.sops
-            ./hosts/nixos-pc
+      pkgs = nixpkgs.legacyPackages.${system};
+
+      commonModules = [
+        inputs.home-manager.nixosModules.default
+        inputs.stylix.nixosModules.stylix
+        inputs.catppuccin.nixosModules.catppuccin
+      ];
+
+      mkHost =
+        { host }:
+        nixpkgs.lib.nixosSystem {
+          modules = commonModules ++ [
+            (./hosts + "/${host}")
           ];
-          specialArgs = {
-            host = "nixos-pc";
-            hyprlandLowPerformance = false;
+
+          specialArgs = inputs // {
             inherit
-              self
               inputs
               username
-              catppuccin
-              spicetify-nix
-              nixvim
-              sops-nix
+              host
               ;
           };
         };
+    in
+    {
+      devShells.${system}.default = import ./shells/dotnet_shell.nix {
+        inherit pkgs;
+      };
 
-        nixos-laptop = nixpkgs.lib.nixosSystem {
-          modules = [
-            inputs.home-manager.nixosModules.default
-            inputs.stylix.nixosModules.stylix
-            inputs.spicetify-nix.nixosModules.default
-            catppuccin.nixosModules.catppuccin
-            sops-nix.nixosModules.sops
-            ./hosts/nixos-laptop
-          ];
-          specialArgs = {
-            host = "nixos-laptop";
-            hyprlandLowPerformance = true;
-            inherit
-              self
-              inputs
-              username
-              catppuccin
-              spicetify-nix
-              nixvim
-              sops-nix
-              ;
-          };
+      nixosConfigurations = {
+        nixos-pc = mkHost {
+          host = "nixos-pc";
+        };
+
+        nixos-laptop = mkHost {
+          host = "nixos-laptop";
         };
       };
     };
