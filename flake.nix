@@ -39,6 +39,31 @@
       url = "github:caelestia-dots/shell/6d3e6a96492b0e9c668464875ac34150113ede5f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    zapfast = {
+      url = "github:crmne/zapfast";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    herdr = {
+      url = "github:herdrdev/herdr/v0.9.3";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    pi = {
+      url = "github:earendil-works/pi/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    taste-skill = {
+      url = "github:Leonxlnx/taste-skill";
+      flake = false;
+    };
+
+    impeccable = {
+      url = "github:pbakaus/impeccable";
+      flake = false;
+    };
   };
 
   outputs =

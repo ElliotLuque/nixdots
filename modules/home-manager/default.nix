@@ -12,6 +12,7 @@
     ./hyprland
     ./gh.nix
     ./caelestia.nix
+    ./pi.nix
     ./lf/lf.nix
     ./bat.nix
     ./scripts.nix

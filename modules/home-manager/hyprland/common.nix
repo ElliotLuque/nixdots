@@ -139,8 +139,7 @@ in
         general = {
           gaps_in = 6,
           gaps_out = 10,
-          border_size = 3,
-          col = { active_border = "rgb(cba6f7)", inactive_border = "rgba(313244aa)" },
+          border_size = 0,
           resize_on_border = false,
           allow_tearing = false,
           layout = "dwindle",
@@ -148,8 +147,8 @@ in
         decoration = {
           rounding = 10,
           active_opacity = 1,
-          inactive_opacity = 0.95,
-          shadow = { enabled = true, range = 12, render_power = 2, color = "rgba(cba6f7bb)", color_inactive = "rgba(313244aa)" },
+          inactive_opacity = 0.8,
+          shadow = { enabled = false },
           blur = { enabled = true, size = 6, passes = 3, vibrancy = 0.1696 },
         },
         dwindle = { preserve_split = true },
@@ -202,7 +201,7 @@ in
       hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightness-step down"), { locked = true, repeating = true })
 
       hl.window_rule({ name = "suppress-maximize", match = { class = ".*" }, suppress_event = "maximize" })
-      hl.window_rule({ name = "kitty-opacity", match = { class = "kitty" }, opacity = "0.85 override 0.7 override 0.85 override" })
+      hl.window_rule({ name = "kitty-opacity", match = { class = "kitty" }, opacity = "0.85 override 0.45 override 0.85 override" })
 
       hl.on("hyprland.start", function()
         hl.exec_cmd("dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE && systemctl --user start hyprland-session.target")
