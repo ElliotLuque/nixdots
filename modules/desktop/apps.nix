@@ -1,6 +1,23 @@
 { ... }:
 {
   flake.modules.homeManager.desktop-apps = { pkgs, ... }: {
+    programs.swayimg = {
+      enable = true;
+      initLua = ''
+        swayimg.mode = "viewer"
+        swayimg.imagelist.adjacent = true
+        swayimg.imagelist.order = "numeric"
+        -- Fit large images to the window without upscaling small images.
+        swayimg.viewer.default_scale = "optimal"
+
+        for _, mode in ipairs({ swayimg.viewer, swayimg.gallery, swayimg.slideshow }) do
+          mode.on_key("q", function()
+            swayimg.exit()
+          end)
+        end
+      '';
+    };
+
     home.packages = with pkgs; [
       wiremix
       bluetui
@@ -14,7 +31,6 @@
       slurp
       nomacs
       celluloid
-      feh
       ffmpeg
       signal-desktop
       obsidian

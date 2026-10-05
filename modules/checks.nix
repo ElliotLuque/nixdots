@@ -155,6 +155,21 @@ in
         assert desktop.config.networking.firewall.allowedUDPPorts == [ ];
         assert desktop.config.networking.networkmanager.ensureProfiles.profiles == { };
         assert !(desktopHome.systemd.user.services ? proton-vpn);
+        assert desktopHome.programs.swayimg.enable;
+        assert desktopHome.xdg.configFile."swayimg/init.lua".text != "";
+        assert builtins.elem "swayimg" (map inputs.nixpkgs.lib.getName desktopHome.home.packages);
+        assert !(builtins.elem "feh" (map inputs.nixpkgs.lib.getName desktopHome.home.packages));
+        assert builtins.all
+          (mime: desktopHome.xdg.mimeApps.defaultApplications.${mime} == [ "swayimg.desktop" ])
+          [
+            "image/jpeg"
+            "image/png"
+            "image/gif"
+            "image/webp"
+            "image/svg+xml"
+            "image/bmp"
+            "image/tiff"
+          ];
         assert builtins.isString desktop.config.system.build.toplevel.drvPath;
         pkgs.runCommand "architecture-check" { } ''
           touch "$out"
