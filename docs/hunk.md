@@ -30,8 +30,10 @@ worktree. Use a session ID if several viewers are open for that worktree.
 
 ## Configuration ownership
 
-`modules/ai/hunk.nix` manages `~/.config/hunk/config.toml`,
-`~/.config/herdr/config.toml`, `~/.pi/agent/extensions/hunk.ts`, and
+`modules/ai/herd/default.nix` composes herdr and its integrations and owns the
+base `~/.config/herdr/config.toml` settings. `modules/ai/herd/hunk.nix` manages
+`~/.config/hunk/config.toml`, the Hunk keybinding in herdr,
+`~/.pi/agent/extensions/hunk.ts`, and
 `~/.agents/skills/hunk-review`. Change persistent preferences in the Nix module,
 not those generated files. Existing Herdr onboarding, status indicators, and
 system toast settings are retained.

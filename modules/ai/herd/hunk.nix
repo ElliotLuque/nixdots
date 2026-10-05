@@ -63,17 +63,6 @@
         prompt_save_view_preferences = false
       '';
       xdg.configFile."herdr/config.toml".text = ''
-        onboarding = false
-
-        [theme]
-        name = "catppuccin"
-
-        [ui]
-        status_indicators = "symbols"
-
-        [ui.toast]
-        delivery = "system"
-
         [[keys.command]]
         key = "prefix+d"
         type = "popup"

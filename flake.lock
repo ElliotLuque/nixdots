@@ -355,6 +355,22 @@
         "type": "github"
       }
     },
+    "herdr-worktrunk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790931822,
+        "narHash": "sha256-+dxQPMAjeQlsnJJJbMBQCsbjd7p5PRlojJqITAq+f6U=",
+        "owner": "devashish2203",
+        "repo": "herdr-worktrunk",
+        "rev": "77e91a9b5429c0296cd883300b4b1d4664e9edd6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "devashish2203",
+        "repo": "herdr-worktrunk",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -1073,6 +1089,7 @@
         "catppuccin": "catppuccin",
         "flake-parts": "flake-parts",
         "herdr": "herdr",
+        "herdr-worktrunk": "herdr-worktrunk",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",
         "hyprland": "hyprland",
