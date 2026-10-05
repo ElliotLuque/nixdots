@@ -56,11 +56,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    herdr-worktrunk = {
-      url = "github:devashish2203/herdr-worktrunk";
-      flake = false;
-    };
-
     herdr-projects = {
       url = "github:eliasstravik/herdr-projects/v0.2.34";
       flake = false;

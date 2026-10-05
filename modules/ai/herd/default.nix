@@ -5,7 +5,6 @@
     {
       imports = with config.flake.modules.homeManager; [
         hunk-review
-        herdr-worktrunk
         herdr-projects
       ];
 
