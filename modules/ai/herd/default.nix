@@ -6,6 +6,7 @@
       imports = with config.flake.modules.homeManager; [
         hunk-review
         herdr-worktrunk
+        herdr-projects
       ];
 
       home.packages = [ inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default ];

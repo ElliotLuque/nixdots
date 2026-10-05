@@ -61,6 +61,11 @@
       flake = false;
     };
 
+    herdr-projects = {
+      url = "github:eliasstravik/herdr-projects/v0.2.34";
+      flake = false;
+    };
+
     pi = {
       url = "github:earendil-works/pi/stable";
       inputs.nixpkgs.follows = "nixpkgs";
