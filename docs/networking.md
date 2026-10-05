@@ -9,12 +9,13 @@ Networking capabilities live in `modules/networking/`. Registering a feature doe
 | `network-manager` | NixOS | NetworkManager only; no private profiles or application firewall exceptions |
 | `localsend` | NixOS | LocalSend package and its native TCP/UDP port 53317 policy |
 | `campus-wifi` | NixOS | UPVNET Wi-Fi, NetworkManager, and runtime credential substitution |
+| `mosh` | NixOS | Mosh client and server binaries, with UDP ports 60000–61000 open |
 | `ssh-server` | NixOS | OpenSSH listener; authentication policy is a separate host decision |
 | `ssh-client` | NixOS | SSH agent, without enabling an SSH listener |
 | `ssh-client` | Home Manager | Generic SSH client settings; no personal destinations or keys |
 | `proton-vpn` | Home Manager | Proton VPN GUI and graphical-session user unit |
 
-The workstation role selects NetworkManager and the SSH client, not LocalSend, private networks, or an SSH server. Both current hosts explicitly select `localsend` and `ssh-server`, preserving their previous capabilities. Elliot explicitly selects the Proton VPN GUI on both current hosts. It is no longer launched from shared Hyprland Lua or installed by the generic desktop-apps bundle.
+The workstation role selects NetworkManager and the SSH client, not LocalSend, private networks, or an SSH server. Both current hosts explicitly select `localsend`, `ssh-server`, and `mosh`. Elliot explicitly selects the Proton VPN GUI on both current hosts. It is no longer launched from shared Hyprland Lua or installed by the generic desktop-apps bundle.
 
 A VPS importing `base` and `ssh-server` does not receive campus access, Proton VPN, LocalSend, or NetworkManager. A new workstation importing only `workstation` does not receive them either, except for NetworkManager.
 
@@ -28,6 +29,7 @@ imports = with modules.nixos; [
   workstation
   localsend
   ssh-server
+  mosh
   # campus-wifi # only after provisioning its runtime configuration
 ];
 
@@ -45,6 +47,16 @@ programs.localsend.openFirewall = false;
 ```
 
 The package remains installed, but the feature no longer opens its receiving ports. NetworkManager by itself never opens them.
+
+## Mosh
+
+The `mosh` feature uses `programs.mosh.enable` to install both `mosh` and `mosh-server` and open UDP ports 60000–61000. Mosh starts a per-session server through SSH rather than running a persistent daemon; receiving hosts must also select `ssh-server` (as both current hosts do).
+
+After rebuilding, connect with `mosh user@hostname`. The destination needs Mosh installed and its UDP ports reachable. For client-only use, keep the package but disable the firewall exception:
+
+```nix
+programs.mosh.openFirewall = false;
+```
 
 ## Campus Wi-Fi
 

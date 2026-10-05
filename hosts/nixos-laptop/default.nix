@@ -18,6 +18,7 @@ in
       nvidia-prime
       localsend
       ssh-server
+      mosh
       # Opt in to campus-wifi after provisioning /etc/nixdots/campus-wifi.env.
     ];
     networking.hostName = "nixos-laptop";

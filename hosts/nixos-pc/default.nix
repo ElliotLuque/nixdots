@@ -18,6 +18,7 @@ in
       ollama-cuda
       localsend
       ssh-server
+      mosh
     ];
     networking.hostName = "nixos-pc";
     system.stateVersion = "24.11";

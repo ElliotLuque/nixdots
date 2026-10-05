@@ -30,6 +30,12 @@ in
       campus = (mkFixture [ modules.nixos.campus-wifi ]).config;
       sshClient = (mkFixture [ modules.nixos.ssh-client ]).config;
       sshServer = (mkFixture [ modules.nixos.ssh-server ]).config;
+      mosh = (mkFixture [ modules.nixos.mosh ]).config;
+      moshClosed =
+        (mkFixture [
+          modules.nixos.mosh
+          { programs.mosh.openFirewall = false; }
+        ]).config;
       identity = (mkFixture [ modules.nixos.elliot ]).config;
       mkHomeFixture =
         extraModules:
@@ -62,6 +68,21 @@ in
     {
       checks.networking-and-access =
         assert !plain.programs.localsend.enable;
+        assert !plain.programs.mosh.enable;
+        assert plain.networking.firewall.allowedUDPPortRanges == [ ];
+        assert mosh.programs.mosh.enable;
+        assert builtins.elem pkgs.mosh mosh.environment.systemPackages;
+        assert !mosh.services.openssh.enable;
+        assert mosh.networking.firewall.allowedTCPPorts == [ ];
+        assert
+          mosh.networking.firewall.allowedUDPPortRanges == [
+            {
+              from = 60000;
+              to = 61000;
+            }
+          ];
+        assert moshClosed.programs.mosh.enable;
+        assert moshClosed.networking.firewall.allowedUDPPortRanges == [ ];
         assert plain.networking.networkmanager.ensureProfiles.profiles == { };
         assert plain.networking.firewall.allowedTCPPorts == [ ];
         assert plain.networking.firewall.allowedUDPPorts == [ ];
