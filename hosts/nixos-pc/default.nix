@@ -2,8 +2,7 @@
 ###  NixOS Desktop PC Config  ###
 #################################
 
-{ inputs, ... }:
-
+{ ... }:
 {
   imports = [
     ./hardware-configuration.nix

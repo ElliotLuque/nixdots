@@ -2,7 +2,7 @@
 ###  NixOS Laptop PC Config  ###
 #################################
 
-{ inputs, ... }:
+{ ... }:
 {
   imports = [
     ./hardware-configuration.nix
