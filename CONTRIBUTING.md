@@ -28,7 +28,29 @@ At minimum, try:
 nix flake check
 ```
 
+For evaluation without building the workstation closures, use:
+
+```bash
+nix flake check --no-build
+nix build .#checks.x86_64-linux.architecture
+```
+
 If your change affects a specific host, evaluate or rebuild that host locally when possible.
+
+## Module conventions
+
+See [Architecture](docs/architecture.md) before adding features or hosts.
+
+- Automatically discovered `.nix` files in `modules/` and `hosts/` are flake-parts modules.
+- Register features under `flake.modules.nixos` / `flake.modules.homeManager`; roles and hosts explicitly import them.
+- Keep hardware identifiers, monitors and deployment-specific services in the host; keep personal identity and autologin in user modules.
+- Use `_` prefixes for raw Nix helper files that must not be auto-imported, including generated hardware configuration.
+- Capture flake inputs in the outer module instead of passing all inputs through `specialArgs`.
+- Prefer existing NixOS/Home Manager options to new enable flags, factories or speculative role frameworks.
+- Preserve system and home state versions when refactoring existing installations.
+- Add new files to Git before evaluating a local Git flake.
+
+Format changed Nix files with `nix fmt -- <files>`. Leave generated hardware files unchanged unless the hardware itself changes.
 
 ## Pull requests
 

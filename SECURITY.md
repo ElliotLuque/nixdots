@@ -18,8 +18,8 @@ Please include enough information to reproduce and understand the issue, such as
 
 This repository contains a personal NixOS configuration intended as a reusable reference. Security reports related to the repository's own configuration, committed secrets material, unsafe permissions or reproducible configuration issues are in scope.
 
-Vulnerabilities in upstream projects such as NixOS, Home Manager, Hyprland, sops-nix or other dependencies should generally be reported to their respective maintainers unless this repository introduces the issue through its own configuration.
+Vulnerabilities in upstream projects such as NixOS, Home Manager, Hyprland or other dependencies should generally be reported to their respective maintainers unless this repository introduces the issue through its own configuration.
 
 ## Secrets
 
-Secrets in this repository are expected to be encrypted with SOPS/age. Private age keys and plaintext credentials must never be committed.
+Private keys, API tokens and plaintext credentials must never be committed. Provision sensitive values outside the public repository and the Nix store.

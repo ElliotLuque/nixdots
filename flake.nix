@@ -1,7 +1,14 @@
 {
-  description = "nixos configuration";
+  description = "Personal AI and workstation infrastructure";
 
   inputs = {
+    # composition
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+    import-tree.url = "github:vic/import-tree";
+
     # core
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
@@ -9,8 +16,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    sops-nix.url = "github:Mic92/sops-nix";
 
     # desktop
     hyprland.url = "github:hyprwm/Hyprland/34eb03bd8da01024596c367fba66485a8c9b8ca7";
@@ -46,11 +51,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zapfast = {
-      url = "github:crmne/zapfast";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     herdr = {
       url = "github:herdrdev/herdr/v0.9.3";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -61,56 +61,31 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # agent skills
-    agent-skills.url = "path:./agent-skills";
+    # shared skill sources (configured by modules/ai/skills.nix)
+    agent-skills.url = "github:Kyure-A/agent-skills-nix";
+    taste-skill = {
+      url = "github:Leonxlnx/taste-skill";
+      flake = false;
+    };
+    impeccable = {
+      url = "github:pbakaus/impeccable";
+      flake = false;
+    };
+    matt-skills = {
+      url = "github:mattpocock/skills";
+      flake = false;
+    };
   };
 
   outputs =
-    inputs@{
-      nixpkgs,
-      ...
-    }:
-    let
-      system = "x86_64-linux";
-      username = "elliot";
-
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      commonModules = [
-        inputs.home-manager.nixosModules.default
-        inputs.stylix.nixosModules.stylix
-        inputs.catppuccin.nixosModules.catppuccin
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        inputs.flake-parts.flakeModules.modules
+        (inputs.import-tree [
+          ./modules
+          ./hosts
+        ])
       ];
-
-      mkHost =
-        { host }:
-        nixpkgs.lib.nixosSystem {
-          modules = commonModules ++ [
-            (./hosts + "/${host}")
-          ];
-
-          specialArgs = inputs // {
-            inherit
-              inputs
-              username
-              host
-              ;
-          };
-        };
-    in
-    {
-      devShells.${system}.default = import ./shells/dotnet_shell.nix {
-        inherit pkgs;
-      };
-
-      nixosConfigurations = {
-        nixos-pc = mkHost {
-          host = "nixos-pc";
-        };
-
-        nixos-laptop = mkHost {
-          host = "nixos-laptop";
-        };
-      };
     };
 }

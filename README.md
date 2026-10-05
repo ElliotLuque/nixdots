@@ -1,130 +1,118 @@
 # nixdots
 
-Personal NixOS configuration used as a reproducible, modular reference for a real daily-driver setup.
+Personal NixOS configuration evolving into reproducible AI and workstation infrastructure.
 
 ![NixOS desktop](profile.png)
 
-This repository contains the NixOS and Home Manager configuration I use across my desktop and laptop. It is intentionally public so other NixOS users can inspect, reuse, and adapt individual modules rather than treating the repository as a drop-in distribution.
+This repository manages my desktop (`nixos-pc`) and laptop (`nixos-laptop`). It is public as a reference, not a drop-in distribution. The architecture also leaves room for an always-on VPS without making desktop settings the default for every machine.
 
 ## Highlights
 
-- Nix flakes with `nixos-unstable`
-- Two host profiles: `nixos-pc` and `nixos-laptop`
-- Home Manager for user-level configuration
-- Hyprland-based Wayland desktop
-- Reusable NixOS and Home Manager modules
-- SOPS + age for encrypted secrets
-- Stylix and Catppuccin integration
-- Spicetify configuration
-- Separate Nixvim flake integration
-- Host-specific handling for desktop/laptop hardware and performance
+- `nixos-unstable`, flake-parts and import-tree
+- Dendritic feature modules: related NixOS and Home Manager configuration lives together
+- Explicit role composition and host-specific hardware/display configuration
+- Hyprland, Caelestia, Stylix and Catppuccin
+- Development tools, Nixvim and Docker
+- AI clients (Pi, Claude Code, Codex, OpenCode and Herdr)
+- Shared agent skills, usable independently of the desktop
+- Model-agnostic client installation, with opt-in local Ollama configuration for Pi, Codex and OpenCode
 
 ## Repository layout
 
 ```text
 .
-├── flake.nix
-├── flake.lock
+├── flake.nix                    # inputs and composition entrypoint
+├── flake.lock                   # one lock for all dependencies, including skills
 ├── hosts/
-│   ├── nixos-pc/
+│   ├── nixos-pc/                # host composition + generated hardware
 │   └── nixos-laptop/
 ├── modules/
-│   ├── nixos/
-│   └── home-manager/
-├── secrets/
-├── shells/
+│   ├── core/                   # OS policy, locale and Home Manager
+│   ├── shell/                  # CLI tools and Fish
+│   ├── desktop/                # desktop session, theme, apps and media
+│   ├── networking/             # network management, SSH, LocalSend and opt-in networks
+│   ├── development/            # development environment
+│   ├── ai/                     # clients, skills and inference
+│   ├── hardware/               # reusable boot/GPU/power choices
+│   ├── roles/                  # base and workstation bundles
+│   ├── users/                  # personal identity, permissions and autologin
+│   ├── checks.nix              # architecture, desktop-script and Lua checks
+│   └── flake.nix               # supported systems and formatter
 └── wallpaper/
 ```
 
-`hosts/` contains machine-specific configuration while `modules/` contains reusable system and user configuration. The flake currently exposes the `nixos-pc` and `nixos-laptop` NixOS configurations.
+`import-tree` discovers flake-parts modules in `modules/` and `hosts/`. Discovery **registers** features; it does not enable them. Files/directories prefixed with `_` are excluded, including generated hardware files.
 
-## Notable components
-
-The configuration integrates several projects from the Nix ecosystem, including Home Manager, Hyprland, sops-nix, Stylix, Catppuccin, Spicetify Nix and my separate Nixvim configuration.
-
-The Home Manager modules cover tools and desktop components such as Fish, Git, Kitty, Atuin, btop, lazygit, Hyprland and related UI configuration. System modules cover common NixOS concerns such as boot, networking, audio, graphics, NVIDIA configuration, power management and services.
+See [Architecture and adding hosts](docs/architecture.md) for the composition model and examples, and [Scoped networking and access](docs/networking.md) for per-host SSH/VPN selection, campus Wi-Fi provisioning and Nix daemon policy.
 
 ## Using this repository
 
 > [!IMPORTANT]
-> This is my real machine configuration. Do not rebuild your system from it unchanged. Fork it and adapt host-specific values, hardware configuration, usernames, secrets and device settings first.
+> This is my real machine configuration. Do not rebuild your system from it unchanged. Adapt hardware, users, secrets, device settings and security policy first.
 
-### 1. Clone or fork it
+### 1. Clone or fork
 
 ```bash
 git clone https://github.com/ElliotLuque/nixdots.git
 cd nixdots
 ```
 
-For actual reuse, a fork is recommended so you can maintain your own host definitions and secrets independently.
+### 2. Review the configuration
 
-### 2. Review the flake
-
-Start with `flake.nix`. In particular, adapt the username and review all inputs and host definitions before applying anything.
-
-Useful inspection commands:
+Start with `flake.nix`, `hosts/<name>/default.nix`, `modules/roles/` and `modules/users/elliot.nix`. There is no global username or implicit host factory.
 
 ```bash
 nix flake show
-nix flake check
+nix flake check --no-build
+nix build .#checks.x86_64-linux.architecture
 ```
 
-### 3. Create your own host
+The architecture check evaluates headless and workstation fixtures, standalone skills, and opt-in local-model configuration. The networking/access check verifies feature-scoped firewall rules, SSH selection, runtime campus credentials and identity-independent Nix access. `nix flake check` also builds desktop scripts and tests Hyprland host overrides with stub compositor calls. `nix flake check --no-build` evaluates both real NixOS configurations without building or activating either system.
 
-Use either `hosts/nixos-pc` or `hosts/nixos-laptop` as a reference and replace hardware-specific configuration with values generated for your own machine.
+### 3. Add your host
 
-You will normally need to review at least:
+Follow [the host guide](docs/architecture.md#adding-a-host). Keep generated hardware in `_hardware-configuration.nix` so it is imported as a NixOS module, not automatically as a flake-parts module. New files must be Git-tracked for local Git-flake evaluation (`git add <files>`).
 
-- hardware configuration
-- hostname and networking
-- GPU configuration
-- user name and home directory
-- display/monitor configuration
-- host-specific packages and services
+Review at least:
 
-### 4. Configure secrets
+- hardware, bootloader, hostname and networking
+- GPU and monitor configuration
+- username, home directory and state versions
+- packages, services and firewall exposure
+- SSH authentication and secrets
 
-Secrets are managed with `sops-nix` and age. The encrypted file committed to this repository cannot be decrypted without the corresponding private age key.
-
-Create your own age key and replace the repository's SOPS recipient/configuration before adding your own secrets. Never commit private keys or plaintext credentials.
-
-### 5. Rebuild
-
-After adapting a host, rebuild with its flake output, for example:
+### 4. Rebuild
 
 ```bash
 sudo nixos-rebuild switch --flake .#nixos-pc
-```
-
-or:
-
-```bash
+# or
 sudo nixos-rebuild switch --flake .#nixos-laptop
 ```
 
-## Reusing individual modules
+The existing Fish `system-rebuild` shortcut is unchanged. See [Proposed rebuild improvements](docs/rebuilding.md) for options that preserve its convenience while adding clearer build output, action selection and future remote deployment.
 
-You do not need to adopt the entire configuration. The most reusable parts are under:
+## Reusing features
 
-```text
-modules/nixos/
-modules/home-manager/
+Features are exposed through `modules.nixos.<name>` and `modules.homeManager.<name>`. For example, another Home Manager configuration can import:
+
+```nix
+inputs.nixdots.modules.homeManager.agent-skills
 ```
 
-They can be copied, adapted, or used as references for your own flake-based NixOS configuration.
+This provides the same pinned skill sources and selection without importing a workstation, a personal user or Ollama. The old `agent-skills/` nested flake has been removed; its inputs and configuration now live in the root flake and `modules/ai/skills.nix`.
 
-## Secrets and security
+The base role intentionally includes both Vim and Neovim. Pi installs without model configuration. Hosts running local Ollama can apply `modules.homeManager.local-llm` to a managed user: model IDs and the endpoint come from `services.ollama`, not from the client installation modules. Currently only `nixos-pc` selects this feature. Use Pi's `/model`, `codex --profile local`, or `opencode --model ollama/<model-id>` to select local inference; cloud defaults remain unchanged.
 
-The repository may contain encrypted SOPS material, but private decryption keys are not committed. If you discover a security issue or accidental credential exposure, please follow the process described in [SECURITY.md](SECURITY.md) rather than opening a public issue with sensitive details.
+Use `nix fmt -- <files>` for Nix formatting.
 
-## Contributing
+## Security
 
-Issues, suggestions and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the expected workflow and scope.
+Never commit private keys or plaintext credentials. Report accidental credential exposure or security issues using [SECURITY.md](SECURITY.md), not a public issue containing sensitive details.
 
-## Project status
+## Contributing and status
 
-This repository tracks an actively used personal environment, so modules may evolve as NixOS, Home Manager, Hyprland and other upstream projects change. Backwards compatibility is not guaranteed, but changes should remain understandable and reproducible.
+See [CONTRIBUTING.md](CONTRIBUTING.md). This is an actively used personal environment; upstream projects and modules evolve, and backwards compatibility is not guaranteed. A VPS is a future deployment, not a currently exposed host output.
 
 ## License
 
-Licensed under the [MIT License](LICENSE). You are free to reuse and adapt the configuration, subject to the license terms.
+[MIT](LICENSE).
