@@ -91,6 +91,12 @@ sudo nixos-rebuild switch --flake .#nixos-laptop
 
 The existing Fish `system-rebuild` shortcut is unchanged. See [Proposed rebuild improvements](docs/rebuilding.md) for options that preserve its convenience while adding clearer build output, action selection and future remote deployment.
 
+## Image viewer
+
+Swayimg is the default image viewer on both workstations. Home Manager installs it and writes `~/.config/swayimg/init.lua` from `programs.swayimg.initLua` in `modules/desktop/apps.nix`; image MIME defaults live in `modules/desktop/xdg.nix`. Change these Nix declarations rather than editing the generated Lua file.
+
+Opening an image also loads neighboring images in natural filename order. Large images fit the window without enlarging small ones. Use **Page Up / Page Down** for previous/next image, **Enter** to toggle viewer/gallery, **f** for fullscreen, **t** for the information overlay, and **q** or **Escape** to quit.
+
 ## Reusing features
 
 Features are exposed through `modules.nixos.<name>` and `modules.homeManager.<name>`. For example, another Home Manager configuration can import:
