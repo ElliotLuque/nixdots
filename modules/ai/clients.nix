@@ -3,6 +3,7 @@
   flake.modules.homeManager.ai-clients = { pkgs, ... }: {
     imports = with config.flake.modules.homeManager; [
       pi
+      hunk-review
       opencode
       agent-skills
     ];
