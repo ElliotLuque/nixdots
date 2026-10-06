@@ -5,7 +5,9 @@
     {
       imports = with config.flake.modules.homeManager; [
         hunk-review
-        # Agent Usage imports Radar, including its sidebar and keybindings.
+        terminal-browser-herdr
+        herdr-radar
+        term-browser
         herdr-agent-usage
         herdr-merge-delete
       ];
