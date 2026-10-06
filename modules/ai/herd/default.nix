@@ -5,6 +5,7 @@
     {
       imports = with config.flake.modules.homeManager; [
         hunk-review
+        terminal-browser-herdr
         herdr-radar
         herdr-agent-usage
         herdr-merge-delete
