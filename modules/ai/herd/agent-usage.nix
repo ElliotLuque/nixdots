@@ -72,7 +72,15 @@
     in
     {
       imports = [ config.flake.modules.homeManager.herdr-radar ];
-      home.packages = [ usage ];
+      # Keep the plugin manifest/layout out of the shared home profile.
+      # Herdr links the complete package directly during activation below.
+      home.packages = [
+        (pkgs.buildEnv {
+          name = "herdr-agent-usage-profile";
+          paths = [ usage ];
+          pathsToLink = [ "/bin" ];
+        })
+      ];
       xdg.configFile."herdr/config.toml".text = ''
         [[keys.command]]
         key = "prefix+shift+q"

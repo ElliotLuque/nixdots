@@ -85,7 +85,18 @@
       baseConfig = pkgs.writeText "herdr-base.toml" config.xdg.configFile."herdr/config.toml".text;
     in
     {
-      home.packages = [ radar ];
+      # Publish only CLI/font paths, not plugin-private files such as the
+      # root manifest, which would collide with other Herdr plugins.
+      home.packages = [
+        (pkgs.buildEnv {
+          name = "herdr-radar-profile";
+          paths = [ radar ];
+          pathsToLink = [
+            "/bin"
+            "/share/fonts"
+          ];
+        })
+      ];
       fonts.fontconfig.enable = true;
       programs.kitty.extraConfig = ''
         symbol_map U+E1A0-U+E1BA,U+E1C0-U+E1C5 Herdr Agent Icons Max
@@ -97,9 +108,12 @@
         pkgs.runCommand "herdr-config.toml" { } ''
           cp ${radar}/share/sidebar.toml sidebar.toml
           chmod u+w sidebar.toml
-          ${lib.optionalString (builtins.elem packages.herdr-agent-usage config.home.packages) ''
-            ${pkgs.python3.withPackages (p: [ p.tomlkit ])}/bin/python ${./_append_usage.py} sidebar.toml
-          ''}
+          ${lib.optionalString
+            (builtins.any (p: lib.getName p == "herdr-agent-usage-profile") config.home.packages)
+            ''
+              ${pkgs.python3.withPackages (p: [ p.tomlkit ])}/bin/python ${./_append_usage.py} sidebar.toml
+            ''
+          }
           cat ${baseConfig} sidebar.toml > $out
         ''
       );
