@@ -6,7 +6,9 @@ The `herdr` Home Manager feature installs [terminal-browser](https://github.com/
 
 Rebuild/activate the normal configuration for your host. Activation links the Nix-managed `zenbu-labs.terminal-browser` Herdr plugin. It does not stop the Herdr server or any running agent panes.
 
-Herdr 0.9.3 does not populate its native right-click menu from plugin action contexts. `modules/ai/herd/_terminal-browser-menu.patch` adds the pane menu item explicitly and opens the plugin's `browser` split entrypoint beside the **clicked** pane. After rebuilding, detach the old client with `prefix+q` and reattach using the updated `herdr` binary; reloading configuration or relinking the plugin does not update an already-running client. Do not stop the server.
+Herdr 0.9.3 does not populate its native right-click menu from plugin action contexts. `modules/ai/herd/_terminal-browser-menu.patch` adds the pane menu item explicitly and opens the plugin's `browser` split entrypoint beside the **clicked** pane. It also adds `plugin.pane.open` to the server's client-shell endpoint allowlist: upstream supports it on the CLI socket API but neither advertises nor accepts it on the right-click action transport.
+
+This fix requires the rebuilt **server and client**. Reattaching only the client, reloading configuration, or relinking the plugin cannot update the running server's allowlist; an old server will still report “This server does not support plugin.pane.open yet.” Activate the rebuild, then restart Herdr only after saving work and deliberately ending the running pane sessions (or reboot when convenient). **Do not stop the server from an active agent session**, because that terminates its pane processes. Once the updated server is running, attach with the updated `herdr` binary.
 
 After activation, run `/reload` in Pi to discover the new skill, or start a new Pi session. The upstream portable skill is installed at `~/.agents/skills/terminal-browser/SKILL.md`, which Pi discovers natively. No Claude-specific plugin, Pi extension, or MCP server is required for browser control.
 
@@ -41,4 +43,4 @@ nix build .#checks.x86_64-linux.architecture --no-link
 nix flake check --no-build
 ```
 
-The dedicated check exercises version/help output, the bundled agent-browser, loading the native renderer, the skill's presence, and the installer-free Herdr manifest. The Herdr Rust check verifies that the native pane menu includes the action and dispatches a right-split request targeting the clicked pane/workspace rather than the focused one. ARM64 is packaged but has not been runtime-tested on the x86-64 workstation.
+The dedicated check exercises version/help output, the bundled agent-browser, loading the native renderer, the skill's presence, and the installer-free Herdr manifest. The Herdr Rust check loads the server's actual advertised method list, verifies that the native pane menu dispatches an allowed right-split request targeting the clicked pane/workspace rather than the focused one, and checks the advertised plugin method's wire schema. ARM64 is packaged but has not been runtime-tested on the x86-64 workstation.
