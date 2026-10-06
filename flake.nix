@@ -61,6 +61,11 @@
       flake = false;
     };
 
+    herdr-agent-usage = {
+      url = "github:levi-qiao/herdr-agent-usage/v1.6.2";
+      flake = false;
+    };
+
     herdr-radar = {
       url = "github:hhdebb/herdr-radar/v1.4.2";
       flake = false;

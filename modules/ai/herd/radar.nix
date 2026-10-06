@@ -88,7 +88,12 @@
       # sidebar at build time so Home Manager can keep the result immutable.
       xdg.configFile."herdr/config.toml".source = lib.mkForce (
         pkgs.runCommand "herdr-config.toml" { } ''
-          cat ${baseConfig} ${radar}/share/sidebar.toml > $out
+          cp ${radar}/share/sidebar.toml sidebar.toml
+          chmod u+w sidebar.toml
+          ${lib.optionalString (builtins.elem packages.herdr-agent-usage config.home.packages) ''
+            ${pkgs.python3.withPackages (p: [ p.tomlkit ])}/bin/python ${./_append_usage.py} sidebar.toml
+          ''}
+          cat ${baseConfig} sidebar.toml > $out
         ''
       );
       xdg.configFile."herdr/config.toml".text = ''

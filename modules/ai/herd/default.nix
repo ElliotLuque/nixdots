@@ -7,6 +7,7 @@
         hunk-review
         herdr-projects
         herdr-radar
+        herdr-agent-usage
         herdr-merge-delete
       ];
 

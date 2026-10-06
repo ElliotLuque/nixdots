@@ -100,6 +100,16 @@ in
       hostLua = pkgs.writeText "host.lua" laptopHome.xdg.configFile."hypr/host.lua".text;
     in
     {
+      checks.herdr-agent-usage =
+        pkgs.runCommand "herdr-agent-usage-integration-check" { nativeBuildInputs = [ pkgs.python3 ]; }
+          ''
+            export HOME=$TMPDIR
+            python ${./ai/herd/_test_usage.py} \
+              ${inputs.self.packages.${system}.herdr-agent-usage} \
+              ${desktopHome.xdg.configFile."herdr/config.toml".source}
+            touch $out
+          '';
+
       checks.herdr-radar =
         pkgs.runCommand "herdr-radar-integration-check"
           {
