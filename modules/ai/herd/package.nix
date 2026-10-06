@@ -17,6 +17,11 @@
       checks.herdr-terminal-browser-menu = config.packages.herdr.overrideAttrs (_: {
         src = inputs.herdr;
         doCheck = true;
+        # The mock plugin uses Herdr's normal per-user config/state directories.
+        preCheck = ''
+          export HOME="$TMPDIR/home"
+          mkdir -p "$HOME"
+        '';
         cargoTestFlags = [
           "--bin"
           "herdr"

@@ -1,14 +1,53 @@
 --- a/src/client/shell/context_menu.rs
 +++ b/src/client/shell/context_menu.rs
-@@ -1,5 +1,53 @@
+@@ -1,5 +1,106 @@
  use super::*;
  
 +#[cfg(test)]
 +mod terminal_browser_tests {
 +    use super::*;
 +
-+    #[test]
-+    fn terminal_browser_menu_opens_beside_clicked_pane() {
++    #[cfg(unix)]
++    #[tokio::test]
++    async fn terminal_browser_menu_opens_beside_clicked_pane() {
++        use crate::api::schema::{Method, PluginLinkParams, ResponseResult, SuccessResponse};
++        let (_api_tx, api_rx) = tokio::sync::mpsc::unbounded_channel();
++        let mut app = crate::app::App::new(
++            &Config::default(), crate::app::AppPolicy::TEST, None, api_rx,
++            crate::api::EventHub::default(),
++        );
++        app.state.workspaces = vec![
++            crate::workspace::Workspace::test_new("focused"),
++            crate::workspace::Workspace::test_new("clicked"),
++        ];
++        app.state.ensure_test_terminals();
++        app.state.active = Some(0);
++        app.state.selected = 0;
++        app.state.mode = crate::app::Mode::Terminal;
++        let clicked_pane = app.public_pane_id(1, app.state.workspaces[1].tabs[0].root_pane).unwrap();
++        let clicked_workspace = app.public_workspace_id(1);
++        let focused_pane = app.public_pane_id(0, app.state.workspaces[0].tabs[0].root_pane).unwrap();
++        let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
++        let root = std::env::temp_dir().join(format!("herdr-terminal-browser-{}-{nonce}", std::process::id()));
++        std::fs::create_dir_all(&root).unwrap();
++        std::fs::write(root.join("herdr-plugin.toml"), r#"
++id = "zenbu-labs.terminal-browser"
++name = "Terminal Browser Test"
++version = "0.1.1"
++min_herdr_version = "0.8.2"
++[[panes]]
++id = "browser"
++title = "Browser"
++placement = "split"
++command = ["sh", "-c", "sleep 1"]
++"#).unwrap();
++        let linked = app.handle_api_request(crate::api::schema::Request {
++            id: "link-browser-test".into(),
++            method: Method::PluginLink(PluginLinkParams {
++                path: root.display().to_string(), enabled: true, source: None,
++            }),
++        });
++        assert!(linked.contains("plugin_linked"), "{linked}");
 +        let mut state = ClientShellState::new(ClientShellConfig::from_config(&Config::default()));
 +        state.set_snapshot(Box::new(super::super::tests::snapshot()));
 +        // Match the real handshake; an absent method list accepts everything.
@@ -20,9 +59,9 @@
 +        ));
 +        let menu = ClientContextMenuOverlay {
 +            target: ClientContextMenuTarget::Pane {
-+                pane_id: "clicked_pane".into(),
-+                workspace_id: "clicked_workspace".into(),
-+                source_pane_id: Some("focused_pane".into()),
++                pane_id: clicked_pane.clone(),
++                workspace_id: clicked_workspace.clone(),
++                source_pane_id: Some(focused_pane),
 +                has_manual_label: false,
 +                right_click_passthrough: false,
 +            },
@@ -45,16 +84,30 @@
 +        assert!(crate::server::client_commands::supports_client_shell_method(&request.method));
 +        assert_eq!(params.plugin_id, "zenbu-labs.terminal-browser");
 +        assert_eq!(params.entrypoint, "browser");
-+        assert_eq!(params.target_pane_id.as_deref(), Some("clicked_pane"));
-+        assert_eq!(params.workspace_id.as_deref(), Some("clicked_workspace"));
++        assert_eq!(params.target_pane_id.as_deref(), Some(clicked_pane.as_str()));
++        assert_eq!(params.workspace_id, None); // Split targets must not include workspace_id.
 +        assert_eq!(params.direction, Some(crate::api::schema::SplitDirection::Right));
++        let response = app.handle_api_request(*request.clone());
++        for (_, runtime) in app.terminal_runtimes.drain() {
++            runtime.shutdown();
++        }
++        std::fs::remove_dir_all(root).unwrap();
++        let response: SuccessResponse = serde_json::from_str(&response)
++            .unwrap_or_else(|error| panic!("menu request rejected: {response}: {error}"));
++        let ResponseResult::PluginPaneOpened { plugin_pane } = response.result else {
++            panic!("expected plugin pane opened");
++        };
++        assert_eq!(plugin_pane.pane.workspace_id, clicked_workspace);
++        assert_ne!(plugin_pane.pane.pane_id, clicked_pane);
++        assert_eq!(app.state.workspaces[0].tabs[0].panes.len(), 1);
++        assert_eq!(app.state.workspaces[1].tabs[0].panes.len(), 2);
 +    }
 +}
 +
  impl ClientContextMenuOverlay {
      pub(super) fn items(&self) -> Vec<ClientContextMenuItem> {
          use ClientContextMenuAction as Action;
-@@ -60,6 +108,7 @@
+@@ -60,6 +161,7 @@
                      items.push(item("Swap with focused pane", Action::SwapWithFocusedPane));
                  }
                  items.extend([
@@ -62,7 +115,7 @@
                      item("Split right", Action::SplitRight),
                      item("Split down", Action::SplitDown),
                      item("Zoom", Action::Zoom),
-@@ -419,6 +468,25 @@
+@@ -419,6 +521,25 @@
                      );
                  }
              }
@@ -75,7 +128,7 @@
 +                        placement: None,
 +                        width: None,
 +                        height: None,
-+                        workspace_id: Some(workspace_id),
++                        workspace_id: None, // Split targets are identified by pane, not workspace.
 +                        target_pane_id: Some(pane_id),
 +                        direction: Some(SplitDirection::Right),
 +                        cwd: None,
