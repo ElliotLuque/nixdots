@@ -56,6 +56,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    herdr-radar = {
+      url = "github:hhdebb/herdr-radar/v1.4.2";
+      flake = false;
+    };
+
     pi = {
       url = "github:earendil-works/pi/stable";
       inputs.nixpkgs.follows = "nixpkgs";

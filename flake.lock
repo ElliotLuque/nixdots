@@ -355,6 +355,40 @@
         "type": "github"
       }
     },
+    "herdr-projects": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790629677,
+        "narHash": "sha256-3Pmg0yDPFRY8fWI3Qc/0oMxnbFTBTHM48C38v63wFP4=",
+        "owner": "eliasstravik",
+        "repo": "herdr-projects",
+        "rev": "4e4548c3c43888e6be1c96906215998f07dc63f0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eliasstravik",
+        "ref": "v0.2.34",
+        "repo": "herdr-projects",
+        "type": "github"
+      }
+    },
+    "herdr-radar": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791044583,
+        "narHash": "sha256-fnpdFGVL2iltBDH2CLeyysr6B4w1I6aTXYIOTOaHMdo=",
+        "owner": "hhdebb",
+        "repo": "herdr-radar",
+        "rev": "1ba8cc4a3900191c9f1f4f850398c7dd10212df2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hhdebb",
+        "ref": "v1.4.2",
+        "repo": "herdr-radar",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -1073,6 +1107,8 @@
         "catppuccin": "catppuccin",
         "flake-parts": "flake-parts",
         "herdr": "herdr",
+        "herdr-projects": "herdr-projects",
+        "herdr-radar": "herdr-radar",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",
         "hyprland": "hyprland",
