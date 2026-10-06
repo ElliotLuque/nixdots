@@ -10,7 +10,7 @@ After activation, run `/reload` in Pi to discover the new skill, or start a new 
 
 ## Usage
 
-Inside Herdr, choose **Open terminal-browser (right split)** from the global plugin actions, or run:
+Inside Herdr, choose **Open terminal-browser (right split)** from the pane’s right-click menu or the global plugin actions, or run:
 
 ```bash
 terminal-browser open http://localhost:3000 --split right
