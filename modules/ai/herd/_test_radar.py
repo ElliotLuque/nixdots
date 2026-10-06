@@ -58,7 +58,11 @@ assert all(
     for row in spaces["rows"]
     for cell in row
 )
-keys = {entry["key"]: entry["command"] for entry in config["keys"]["command"]}
+commands = config["keys"]["command"]
+# Herdr normalizes the comma alias before detecting binding conflicts.
+normalized_keys = [entry["key"].replace("comma", ",") for entry in commands]
+assert len(normalized_keys) == len(set(normalized_keys)), normalized_keys
+keys = {entry["key"]: entry["command"] for entry in commands}
 assert keys["prefix+r"] == "hhdebb.herdr-radar.view-flip"
 assert keys["prefix+comma"] == "hhdebb.herdr-radar.settings"
 for section in ("actions", "panes", "startup", "events", "build"):
