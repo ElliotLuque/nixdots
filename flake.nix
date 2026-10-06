@@ -56,6 +56,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    herdr-projects = {
+      url = "github:eliasstravik/herdr-projects/v0.2.34";
+      flake = false;
+    };
+
+    herdr-agent-usage = {
+      url = "github:levi-qiao/herdr-agent-usage/v1.6.2";
+      flake = false;
+    };
+
     herdr-radar = {
       url = "github:hhdebb/herdr-radar/v1.4.2";
       flake = false;

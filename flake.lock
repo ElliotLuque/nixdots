@@ -355,6 +355,40 @@
         "type": "github"
       }
     },
+    "herdr-agent-usage": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789875987,
+        "narHash": "sha256-RvbfJIVcxGCpsQMUqRkHKbUGyGu8VXanBmY5LyHnbjU=",
+        "owner": "levi-qiao",
+        "repo": "herdr-agent-usage",
+        "rev": "a3ceca48281b73d6e118c11cbcfbdf4c613fcb28",
+        "type": "github"
+      },
+      "original": {
+        "owner": "levi-qiao",
+        "ref": "v1.6.2",
+        "repo": "herdr-agent-usage",
+        "type": "github"
+      }
+    },
+    "herdr-projects": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790629677,
+        "narHash": "sha256-3Pmg0yDPFRY8fWI3Qc/0oMxnbFTBTHM48C38v63wFP4=",
+        "owner": "eliasstravik",
+        "repo": "herdr-projects",
+        "rev": "4e4548c3c43888e6be1c96906215998f07dc63f0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eliasstravik",
+        "ref": "v0.2.34",
+        "repo": "herdr-projects",
+        "type": "github"
+      }
+    },
     "herdr-radar": {
       "flake": false,
       "locked": {
@@ -1090,6 +1124,8 @@
         "catppuccin": "catppuccin",
         "flake-parts": "flake-parts",
         "herdr": "herdr",
+        "herdr-agent-usage": "herdr-agent-usage",
+        "herdr-projects": "herdr-projects",
         "herdr-radar": "herdr-radar",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",

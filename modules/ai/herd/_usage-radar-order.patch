@@ -1,0 +1,20 @@
+diff --git a/src/configure/mod.rs b/src/configure/mod.rs
+--- a/src/configure/mod.rs
++++ b/src/configure/mod.rs
+@@ -256,14 +256,7 @@
+ /// runs, and a panel that kept its old ordering is a cosmetic disagreement —
+ /// failing the whole `--apply` over it would be worse than reporting it.
+-pub(crate) fn apply_agent_order(order: AgentOrder) {
+-    let result = if order.is_quota() {
+-        crate::herdr::set_quota_agent_view()
+-    } else {
+-        crate::herdr::clear_quota_agent_view()
+-    };
+-    if let Err(error) = result {
+-        println!("Could not set the Herdr agent order: {error}");
+-    }
++pub(crate) fn apply_agent_order(_order: AgentOrder) {
++    // Radar owns Herdr's single agent-view override in this Nix installation.
+ }
+ 
+ pub(crate) fn resolved_row_gap(

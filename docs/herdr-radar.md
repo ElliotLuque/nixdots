@@ -6,7 +6,7 @@ The `herdr` Home Manager feature includes [herdr-radar](https://github.com/hhdeb
 
 ## Ownership and keys
 
-Nix generates Radar's dark, font-icon sidebar from the pinned upstream implementation and appends it to the composed Herdr config at build time. Radar owns the Agents and Spaces rows.
+Nix generates Radar's dark, font-icon sidebar from the pinned upstream implementation and appends it to the composed Herdr config at build time. Herdr Projects retains its tab-bar count and `prefix+a` popup; Radar owns the Agents and Spaces rows instead of the previous Projects row definitions. When [Herdr Agent Usage](herdr-agent-usage.md) is selected, its model/context/quota rows are appended at build time without replacing Radar's identity/state rows or activity ordering.
 
 - `prefix+r`: Radar active/recent view toggle
 - `prefix+comma`: Radar settings popup
