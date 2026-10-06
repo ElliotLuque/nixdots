@@ -53,9 +53,26 @@
     {
       home.packages = [ plugin ];
 
-      # Keep the popup binding declarative: upstream configure would try to
-      # rewrite Home Manager's read-only Herdr config.
+      # Keep the UI setup declarative: upstream configure refuses to edit
+      # Home Manager's symlink. Match upstream's project cards and count.
       xdg.configFile."herdr/config.toml".text = ''
+        [[ui.tab_bar_right]]
+        type = "command"
+        command = "${plugin}/bin/herdr-projects needs-you --line"
+        interval_seconds = 15
+        timeout_seconds = 5
+
+        [ui.sidebar.agents]
+        rows = [
+          ["state_icon", { token = "agent", bold = false, dim = false, rules = [{ contains = "\u200B", bold = true }] }, "state_text"],
+          [{ token = "$hp_sub", dim = true }],
+        ]
+
+        [ui.sidebar.spaces]
+        rows = [
+          ["state_icon", { token = "workspace", rules = [{ contains = "\u2800", bold = true }] }, { token = "branch", dim = true }, "git_status"],
+        ]
+
         [[keys.command]]
         key = "prefix+a"
         type = "plugin_action"
@@ -65,6 +82,9 @@
       # Share Herdr's mutable registry with other plugins without replacing it.
       home.activation.herdr-projects = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run ${herdr}/bin/herdr plugin link ${plugin} --enabled
+        # Upstream owns the mutable hook files and skill links, and records
+        # its edits so repeated activations preserve unrelated user settings.
+        run ${plugin}/bin/herdr-projects configure --hooks-only
       '';
     };
 }
