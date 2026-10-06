@@ -7,7 +7,6 @@
         hunk-review
         terminal-browser-herdr
         herdr-radar
-        term-browser
         herdr-agent-usage
         herdr-merge-delete
       ];
