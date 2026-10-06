@@ -8,8 +8,21 @@
       packages.herdr =
         inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
           (old: {
-            patches = (old.patches or [ ]) ++ [ ./_worktree-tools/context-menu.patch ];
+            patches = (old.patches or [ ]) ++ [
+              ./_worktree-tools/context-menu.patch
+              ./_terminal-browser-menu.patch
+            ];
           });
+
+      checks.herdr-terminal-browser-menu = config.packages.herdr.overrideAttrs (_: {
+        src = inputs.herdr;
+        doCheck = true;
+        cargoTestFlags = [
+          "--bin"
+          "herdr"
+          "terminal_browser"
+        ];
+      });
 
       checks.herdr-worktree-menu = config.packages.herdr.overrideAttrs (_: {
         # Upstream's packaging source omits fixtures required by Rust unit tests.

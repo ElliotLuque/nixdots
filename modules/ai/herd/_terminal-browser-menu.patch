@@ -1,0 +1,92 @@
+--- a/src/client/shell/context_menu.rs
++++ b/src/client/shell/context_menu.rs
+@@ -1,5 +1,45 @@
+ use super::*;
+ 
++#[cfg(test)]
++mod terminal_browser_tests {
++    use super::*;
++
++    #[test]
++    fn terminal_browser_menu_opens_beside_clicked_pane() {
++        let mut state = ClientShellState::new(ClientShellConfig::from_config(&Config::default()));
++        state.set_snapshot(Box::new(super::super::tests::snapshot()));
++        let menu = ClientContextMenuOverlay {
++            target: ClientContextMenuTarget::Pane {
++                pane_id: "clicked_pane".into(),
++                workspace_id: "clicked_workspace".into(),
++                source_pane_id: Some("focused_pane".into()),
++                has_manual_label: false,
++                right_click_passthrough: false,
++            },
++            x: 0,
++            y: 0,
++            highlighted: 0,
++        };
++        let index = menu.items().iter().position(|item| {
++            item.action == ClientContextMenuAction::OpenTerminalBrowser
++        }).expect("browser menu item");
++        state.overlay = Some(ClientShellOverlay::ContextMenu(menu));
++        let mut outcome = ClientShellInput::default();
++        state.activate_context_menu_item(index, &mut outcome);
++        let [ClientShellAction::Endpoint { request, .. }] = &outcome.actions[..] else {
++            panic!("expected one plugin pane request");
++        };
++        let crate::api::schema::Method::PluginPaneOpen(params) = &request.method else {
++            panic!("expected plugin.pane.open");
++        };
++        assert_eq!(params.plugin_id, "zenbu-labs.terminal-browser");
++        assert_eq!(params.entrypoint, "browser");
++        assert_eq!(params.target_pane_id.as_deref(), Some("clicked_pane"));
++        assert_eq!(params.workspace_id.as_deref(), Some("clicked_workspace"));
++        assert_eq!(params.direction, Some(crate::api::schema::SplitDirection::Right));
++    }
++}
++
+ impl ClientContextMenuOverlay {
+     pub(super) fn items(&self) -> Vec<ClientContextMenuItem> {
+         use ClientContextMenuAction as Action;
+@@ -60,6 +100,7 @@
+                     items.push(item("Swap with focused pane", Action::SwapWithFocusedPane));
+                 }
+                 items.extend([
++                    item("Open terminal-browser (right split)", Action::OpenTerminalBrowser),
+                     item("Split right", Action::SplitRight),
+                     item("Split down", Action::SplitDown),
+                     item("Zoom", Action::Zoom),
+@@ -419,6 +460,25 @@
+                     );
+                 }
+             }
++            ClientContextMenuAction::OpenTerminalBrowser => {
++                use crate::api::schema::PluginPaneOpenParams;
++                self.push_endpoint_method(
++                    Method::PluginPaneOpen(PluginPaneOpenParams {
++                        plugin_id: "zenbu-labs.terminal-browser".into(),
++                        entrypoint: "browser".into(),
++                        placement: None,
++                        width: None,
++                        height: None,
++                        workspace_id: Some(workspace_id),
++                        target_pane_id: Some(pane_id),
++                        direction: Some(SplitDirection::Right),
++                        cwd: None,
++                        focus: true,
++                        env: Default::default(),
++                    }),
++                    outcome,
++                );
++            }
+             ClientContextMenuAction::SplitRight | ClientContextMenuAction::SplitDown => {
+                 self.push_endpoint_method(
+                     Method::PaneSplit(PaneSplitParams {
+--- a/src/client/shell/state.rs
++++ b/src/client/shell/state.rs
+@@ -522,6 +522,7 @@
+     SwapWithFocusedPane,
+     SplitRight,
+     SplitDown,
++    OpenTerminalBrowser,
+     Zoom,
+     ToggleRightClickPassthrough,
+     ClosePane,

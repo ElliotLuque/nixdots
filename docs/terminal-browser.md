@@ -6,6 +6,8 @@ The `herdr` Home Manager feature installs [terminal-browser](https://github.com/
 
 Rebuild/activate the normal configuration for your host. Activation links the Nix-managed `zenbu-labs.terminal-browser` Herdr plugin. It does not stop the Herdr server or any running agent panes.
 
+Herdr 0.9.3 does not populate its native right-click menu from plugin action contexts. `modules/ai/herd/_terminal-browser-menu.patch` adds the pane menu item explicitly and opens the plugin's `browser` split entrypoint beside the **clicked** pane. After rebuilding, detach the old client with `prefix+q` and reattach using the updated `herdr` binary; reloading configuration or relinking the plugin does not update an already-running client. Do not stop the server.
+
 After activation, run `/reload` in Pi to discover the new skill, or start a new Pi session. The upstream portable skill is installed at `~/.agents/skills/terminal-browser/SKILL.md`, which Pi discovers natively. No Claude-specific plugin, Pi extension, or MCP server is required for browser control.
 
 ## Usage
@@ -34,8 +36,9 @@ Telemetry is disabled by default through `TERMINAL_BROWSER_NO_TELEMETRY=1` in th
 
 ```bash
 nix build .#terminal-browser .#checks.x86_64-linux.terminal-browser --no-link
+nix build .#herdr .#checks.x86_64-linux.herdr-terminal-browser-menu --no-link
 nix build .#checks.x86_64-linux.architecture --no-link
 nix flake check --no-build
 ```
 
-The dedicated check exercises version/help output, the bundled agent-browser, loading the native renderer, the skill's presence, and the installer-free Herdr manifest. ARM64 is packaged but has not been runtime-tested on the x86-64 workstation.
+The dedicated check exercises version/help output, the bundled agent-browser, loading the native renderer, the skill's presence, and the installer-free Herdr manifest. The Herdr Rust check verifies that the native pane menu includes the action and dispatches a right-split request targeting the clicked pane/workspace rather than the focused one. ARM64 is packaged but has not been runtime-tested on the x86-64 workstation.
