@@ -5,7 +5,6 @@
     {
       imports = with config.flake.modules.homeManager; [
         hunk-review
-        herdr-projects
         herdr-merge-delete
       ];
 
