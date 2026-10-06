@@ -26,6 +26,11 @@
       command = ["${config.packages.terminal-browser}/bin/terminal-browser", "open"]
       EOF
     '';
+    checks.terminal-browser-performance = pkgs.runCommand "terminal-browser-performance-check" { } ''
+      ELECTRON_RUN_AS_NODE=1 ${config.packages.terminal-browser}/lib/terminal-browser/electron/pixel \
+        ${./_test_terminal_browser_performance.cjs} ${config.packages.terminal-browser}
+      touch $out
+    '';
     checks.terminal-browser =
       pkgs.runCommand "terminal-browser-check"
         {
