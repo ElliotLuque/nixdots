@@ -16,7 +16,7 @@
       id = "open-split"
       title = "Open terminal-browser (right split)"
       description = "Split the focused pane and open terminal-browser in it"
-      contexts = ["global"]
+      contexts = ["global", "pane"]
       command = ["${config.packages.terminal-browser}/bin/terminal-browser", "open", "--split", "right"]
       EOF
     '';
@@ -42,6 +42,7 @@
           assert 'name: terminal-browser' in skill.read_text()
           manifest = tomllib.loads((plugin / 'herdr-plugin.toml').read_text())
           assert 'build' not in manifest
+          assert manifest['actions'][0]['contexts'] == ['global', 'pane']
           assert manifest['actions'][0]['command'] == [str(browser / 'bin/terminal-browser'), 'open', '--split', 'right']
           PY
           touch $out
