@@ -54,24 +54,13 @@
       home.packages = [ plugin ];
 
       # Keep the UI setup declarative: upstream configure refuses to edit
-      # Home Manager's symlink. Match upstream's project cards and count.
+      # Home Manager's symlink. Radar owns the sidebar; keep the project count.
       xdg.configFile."herdr/config.toml".text = ''
         [[ui.tab_bar_right]]
         type = "command"
         command = "${plugin}/bin/herdr-projects needs-you --line"
         interval_seconds = 15
         timeout_seconds = 5
-
-        [ui.sidebar.agents]
-        rows = [
-          ["state_icon", { token = "agent", bold = false, dim = false, rules = [{ contains = "\u200B", bold = true }] }, "state_text"],
-          [{ token = "$hp_sub", dim = true }],
-        ]
-
-        [ui.sidebar.spaces]
-        rows = [
-          ["state_icon", { token = "workspace", rules = [{ contains = "\u2800", bold = true }] }, { token = "branch", dim = true }, "git_status"],
-        ]
 
         [[keys.command]]
         key = "prefix+a"

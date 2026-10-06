@@ -372,6 +372,23 @@
         "type": "github"
       }
     },
+    "herdr-radar": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791044583,
+        "narHash": "sha256-fnpdFGVL2iltBDH2CLeyysr6B4w1I6aTXYIOTOaHMdo=",
+        "owner": "hhdebb",
+        "repo": "herdr-radar",
+        "rev": "1ba8cc4a3900191c9f1f4f850398c7dd10212df2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hhdebb",
+        "ref": "v1.4.2",
+        "repo": "herdr-radar",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -1091,6 +1108,7 @@
         "flake-parts": "flake-parts",
         "herdr": "herdr",
         "herdr-projects": "herdr-projects",
+        "herdr-radar": "herdr-radar",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",
         "hyprland": "hyprland",

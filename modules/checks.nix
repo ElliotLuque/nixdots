@@ -100,6 +100,22 @@ in
       hostLua = pkgs.writeText "host.lua" laptopHome.xdg.configFile."hypr/host.lua".text;
     in
     {
+      checks.herdr-radar =
+        pkgs.runCommand "herdr-radar-integration-check"
+          {
+            nativeBuildInputs = [
+              pkgs.python3
+              pkgs.nodejs
+            ];
+          }
+          ''
+            export HOME=$TMPDIR
+            python ${./ai/herd/_test_radar.py} \
+              ${inputs.self.packages.${system}.herdr-radar} \
+              ${desktopHome.xdg.configFile."herdr/config.toml".source}
+            touch $out
+          '';
+
       checks.architecture =
         assert !base.programs.hyprland.enable;
         assert !base.services.xserver.enable;
