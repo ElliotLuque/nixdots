@@ -5,6 +5,7 @@
       pi
       hunk-review
       opencode
+      paseo
       agent-skills
     ];
     programs.codex.enable = true;

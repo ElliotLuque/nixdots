@@ -164,6 +164,7 @@
 
           hl.window_rule({ name = "suppress-maximize", match = { class = ".*" }, suppress_event = "maximize" })
           hl.window_rule({ name = "kitty-opacity", match = { class = "kitty" }, opacity = "0.85 override 0.45 override 0.85 override" })
+          hl.window_rule({ name = "paseo-opacity", match = { class = "^Paseo$" }, opacity = "0.85 override 0.85 override 0.85 override" })
 
           hl.on("hyprland.start", function()
             hl.exec_cmd("dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE && systemctl --user start hyprland-session.target")
