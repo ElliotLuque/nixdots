@@ -44,6 +44,13 @@
           substituteInPlace $out/herdr-plugin.toml --replace-fail \
             '"node"' '"'$out'/bin/radar-node"'
 
+          # Use Herdr's workspace token so the name is available before Radar
+          # starts, and inherits bright/bold focus styling instead of a fixed
+          # foreground and weight on the plugin's $space_label token.
+          substituteInPlace $out/lib/managed-config.js --replace-fail \
+            "cell('\$space_label', state.none)," \
+            "'\"workspace\"',"
+
           # Generate the sidebar from the pinned upstream implementation, not
           # a copied palette. No evaluation-time build or network access needed.
           mkdir -p $out/share/fonts/truetype

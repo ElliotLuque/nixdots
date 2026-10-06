@@ -18,8 +18,20 @@
         [theme]
         name = "catppuccin"
 
+        # Catppuccin Mocha: keep chrome opaque and distinguish active spaces
+        # from the Navigate-mode cursor without changing agent status colours.
+        [theme.custom]
+        sidebar_bg = "#181825"
+        active_row_bg = "#313244"
+        selection_bg = "#45475a"
+        surface_dim = "#6c7086"
+        overlay0 = "#a6adc8"
+        overlay1 = "#bac2de"
+
         [ui]
         status_indicators = "symbols"
+        pane_borders = "always"
+        pane_outer_borders = true
 
         [ui.toast]
         delivery = "system"

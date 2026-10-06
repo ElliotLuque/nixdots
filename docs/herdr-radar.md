@@ -6,15 +6,26 @@ The `herdr` Home Manager feature includes [herdr-radar](https://github.com/hhdeb
 
 ## Ownership and keys
 
-Nix generates Radar's dark, font-icon sidebar from the pinned upstream implementation and appends it to the composed Herdr config at build time. Herdr Projects retains its tab-bar count and `prefix+a` popup; Radar owns the Agents and Spaces rows instead of the previous Projects row definitions.
+Nix generates Radar's dark, font-icon sidebar from the pinned upstream implementation and appends it to the composed Herdr config at build time. Radar owns the Agents and Spaces rows.
 
-- `prefix+a`: Herdr Projects popup (unchanged)
 - `prefix+r`: Radar active/recent view toggle
 - `prefix+comma`: Radar settings popup
 
 The icon font is installed through Home Manager's package/fontconfig integration. Kitty gets an explicit codepoint map; other terminals need `U+E1A0–U+E1BA` and `U+E1C0–U+E1C5` mapped to **Herdr Agent Icons Max**.
 
 Upstream first-run setup is disabled: it normally edits Herdr and terminal config files and copies fonts into the home directory. Config-writing actions return a Nix ownership message instead of modifying store-backed files. Automatic light/dark following is disabled; the existing Catppuccin theme stays in place. Runtime ordering and state tracking still work, and plugin settings remain mutable in Herdr's own plugin config directory. Keep the icon variant at `font` to match the generated sidebar. Changes to the sidebar palette, terminal mapping or Herdr config belong in Nix, not the popup's panel toggle/configure actions.
+
+## Catppuccin chrome and focus
+
+`modules/ai/herd/default.nix` refines the built-in Catppuccin Mocha theme:
+
+- Mantle sidebar background separates navigation from terminal content.
+- Surface0 fills the active space and focused agent; Surface1 distinguishes the Navigate-mode cursor.
+- Overlay0 dividers make the sidebar edge, Spaces/Agents separator and inactive pane borders visible.
+- Brighter muted text keeps secondary navigation readable; blue still marks the active tab and pane border.
+- Pane borders stay visible even with a single pane.
+
+The generated Spaces row uses Herdr's unstyled `workspace` token rather than Radar's fixed-colour `$space_label`. Herdr can therefore brighten and bold the focused name, and names remain visible before Radar starts. Vendor logos, agent lifecycle colours and the compact two-row space layout are preserved.
 
 ## Apply
 
@@ -24,6 +35,12 @@ Rebuild the intended host using the usual repository workflow. Once activation h
 herdr plugin action invoke hhdebb.herdr-radar.state-start
 herdr plugin list
 herdr plugin log list --plugin hhdebb.herdr-radar --limit 20
+```
+
+After activation, reload the theme and sidebar without stopping running panes:
+
+```sh
+herdr server reload-config
 ```
 
 Herdr also starts Radar automatically at server startup. Open a new Kitty window to pick up the font mapping. **Do not stop the Herdr server just to activate Radar**: that would terminate running pane processes.
