@@ -6,7 +6,7 @@
       imports = with config.flake.modules.homeManager; [
         hunk-review
         terminal-browser-herdr
-        herdr-radar
+        # Agent Usage imports Radar; importing it again duplicates keybindings.
         herdr-agent-usage
         herdr-merge-delete
       ];
