@@ -5,6 +5,7 @@
       pi
       herdr
       opencode
+      paseo
       agent-skills
     ];
     programs.codex.enable = true;
