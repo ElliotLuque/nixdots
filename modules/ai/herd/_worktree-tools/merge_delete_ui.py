@@ -1,10 +1,11 @@
-"""Keyboard-first popup for the merge workflow; Git work stays off the UI thread."""
+"""Compact, panel-based TUI; Git work stays off the UI thread."""
 
+from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
-from textual.widgets import Button, Input, Label, RichLog, Static
+from textual.widgets import Button, Input, RichLog, Static
 
 import merge_delete as workflow
 
@@ -25,25 +26,47 @@ class MergeDeleteApp(App):
     ]
     CSS = """
     Screen { background: $background; }
-    #title { height: auto; padding: 0 1 1 1; text-style: bold; }
-    #review { height: 1fr; padding: 0 1; }
-    #branches, #summary, #changes, #notice, #commit-help, #result {
-        height: auto;
-        margin-bottom: 1;
+    #review {
+        height: 1fr;
+        min-height: 4;
+        border: round $secondary;
+        border-title-color: $secondary;
+        border-title-style: bold;
+        padding: 0 1;
+        scrollbar-size: 1 1;
     }
-    #branches { padding: 0 1; background: $surface; }
-    #summary { text-style: bold; }
+    #branches, #summary, #changes, #result { height: auto; }
+    #branches { margin-bottom: 1; }
+    #summary { color: $primary; text-style: bold; }
     #changes { color: $text; }
-    #notice, #commit-help { color: $text-muted; }
-    #commit-label { margin-bottom: 1; }
-    #message { margin-bottom: 1; }
-    #result { color: $text; border: solid $error; padding: 1; }
-    #progress { min-height: 8; height: 1fr; border: solid $primary; }
-    #actions { height: auto; padding: 0 1; align-horizontal: right; }
-    Button { width: auto; min-width: 18; margin-left: 1; }
-    #keys { height: auto; padding: 0 1; color: $text-muted; }
-    .compact Button { min-width: 8; }
-    .compact #confirm { width: 1fr; }
+    #notice { height: auto; color: $text-muted; }
+    #message {
+        height: 3;
+        border: round $secondary;
+        border-title-color: $secondary;
+        background: $background;
+    }
+    #message:focus { border: round $primary; border-title-color: $primary; }
+    #result { color: $text; }
+    #progress { height: 8; background: $background; }
+    #actions { height: 1; align-horizontal: right; }
+    #actions Button {
+        height: 1;
+        width: auto;
+        min-width: 0;
+        margin-left: 1;
+        background: $surface;
+        color: $text;
+        text-style: bold;
+    }
+    #actions #confirm { color: $success; }
+    #actions Button:hover, #actions Button:focus {
+        background: $secondary;
+        background-tint: transparent;
+        color: $background;
+        text-style: bold;
+    }
+    #actions Button:disabled { color: $text-muted; }
     """
 
     def __init__(self, herdr, workspace_id):
@@ -57,39 +80,34 @@ class MergeDeleteApp(App):
         self.exit_code = 0
 
     def compose(self) -> ComposeResult:
-        yield Static(self.TITLE, id="title", markup=False)
         with VerticalScroll(id="review", can_focus=False):
             yield Static("Reading the selected worktree…", id="branches", markup=False)
             yield Static("", id="summary", markup=False)
             yield Static("", id="changes", markup=False)
-            yield Static(
-                "Keeps commits and the branch. Nothing is pushed.\n"
-                "Deletes the checkout, its space, and ignored files.\n"
-                "Stop agents and watchers before continuing.",
-                id="notice", markup=False,
-            )
-            yield Static(
-                "Commits ALL staged, unstaged, and untracked files.\n"
-                "Ignored files excluded. Git hooks still run.",
-                id="commit-help", markup=False,
-            )
-            yield Label("Commit message", id="commit-label")
-            yield Input(placeholder="Describe the changes to commit", id="message")
             yield Static("", id="result", markup=False)
             yield RichLog(id="progress", wrap=True, markup=False, auto_scroll=True)
+        # The form and actions stay visible even when the review has many files.
+        yield Input(placeholder="Describe the changes", id="message")
+        yield Static(
+            "Deletes checkout, space + ignored files. No push.\n"
+            "Keeps branch. Stop agents and watchers first.",
+            id="notice", markup=False,
+        )
         with Horizontal(id="actions"):
-            yield Button("Cancel", id="cancel")
-            yield Button("Merge & delete", id="confirm", variant="primary", disabled=True)
-        yield Static("Arrows/Tab: focus  Enter: select  Esc: cancel\nPgUp/PgDn: review", id="keys", markup=False)
+            yield Button("Cancel", id="cancel", compact=True)
+            yield Button("Merge & delete", id="confirm", compact=True, disabled=True)
 
     def on_mount(self):
-        for name in ("summary", "changes", "commit-label", "message", "commit-help", "result", "progress"):
+        review = self.query_one("#review", VerticalScroll)
+        review.border_title = "Merge & delete"
+        message = self.query_one("#message", Input)
+        message.border_title = "Commit message"
+        message.border_subtitle = "All non-ignored changes · hooks run"
+        self.query_one("#progress", RichLog).can_focus = False
+        for name in ("summary", "changes", "message", "result", "progress"):
             self.query_one(f"#{name}").display = False
         self.query_one("#cancel", Button).focus()
         self.load_plan()
-
-    def on_resize(self, event):
-        self.set_class(event.size.width < 60, "compact")
 
     @work(thread=True)
     def load_plan(self):
@@ -104,27 +122,34 @@ class MergeDeleteApp(App):
 
     def show_plan(self, plan):
         self.plan = plan
-        self.query_one("#title", Static).update(f"Merge & delete: {plan.source_branch} -> {plan.target_branch}")
-        self.query_one("#branches", Static).update(
-            f"From  {plan.source_branch}\n{plan.source}\n"
-            f"Into  {plan.target_branch}  (main checkout)\n{plan.target}"
-        )
-        summary = f"{plan.commits_ahead} existing commit(s) to merge."
+        routes = Text()
+        routes.append(plan.source_branch, "bold #cba6f7")
+        routes.append("  →  ", "#a6adc8")
+        routes.append(plan.target_branch, "bold #a6e3a1")
+        routes.append(f"\nfrom {plan.source}\ninto {plan.target}", "#a6adc8")
+        self.query_one("#branches", Static).update(routes)
+        self.query_one("#review", VerticalScroll).border_subtitle = plan.target.name
+        summary = f"{plan.commits_ahead} commit(s)"
+        changes = Text()
         if plan.changes:
             lines = plan.changes.splitlines()
             staged = sum(line[:1] not in (" ", "?") for line in lines)
             unstaged = sum(line[1:2] not in (" ", "?") for line in lines)
             untracked = sum(line.startswith("??") for line in lines)
-            summary += f"\nChanges: {staged} staged / {unstaged} unstaged / {untracked} untracked."
-            self.query_one("#changes", Static).update(plan.changes)
+            summary += f" · {staged} staged · {unstaged} unstaged · {untracked} new"
+            for index, line in enumerate(lines):
+                if index:
+                    changes.append("\n")
+                changes.append(line[:2], "#f9e2af" if line.startswith("??") else "#a6e3a1")
+                changes.append(line[2:])
         else:
-            summary += "\nWorktree is clean. No new commit is needed."
-            if not plan.commits_ahead:
-                summary += "\nAlready merged: only the checkout and its space will be removed."
+            summary += " · clean"
+            changes.append("No new commit needed." if plan.commits_ahead else "Already merged. Remove checkout and space only.", "#a6adc8")
         self.query_one("#summary", Static).update(summary)
+        self.query_one("#changes", Static).update(changes)
         self.query_one("#summary").display = True
-        for name in ("changes", "commit-label", "message", "commit-help"):
-            self.query_one(f"#{name}").display = bool(plan.changes)
+        self.query_one("#changes").display = True
+        self.query_one("#message").display = bool(plan.changes)
         confirm = self.query_one("#confirm", Button)
         confirm.label = "Commit, merge & delete" if plan.changes else "Merge & delete"
         confirm.refresh(layout=True)
@@ -134,9 +159,7 @@ class MergeDeleteApp(App):
             self.call_after_refresh(self.focus_message)
 
     def focus_message(self):
-        message = self.query_one("#message", Input)
-        message.focus()
-        message.scroll_visible(animate=False, immediate=True)
+        self.query_one("#message", Input).focus()
 
     def check_action(self, action, parameters):
         # Horizontal arrows edit text inside the input, navigate everywhere else.
@@ -151,10 +174,14 @@ class MergeDeleteApp(App):
             self.action_focus_next()
 
     def action_review_up(self):
-        self.query_one("#review", VerticalScroll).scroll_page_up(animate=False)
+        panel = (self.query_one("#progress", RichLog) if self.query_one("#progress").display
+                 else self.query_one("#review", VerticalScroll))
+        panel.scroll_page_up(animate=False)
 
     def action_review_down(self):
-        self.query_one("#review", VerticalScroll).scroll_page_down(animate=False)
+        panel = (self.query_one("#progress", RichLog) if self.query_one("#progress").display
+                 else self.query_one("#review", VerticalScroll))
+        panel.scroll_page_down(animate=False)
 
     def on_input_changed(self, event: Input.Changed):
         if self.plan and not self.busy and not self.finished:
@@ -171,14 +198,17 @@ class MergeDeleteApp(App):
         elif event.button.id == "confirm" and self.plan and not self.busy and not self.finished:
             message = self.query_one("#message", Input).value.strip()
             if self.plan.changes and not message:
-                self.query_one("#message", Input).focus()
+                self.focus_message()
                 return
             self.busy = True
             self.query_one("#confirm", Button).disabled = True
             self.query_one("#cancel", Button).disabled = True
             self.query_one("#message", Input).disabled = True
+            for name in ("branches", "summary", "changes", "message"):
+                self.query_one(f"#{name}").display = False
+            self.query_one("#review", VerticalScroll).border_title = "Working…"
             self.query_one("#progress").display = True
-            self.query_one("#keys", Static).update("Working… keep this panel open until Git and cleanup finish.")
+            self.query_one("#notice", Static).update("Git is running. Keep this panel open until it finishes.")
             self.perform_merge(message)
 
     @work(thread=True)
@@ -197,33 +227,43 @@ class MergeDeleteApp(App):
 
     def show_error(self, error):
         self.finish(1)
-        if self.plan is None:
-            self.query_one("#branches", Static).update("Cannot prepare this worktree.")
-            self.query_one("#notice").display = False
+        review = self.query_one("#review", VerticalScroll)
+        review.border_title = "Stopped"
+        review.styles.border = ("round", "#f38ba8")
+        review.styles.border_title_color = "#f38ba8"
+        for name in ("branches", "summary", "changes", "progress"):
+            self.query_one(f"#{name}").display = False
         result = self.query_one("#result", Static)
         result.update(
-            f"Stopped: {error}\n\n"
-            "No further cleanup was attempted. Any successful commit or merge is kept.\n"
+            f"{error}\n\n"
+            "Any successful commit or merge is kept. No further cleanup was attempted.\n"
             "Check Git status in both checkouts, fix the problem, then reopen this action."
         )
         result.display = True
+        self.query_one("#notice", Static).update("The worktree is kept unless removal already succeeded.")
         self.call_after_refresh(result.scroll_visible, animate=False)
 
     def show_done(self):
         self.finish(0)
-        self.query_one("#summary", Static).update("Merged successfully. The worktree and its space were removed.")
+        review = self.query_one("#review", VerticalScroll)
+        review.border_title = "Merged & removed"
+        review.styles.border = ("round", "#a6e3a1")
+        review.styles.border_title_color = "#a6e3a1"
+        self.query_one("#notice", Static).update("Branch retained. Nothing pushed.")
 
     def finish(self, code):
         self.busy = False
         self.finished = True
         self.exit_code = code
         self.query_one("#confirm", Button).disabled = True
+        self.query_one("#confirm").display = False
         self.query_one("#message", Input).disabled = True
+        self.query_one("#message").display = False
         cancel = self.query_one("#cancel", Button)
         cancel.disabled = False
         cancel.label = "Close"
+        cancel.refresh(layout=True)
         cancel.focus()
-        self.query_one("#keys", Static).update("Enter / Esc: close")
 
     def action_cancel(self):
         # Git/hook processes cannot be safely canceled midway through mutation.

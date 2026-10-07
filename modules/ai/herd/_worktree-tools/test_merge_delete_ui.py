@@ -162,21 +162,61 @@ class MergeDeleteUITests(GitFixture, unittest.IsolatedAsyncioTestCase):
         with patch.object(workflow, "run", side_effect=self.herdr):
             async with app.run_test(size=(48, 18)) as pilot:
                 await self.loaded(app, pilot)
-                self.assertTrue(app.has_class("compact"))
                 message = app.query_one("#message", Input)
                 review = app.query_one("#review")
-                self.assertGreaterEqual(message.region.y, review.region.y)
-                self.assertLessEqual(message.region.bottom, review.region.bottom)
+                self.assertGreaterEqual(message.region.y, review.region.bottom)
+                self.assertLess(message.region.bottom, app.size.height)
                 app.query_one("#message", Input).value = "Narrow panel"
                 await pilot.pause()
                 await pilot.press("enter")
                 confirm = app.query_one("#confirm", Button)
                 self.assertEqual(app.focused, confirm)
-                self.assertLess(confirm.region.bottom, app.size.height)
+                self.assertLessEqual(confirm.region.bottom, app.size.height)
                 self.assertGreaterEqual(confirm.region.x, 0)
                 self.assertLessEqual(confirm.region.right, app.size.width)
                 await pilot.press("shift+tab")
                 self.assertEqual(app.focused.id, "cancel")
+                await pilot.press("escape")
+
+    async def test_small_panel_has_one_line_buttons_and_no_controls_legend(self):
+        (self.source / "new.txt").write_text("new\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            # Herdr's 64x18 outer popup leaves a 61x16 terminal surface.
+            async with app.run_test(size=(61, 16)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertFalse(app.query("#keys"))
+                self.assertFalse(app.query("#title"))
+                self.assertEqual(app.query_one("#review").border_title, "Merge & delete")
+                for name in ("cancel", "confirm"):
+                    button = app.query_one(f"#{name}", Button)
+                    self.assertEqual(button.region.height, 1)
+                    self.assertLessEqual(button.region.right, app.size.width)
+                    self.assertLessEqual(button.region.bottom, app.size.height)
+                message = app.query_one("#message", Input)
+                self.assertEqual(message.region.height, 3)
+                self.assertGreaterEqual(message.region.y, 0)
+                self.assertLess(message.region.bottom, app.size.height)
+                await pilot.press("escape")
+
+    async def test_many_files_scroll_without_hiding_form_or_actions(self):
+        for index in range(40):
+            (self.source / f"new-{index:02}.txt").write_text("new\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(61, 16)) as pilot:
+                await self.loaded(app, pilot)
+                review = app.query_one("#review")
+                message = app.query_one("#message", Input)
+                buttons = app.query_one("#actions")
+                regions = (message.region, buttons.region)
+                await pilot.press("pagedown")
+                self.assertGreater(review.scroll_y, 0)
+                self.assertEqual((message.region, buttons.region), regions)
+                self.assertEqual(app.focused.id, "message")
+                await pilot.press("pageup")
+                self.assertEqual(review.scroll_y, 0)
+                self.assertFalse(self.removed)
                 await pilot.press("escape")
 
     async def test_cancel_is_blocked_during_git_mutation(self):

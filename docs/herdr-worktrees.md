@@ -25,8 +25,12 @@ their existing behavior.
    **Merge & delete**. If its commits are already in the target, the action just
    removes the checkout and closes its space.
 
-The popup is a compact, responsive Textual terminal UI with **Catppuccin Mocha**
-colors. It opens at **60% width / 55% height** of the Herdr window.
+The popup is a compact, panel-based Textual terminal UI with **Catppuccin Mocha**
+colors, rounded borders, colored branches/file statuses, and single-line buttons.
+It opens at **64 columns × 18 rows**, clamped to the Herdr window on smaller
+terminals, rather than growing proportionally on large screens. There is no
+on-screen controls legend. The message input and buttons remain visible while
+the branch/path summary and file list scroll.
 Use **Up / Down** or **Tab / Shift+Tab** to move between controls, and **Left / Right**
 to navigate between buttons. In the commit-message input, Left / Right move the
 text cursor as usual. **Enter** activates the focused button, **Esc** cancels, and
