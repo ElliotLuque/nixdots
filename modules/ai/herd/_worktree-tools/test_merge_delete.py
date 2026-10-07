@@ -12,7 +12,7 @@ from unittest.mock import patch
 import merge_delete as workflow
 
 
-class MergeDeleteTests(unittest.TestCase):
+class GitFixture(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -50,11 +50,13 @@ class MergeDeleteTests(unittest.TestCase):
             return "{}"
         self.fail(f"Unexpected API call: {args}")
 
-    def execute(self, plan=None):
+    def execute(self, plan=None, message=None):
         plan = plan or workflow.inspect(self.source, self.target)
         with patch.object(workflow, "run", side_effect=self.herdr), contextlib.redirect_stdout(io.StringIO()):
-            workflow.merge_and_delete("fake-herdr", self.workspace_id, plan)
+            workflow.merge_and_delete("fake-herdr", self.workspace_id, plan, message)
 
+
+class MergeDeleteTests(GitFixture):
     def test_fast_forward_removes_only_selected_checkout_and_keeps_branch(self):
         source_head = workflow.git(self.source, "rev-parse", "HEAD")
         self.execute()
@@ -83,8 +85,8 @@ class MergeDeleteTests(unittest.TestCase):
         self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
         self.assertEqual(workflow.git(self.target, "status", "--porcelain"), "")
 
-    def test_dirty_checkouts_are_rejected(self):
-        for path in (self.source, self.target):
+    def test_dirty_target_is_rejected(self):
+        for path in (self.target,):
             for filename in ("file.txt", "untracked.txt"):
                 with self.subTest(path=path, filename=filename):
                     before = (path / filename).read_text() if (path / filename).exists() else None
@@ -95,6 +97,37 @@ class MergeDeleteTests(unittest.TestCase):
                         (path / filename).unlink()
                     else:
                         (path / filename).write_text(before)
+        self.assertFalse(self.removed)
+
+    def test_in_progress_git_operation_is_rejected_even_with_dirty_source(self):
+        (self.source / "new.txt").write_text("new\n")
+        marker = Path(workflow.git(self.source, "rev-parse", "--git-path", "MERGE_HEAD"))
+        marker.write_text(workflow.git(self.target, "rev-parse", "HEAD") + "\n")
+        with self.assertRaisesRegex(workflow.WorkflowError, "existing Git operation"):
+            self.execute(message="Do not commit during a merge")
+        self.assertFalse(self.removed)
+
+    def test_dirty_submodule_contents_must_be_committed_inside_submodule(self):
+        subrepo = self.root / "subrepo"
+        subrepo.mkdir()
+        workflow.git(subrepo, "init", "-b", "main")
+        workflow.git(subrepo, "config", "user.name", "Test")
+        workflow.git(subrepo, "config", "user.email", "test@example.invalid")
+        workflow.git(subrepo, "config", "commit.gpgsign", "false")
+        self.commit(subrepo, "submodule base", "base\n")
+        workflow.git(self.source, "-c", "protocol.file.allow=always", "submodule", "add", str(subrepo), "sub")
+        workflow.git(self.source, "commit", "-m", "Add submodule")
+        for filename in ("file.txt", "untracked.txt"):
+            with self.subTest(filename=filename):
+                file = self.source / "sub" / filename
+                old = file.read_text() if file.exists() else None
+                file.write_text("dirty\n")
+                with self.assertRaisesRegex(workflow.WorkflowError, "inside submodules"):
+                    self.execute(message="Cannot commit nested contents")
+                if old is None:
+                    file.unlink()
+                else:
+                    file.write_text(old)
         self.assertFalse(self.removed)
 
     def test_detached_head_and_main_checkout_are_rejected(self):
@@ -142,20 +175,97 @@ class MergeDeleteTests(unittest.TestCase):
         self.assertTrue(self.source.exists())
         workflow.git(self.target, "merge-base", "--is-ancestor", plan.source_head, "HEAD")
 
-    def test_missing_explicit_selection_never_uses_focused_workspace(self):
-        with patch.dict(os.environ, {}, clear=True), patch("builtins.input", return_value=""), \
-                patch.object(workflow, "run") as run, contextlib.redirect_stderr(io.StringIO()):
-            self.assertEqual(workflow.main(), 1)
-            run.assert_not_called()
+    def test_commits_staged_unstaged_and_untracked_then_merges(self):
+        (self.source / "file.txt").write_text("staged\n")
+        workflow.git(self.source, "add", "file.txt")
+        (self.source / "file.txt").write_text("unstaged after staging\n")
+        (self.source / "new file.txt").write_text("new\n")
+        workflow.git(self.source, "config", "core.excludesFile", str(self.root / "ignore"))
+        (self.root / "ignore").write_text("ignored.txt\n")
+        (self.source / "ignored.txt").write_text("not committed\n")
+        self.execute(message="Finish the feature")
+        self.assertTrue(self.removed)
+        self.assertEqual(workflow.git(self.target, "log", "-1", "--format=%s"), "Finish the feature")
+        self.assertEqual((self.target / "file.txt").read_text(), "unstaged after staging\n")
+        self.assertEqual((self.target / "new file.txt").read_text(), "new\n")
+        self.assertFalse((self.target / "ignored.txt").exists())
 
-    def test_cancel_does_not_merge_or_delete(self):
-        env = {"HERDR_BIN_PATH": "fake-herdr", "HERDR_MERGE_WORKSPACE_ID": self.workspace_id}
+    def test_no_existing_feature_commit_can_commit_and_merge(self):
+        workflow.git(self.source, "reset", "--hard", "main")
+        (self.source / "new.txt").write_text("first change\n")
+        self.assertEqual(workflow.inspect(self.source, self.target).commits_ahead, 0)
+        self.execute(message="First feature commit")
+        self.assertTrue(self.removed)
+        self.assertTrue((self.target / "new.txt").exists())
+
+    def test_clean_already_merged_worktree_needs_no_new_commit(self):
+        workflow.git(self.source, "reset", "--hard", "main")
         before = workflow.git(self.target, "rev-parse", "HEAD")
-        with patch.dict(os.environ, env), patch("builtins.input", return_value=""), \
-                patch.object(workflow, "run", side_effect=self.herdr), contextlib.redirect_stdout(io.StringIO()):
-            self.assertEqual(workflow.main(), 0)
+        self.execute()
+        self.assertTrue(self.removed)
         self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
+
+    def test_dirty_worktree_requires_nonempty_message_without_staging(self):
+        (self.source / "new.txt").write_text("new\n")
+        before = workflow.git(self.source, "status", "--porcelain")
+        for message in (None, "", "  "):
+            with self.subTest(message=message), self.assertRaisesRegex(workflow.WorkflowError, "commit message"):
+                self.execute(message=message)
+            self.assertEqual(workflow.git(self.source, "status", "--porcelain"), before)
+            self.assertFalse(self.removed)
+
+    def test_edits_to_already_dirty_files_invalidate_confirmation(self):
+        for filename in ("file.txt", "untracked.txt"):
+            with self.subTest(filename=filename):
+                (self.source / filename).write_text("first\n")
+                plan = workflow.inspect(self.source, self.target)
+                (self.source / filename).write_text("second\n")
+                with self.assertRaisesRegex(workflow.WorkflowError, "changed since confirmation"):
+                    self.execute(plan, message="Do not commit changed files")
         self.assertFalse(self.removed)
+
+    def test_untracked_whitespace_names_and_symlinks_are_committed(self):
+        (self.source / " leading\nfile ").write_text("new\n")
+        (self.source / "link").symlink_to("file.txt")
+        self.execute(message="Add unusual filenames")
+        self.assertEqual((self.target / " leading\nfile ").read_text(), "new\n")
+        self.assertTrue((self.target / "link").is_symlink())
+
+    def test_commit_failure_keeps_worktree_and_target_unchanged(self):
+        hook = self.target / ".git/hooks/pre-commit"
+        hook.write_text("#!/bin/sh\necho 'commit rejected' >&2\nexit 1\n")
+        hook.chmod(0o755)
+        before = workflow.git(self.target, "rev-parse", "HEAD")
+        (self.source / "new.txt").write_text("new\n")
+        with self.assertRaisesRegex(workflow.WorkflowError, "commit rejected"):
+            self.execute(message="Rejected")
+        self.assertFalse(self.removed)
+        self.assertTrue(self.source.exists())
+        self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
+        self.assertIn("A  new.txt", workflow.git(self.source, "status", "--porcelain"))
+
+    def test_hook_changes_after_commit_stop_before_merge(self):
+        hook = self.target / ".git/hooks/post-commit"
+        hook.write_text("#!/bin/sh\nprintf 'hook change' > file.txt\n")
+        hook.chmod(0o755)
+        (self.source / "new.txt").write_text("new\n")
+        before = workflow.git(self.target, "rev-parse", "HEAD")
+        with self.assertRaises(workflow.WorkflowError):
+            self.execute(message="Keep this commit")
+        self.assertFalse(self.removed)
+        self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
+        self.assertEqual(workflow.git(self.source, "log", "-1", "--format=%s"), "Keep this commit")
+
+    def test_conflict_after_commit_preserves_new_commit(self):
+        self.commit(self.target, "main conflict", "main\n")
+        (self.source / "file.txt").write_text("feature\n")
+        before = workflow.git(self.target, "rev-parse", "HEAD")
+        with self.assertRaises(workflow.WorkflowError):
+            self.execute(message="Feature conflict")
+        self.assertFalse(self.removed)
+        self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
+        self.assertEqual(workflow.git(self.target, "status", "--porcelain"), "")
+        self.assertEqual(workflow.git(self.source, "log", "-1", "--format=%s"), "Feature conflict")
 
 
 if __name__ == "__main__":

@@ -3,18 +3,19 @@
   perSystem =
     { pkgs, lib, ... }:
     let
+      python = pkgs.python3.withPackages (p: [ p.textual ]);
       plugin = pkgs.stdenvNoCC.mkDerivation {
         pname = "herdr-worktree-tools";
-        version = "0.1.0";
+        version = "0.2.0";
         src = ./_worktree-tools;
         dontBuild = true;
         nativeBuildInputs = [ pkgs.makeWrapper ];
         installPhase = ''
           runHook preInstall
           mkdir -p $out/bin
-          cp merge_delete.py $out/
+          cp merge_delete.py merge_delete_ui.py $out/
           # Include Git without replacing the user's PATH (Git hooks may need it).
-          makeWrapper ${pkgs.python3}/bin/python3 $out/bin/merge-delete \
+          makeWrapper ${python}/bin/python3 $out/bin/merge-delete \
             --prefix PATH : ${lib.makeBinPath [ pkgs.git ]} \
             --add-flags "$out/merge_delete.py"
           substitute herdr-plugin.toml $out/herdr-plugin.toml \
@@ -29,7 +30,7 @@
         pkgs.runCommand "herdr-worktree-tools-tests"
           {
             nativeBuildInputs = [
-              pkgs.python3
+              python
               pkgs.git
             ];
           }

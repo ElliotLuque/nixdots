@@ -1,0 +1,145 @@
+"""Headless terminal tests exercise the actual Textual widgets and keyboard flow."""
+
+import unittest
+from unittest.mock import patch
+
+from textual.widgets import Button, Input, Static
+
+import merge_delete as workflow
+from merge_delete_ui import MergeDeleteApp
+from test_merge_delete import GitFixture
+
+
+class MergeDeleteUITests(GitFixture, unittest.IsolatedAsyncioTestCase):
+    def app(self, workspace_id=None):
+        return MergeDeleteApp("fake-herdr", workspace_id or self.workspace_id)
+
+    async def loaded(self, app, pilot):
+        await app.workers.wait_for_complete()
+        await pilot.pause()
+
+    async def test_clean_defaults_to_cancel_and_enter_changes_nothing(self):
+        before = workflow.git(self.target, "rev-parse", "HEAD")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(90, 32)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertEqual(app.focused.id, "cancel")
+                self.assertFalse(app.query_one("#message").display)
+                self.assertFalse(app.query_one("#confirm", Button).disabled)
+                await pilot.press("enter")
+        self.assertEqual(app.return_value, 0)
+        self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
+        self.assertFalse(self.removed)
+
+    async def test_clean_keyboard_confirmation_merges_and_deletes(self):
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(90, 32)) as pilot:
+                await self.loaded(app, pilot)
+                await pilot.press("tab")
+                self.assertEqual(app.focused.id, "confirm")
+                await pilot.press("enter")
+                await self.loaded(app, pilot)
+                self.assertTrue(app.finished)
+                self.assertTrue(self.removed)
+                self.assertEqual(app.exit_code, 0)
+                await pilot.press("escape")
+
+    async def test_dirty_message_enter_only_focuses_action_then_confirms(self):
+        (self.source / "new.txt").write_text("new\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(90, 32)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertEqual(app.focused.id, "message")
+                confirm = app.query_one("#confirm", Button)
+                self.assertGreaterEqual(confirm.content_region.width, len(str(confirm.label)))
+                self.assertTrue(confirm.disabled)
+                await pilot.press("space", "enter")
+                self.assertTrue(app.query_one("#confirm", Button).disabled)
+                app.query_one("#message", Input).value = "Finish feature"
+                await pilot.pause()
+                await pilot.press("enter")
+                self.assertEqual(app.focused.id, "confirm")
+                self.assertFalse(self.removed)
+                self.assertEqual(workflow.git(self.source, "log", "-1", "--format=%s"), "feature")
+                await pilot.press("enter")
+                await self.loaded(app, pilot)
+                self.assertTrue(self.removed)
+                self.assertEqual(workflow.git(self.target, "log", "-1", "--format=%s"), "Finish feature")
+
+    async def test_dirty_escape_does_not_stage_commit_or_merge(self):
+        (self.source / "new.txt").write_text("new\n")
+        before = workflow.git(self.source, "status", "--porcelain")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(48, 18)) as pilot:
+                await self.loaded(app, pilot)
+                await pilot.press("escape")
+        self.assertEqual(app.return_value, 0)
+        self.assertEqual(workflow.git(self.source, "status", "--porcelain"), before)
+        self.assertFalse(self.removed)
+
+    async def test_missing_explicit_selection_never_uses_focused_workspace(self):
+        app = MergeDeleteApp("fake-herdr", None)
+        with patch.object(workflow, "run") as run:
+            async with app.run_test(size=(80, 28)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertEqual(app.exit_code, 1)
+                self.assertIn("right-click menu", str(app.query_one("#result", Static).content))
+                run.assert_not_called()
+                await pilot.press("enter")
+        self.assertEqual(app.return_value, 1)
+
+    async def test_failure_shows_recovery_and_close_button(self):
+        (self.target / "untracked.txt").write_text("dirty target\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(80, 28)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertTrue(app.query_one("#result").display)
+                self.assertTrue(app.query_one("#confirm", Button).disabled)
+                self.assertEqual(str(app.query_one("#cancel", Button).label), "Close")
+                self.assertEqual(app.focused.id, "cancel")
+                await pilot.press("escape")
+        self.assertFalse(self.removed)
+        self.assertEqual(app.return_value, 1)
+
+    async def test_narrow_panel_keeps_actions_visible_and_keyboard_reachable(self):
+        (self.source / "new.txt").write_text("new\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(48, 18)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertTrue(app.has_class("compact"))
+                message = app.query_one("#message", Input)
+                review = app.query_one("#review")
+                self.assertGreaterEqual(message.region.y, review.region.y)
+                self.assertLessEqual(message.region.bottom, review.region.bottom)
+                app.query_one("#message", Input).value = "Narrow panel"
+                await pilot.pause()
+                await pilot.press("enter")
+                confirm = app.query_one("#confirm", Button)
+                self.assertEqual(app.focused, confirm)
+                self.assertLess(confirm.region.bottom, app.size.height)
+                self.assertGreaterEqual(confirm.region.x, 0)
+                self.assertLessEqual(confirm.region.right, app.size.width)
+                await pilot.press("shift+tab")
+                self.assertEqual(app.focused.id, "cancel")
+                await pilot.press("escape")
+
+    async def test_cancel_is_blocked_during_git_mutation(self):
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test() as pilot:
+                await self.loaded(app, pilot)
+                app.busy = True
+                await pilot.press("escape", "ctrl+c", "ctrl+q")
+                self.assertTrue(app.is_running)
+                app.busy = False
+                await pilot.press("escape")
+
+
+if __name__ == "__main__":
+    unittest.main()

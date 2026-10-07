@@ -1,8 +1,8 @@
 id = "nixdots.worktree-tools"
 name = "Worktree Tools"
-version = "0.1.0"
+version = "0.2.0"
 min_herdr_version = "0.9.3"
-description = "Merge the selected worktree into the main checkout, then remove it safely"
+description = "Commit unfinished work if needed, merge the selected worktree, and remove it safely"
 platforms = ["linux", "macos"]
 
 [[panes]]
