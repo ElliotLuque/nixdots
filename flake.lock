@@ -1074,6 +1074,23 @@
         "type": "github"
       }
     },
+    "pi-anthropic-auth": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790888627,
+        "narHash": "sha256-mJ9JIwdmtGhGebyZLOXy+m1r04a310IW0gbu1FLLPfc=",
+        "owner": "gotgenes",
+        "repo": "pi-anthropic-auth",
+        "rev": "f648e814d479dae75f6e403d8ffa8ae5bc918783",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gotgenes",
+        "ref": "v3.4.2",
+        "repo": "pi-anthropic-auth",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -1137,6 +1154,7 @@
         "nixpkgs": "nixpkgs_4",
         "nixvim": "nixvim",
         "pi": "pi",
+        "pi-anthropic-auth": "pi-anthropic-auth",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",
         "taste-skill": "taste-skill"

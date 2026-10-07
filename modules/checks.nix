@@ -151,6 +151,11 @@ in
         assert !ai.virtualisation.docker.enable;
         assert ai.networking.firewall.allowedTCPPorts == [ ];
         assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/models.json");
+        assert
+          ai.home-manager.users.ai-test.home.file.".pi/agent/extensions/pi-anthropic-auth".source
+          == inputs.pi-anthropic-auth;
+        assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/auth.json");
+        assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/settings.json");
         assert ai.home-manager.users.ai-test.programs.codex.profiles == { };
         assert ai.home-manager.users.ai-test.programs.opencode.settings == { };
         assert builtins.isString ai.system.build.toplevel.drvPath;

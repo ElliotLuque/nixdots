@@ -7,6 +7,9 @@
         inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.default
       ];
 
+      # Pi discovers the package's pi.extensions manifest here. Keep the whole
+      # source tree together so relative imports and package metadata resolve.
+      home.file.".pi/agent/extensions/pi-anthropic-auth".source = inputs.pi-anthropic-auth;
       home.file.".pi/agent/themes/catppuccin-mocha.json".source = ./catppuccin-mocha.json;
 
       # Keep settings writable so Pi can save preferences and package registrations.

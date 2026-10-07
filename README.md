@@ -91,6 +91,20 @@ sudo nixos-rebuild switch --flake .#nixos-laptop
 
 The existing Fish `system-rebuild` shortcut is unchanged. See [Proposed rebuild improvements](docs/rebuilding.md) for options that preserve its convenience while adding clearer build output, action selection and future remote deployment.
 
+## Claude subscriptions in Pi
+
+The Pi Home Manager feature installs [pi-anthropic-auth](https://github.com/gotgenes/pi-anthropic-auth) from a pinned Nix flake input. Home Manager links the package into `~/.pi/agent/extensions/pi-anthropic-auth`; no `pi install` or runtime npm download is needed.
+
+After rebuilding, restart Pi (or run `/reload`), then:
+
+1. Run `/login anthropic` to sign in with your Claude Pro/Max subscription.
+2. Select a Claude model with `/model`.
+3. Run `/anthropic-auth:status` to verify the extension is loaded.
+
+The extension shapes Anthropic OAuth requests; API-key requests and other providers are unchanged. Credentials remain in Pi's writable `~/.pi/agent/auth.json`, outside Nix. Pi's extra-usage warning remains enabled; requests sent directly by other extensions may still incur extra-usage charges. See the extension's README for supported request paths and billing caveats.
+
+Update the extension by changing its version tag in `flake.nix` and running `nix flake update pi-anthropic-auth`.
+
 ## Image viewer
 
 Swayimg is the default image viewer on both workstations. Home Manager installs it and writes `~/.config/swayimg/init.lua` from `programs.swayimg.initLua` in `modules/desktop/apps.nix`; image MIME defaults live in `modules/desktop/xdg.nix`. Change these Nix declarations rather than editing the generated Lua file.

@@ -76,6 +76,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    pi-anthropic-auth = {
+      url = "github:gotgenes/pi-anthropic-auth/v3.4.2";
+      flake = false;
+    };
+
     # shared skill sources (configured by modules/ai/skills.nix)
     agent-skills.url = "github:Kyure-A/agent-skills-nix";
     taste-skill = {
