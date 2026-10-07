@@ -32,6 +32,56 @@ class MergeDeleteUITests(GitFixture, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(workflow.git(self.target, "rev-parse", "HEAD"), before)
         self.assertFalse(self.removed)
 
+    async def test_arrows_navigate_clean_confirmation_in_both_directions(self):
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(72, 22)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertEqual(app.theme, "catppuccin-mocha")
+                self.assertEqual(app.screen.styles.background.hex, "#181825")
+                self.assertEqual(app.focused.id, "cancel")
+                for key, expected in (("right", "confirm"), ("left", "cancel"),
+                                      ("up", "confirm"), ("down", "cancel")):
+                    await pilot.press(key)
+                    self.assertEqual(app.focused.id, expected)
+                self.assertFalse(self.removed)
+                await pilot.press("escape")
+
+    async def test_arrows_leave_horizontal_cursor_editing_intact(self):
+        (self.source / "new.txt").write_text("new\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(72, 22)) as pilot:
+                await self.loaded(app, pilot)
+                message = app.query_one("#message", Input)
+                message.value = "Finish feature"
+                await pilot.pause()
+                await pilot.press("home", "right")
+                self.assertEqual(message.cursor_position, 1)
+                self.assertEqual(app.focused.id, "message")
+                await pilot.press("left")
+                self.assertEqual(message.cursor_position, 0)
+                for key, expected in (("down", "cancel"), ("right", "confirm"),
+                                      ("left", "cancel"), ("up", "message")):
+                    await pilot.press(key)
+                    self.assertEqual(app.focused.id, expected)
+                self.assertEqual(message.value, "Finish feature")
+                self.assertFalse(self.removed)
+                await pilot.press("escape")
+
+    async def test_arrows_skip_disabled_confirmation(self):
+        (self.source / "new.txt").write_text("new\n")
+        app = self.app()
+        with patch.object(workflow, "run", side_effect=self.herdr):
+            async with app.run_test(size=(48, 18)) as pilot:
+                await self.loaded(app, pilot)
+                self.assertTrue(app.query_one("#confirm", Button).disabled)
+                await pilot.press("down")
+                self.assertEqual(app.focused.id, "cancel")
+                await pilot.press("right")
+                self.assertEqual(app.focused.id, "message")
+                await pilot.press("escape")
+
     async def test_clean_keyboard_confirmation_merges_and_deletes(self):
         app = self.app()
         with patch.object(workflow, "run", side_effect=self.herdr):

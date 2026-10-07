@@ -25,10 +25,12 @@ their existing behavior.
    **Merge & delete**. If its commits are already in the target, the action just
    removes the checkout and closes its space.
 
-The popup is a responsive Textual terminal UI (no Rust/Ratatui rewrite required).
-Use **Tab / Shift+Tab** to move between controls, **Enter** to activate the focused
-button, **Esc** to cancel, and **Page Up / Page Down** to scroll the review. Mouse
-interaction also works. In the message field, Enter moves focus to the confirm
+The popup is a compact, responsive Textual terminal UI with **Catppuccin Mocha**
+colors. It opens at **60% width / 55% height** of the Herdr window.
+Use **Up / Down** or **Tab / Shift+Tab** to move between controls, and **Left / Right**
+to navigate between buttons. In the commit-message input, Left / Right move the
+text cursor as usual. **Enter** activates the focused button, **Esc** cancels, and
+**Page Up / Page Down** scroll the review. Mouse interaction also works. In the message field, Enter moves focus to the confirm
 button without executing it. A clean worktree starts with **Cancel** focused, so
 an accidental Enter does not delete it. Canceling before confirmation does not
 stage, commit, merge, or remove anything.

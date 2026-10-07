@@ -18,16 +18,20 @@ class MergeDeleteApp(App):
         Binding("ctrl+q", "cancel", "Cancel", priority=True),
         Binding("pageup", "review_up", show=False, priority=True),
         Binding("pagedown", "review_down", show=False, priority=True),
+        Binding("up", "focus_previous", show=False, priority=True),
+        Binding("down", "focus_next", show=False, priority=True),
+        Binding("left", "focus_horizontal(-1)", show=False, priority=True),
+        Binding("right", "focus_horizontal(1)", show=False, priority=True),
     ]
     CSS = """
-    Screen { background: $surface; }
-    #title { height: auto; padding: 1 2; text-style: bold; }
-    #review { height: 1fr; padding: 0 2; }
+    Screen { background: $background; }
+    #title { height: auto; padding: 0 1 1 1; text-style: bold; }
+    #review { height: 1fr; padding: 0 1; }
     #branches, #summary, #changes, #notice, #commit-help, #result {
         height: auto;
         margin-bottom: 1;
     }
-    #branches { padding: 1; background: $panel; }
+    #branches { padding: 0 1; background: $surface; }
     #summary { text-style: bold; }
     #changes { color: $text; }
     #notice, #commit-help { color: $text-muted; }
@@ -35,19 +39,16 @@ class MergeDeleteApp(App):
     #message { margin-bottom: 1; }
     #result { color: $text; border: solid $error; padding: 1; }
     #progress { min-height: 8; height: 1fr; border: solid $primary; }
-    #actions { height: auto; padding: 1 2; align-horizontal: right; }
+    #actions { height: auto; padding: 0 1; align-horizontal: right; }
     Button { width: auto; min-width: 18; margin-left: 1; }
-    #keys { height: auto; padding: 0 2 1 2; color: $text-muted; }
-    .compact #actions { padding: 0 1; }
-    .compact Button { min-width: 8; margin-left: 1; }
+    #keys { height: auto; padding: 0 1; color: $text-muted; }
+    .compact Button { min-width: 8; }
     .compact #confirm { width: 1fr; }
-    .compact #review { padding: 0 1; }
-    .compact #title { padding: 0 1 1 1; }
-    .compact #keys { padding: 0 1; }
     """
 
     def __init__(self, herdr, workspace_id):
         super().__init__()
+        self.theme = "catppuccin-mocha"
         self.herdr = herdr
         self.workspace_id = workspace_id
         self.plan = None
@@ -57,19 +58,19 @@ class MergeDeleteApp(App):
 
     def compose(self) -> ComposeResult:
         yield Static(self.TITLE, id="title", markup=False)
-        with VerticalScroll(id="review"):
+        with VerticalScroll(id="review", can_focus=False):
             yield Static("Reading the selected worktree…", id="branches", markup=False)
             yield Static("", id="summary", markup=False)
             yield Static("", id="changes", markup=False)
             yield Static(
                 "Keeps commits and the branch. Nothing is pushed.\n"
-                "Removes the checkout and closes its Herdr space. Ignored files are deleted too.\n"
-                "Stop agents and watchers using this worktree before continuing.",
+                "Deletes the checkout, its space, and ignored files.\n"
+                "Stop agents and watchers before continuing.",
                 id="notice", markup=False,
             )
             yield Static(
-                "Commits ALL staged, unstaged, and untracked files; ignored files are not committed.\n"
-                "Existing commits are preserved. Git hooks still run.",
+                "Commits ALL staged, unstaged, and untracked files.\n"
+                "Ignored files excluded. Git hooks still run.",
                 id="commit-help", markup=False,
             )
             yield Label("Commit message", id="commit-label")
@@ -79,7 +80,7 @@ class MergeDeleteApp(App):
         with Horizontal(id="actions"):
             yield Button("Cancel", id="cancel")
             yield Button("Merge & delete", id="confirm", variant="primary", disabled=True)
-        yield Static("Tab: focus   Enter: select   Esc: cancel   PgUp/PgDn: review", id="keys", markup=False)
+        yield Static("Arrows/Tab: focus  Enter: select  Esc: cancel\nPgUp/PgDn: review", id="keys", markup=False)
 
     def on_mount(self):
         for name in ("summary", "changes", "commit-label", "message", "commit-help", "result", "progress"):
@@ -105,7 +106,7 @@ class MergeDeleteApp(App):
         self.plan = plan
         self.query_one("#title", Static).update(f"Merge & delete: {plan.source_branch} -> {plan.target_branch}")
         self.query_one("#branches", Static).update(
-            f"From  {plan.source_branch}\n{plan.source}\n\n"
+            f"From  {plan.source_branch}\n{plan.source}\n"
             f"Into  {plan.target_branch}  (main checkout)\n{plan.target}"
         )
         summary = f"{plan.commits_ahead} existing commit(s) to merge."
@@ -136,6 +137,18 @@ class MergeDeleteApp(App):
         message = self.query_one("#message", Input)
         message.focus()
         message.scroll_visible(animate=False, immediate=True)
+
+    def check_action(self, action, parameters):
+        # Horizontal arrows edit text inside the input, navigate everywhere else.
+        if action == "focus_horizontal" and isinstance(self.focused, Input):
+            return False
+        return super().check_action(action, parameters)
+
+    def action_focus_horizontal(self, direction):
+        if direction < 0:
+            self.action_focus_previous()
+        else:
+            self.action_focus_next()
 
     def action_review_up(self):
         self.query_one("#review", VerticalScroll).scroll_page_up(animate=False)
