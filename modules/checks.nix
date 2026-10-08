@@ -140,7 +140,6 @@ in
           (
             home:
             !(home.home.file ? ".agents/skills/terminal-browser")
-            && !(inputs.nixpkgs.lib.hasInfix "[ui.sidebar.agents" home.xdg.configFile."herdr/config.toml".text)
             && builtins.all (
               package:
               !(builtins.elem (inputs.nixpkgs.lib.getName package) [
@@ -226,8 +225,11 @@ in
             assert config['theme']['name'] == 'catppuccin'
             theme = config['theme']['custom']
             assert all(theme[key] == 'reset' for key in (
-                'panel_bg', 'sidebar_bg', 'active_row_bg', 'selection_bg'
+                'panel_bg', 'sidebar_bg'
             ))
+            assert theme['active_row_bg'] == '#313244'
+            assert theme['selection_bg'] == '#45475a'
+            assert theme['selection_bg'] != theme['active_row_bg']
             assert theme['accent'] == '#89b4fa'
             assert theme['mauve'] == '#a6adc8'
             assert theme['green'] == '#9399b2'  # Idle is muted, not successful.
@@ -238,9 +240,33 @@ in
             assert config['ui']['pane_borders'] == 'auto'
             assert config['ui']['pane_outer_borders']
             assert 'accent' not in config['ui']  # Keep the Catppuccin blue accent.
-            assert config['ui']['sidebar']['spaces']['row_gap'] == 1
-            assert 'rows' not in config['ui']['sidebar']['spaces']
-            assert 'agents' not in config['ui']['sidebar']
+            assert config['ui']['agent_panel_sort'] == 'priority'
+            assert 'spaces' not in config['ui']['sidebar']  # Keep built-in space rows.
+            agents = config['ui']['sidebar']['agents']
+            assert agents['row_gap'] == 0
+            assert agents['rows'] == [
+                ['state_icon', {'token': 'terminal_title_stripped', 'dim': False}],
+                [{'token': 'workspace', 'dim': True, 'bold': False}],
+            ]
+            keys = config['keys']
+            assert keys['prefix'] == 'ctrl+a'
+            assert keys['workspace_picker'] == 'prefix+w'
+            assert keys['switch_tab'] == 'prefix+1..9'
+            assert 'switch_tab' not in config['ui']['toast']
+            for direction, vim_key in (('left', 'h'), ('down', 'j'), ('up', 'k'), ('right', 'l')):
+                assert keys[f'focus_pane_{direction}'] == [f'prefix+{vim_key}', f'prefix+{direction}']
+            assert keys['indexed'] == {'workspaces': 'ctrl', 'agents': 'ctrl+shift'}
+            commands = {command['key']: command for command in keys['command']}
+            assert len(commands) == len(keys['command'])  # No duplicate command bindings.
+            git = commands['ctrl+g']
+            assert git['type'] == 'popup'
+            assert git['command'].endswith('/bin/lazygit; exit')
+            assert (git['width'], git['height']) == ('95%', '90%')
+            terminal = commands['prefix+shift+c']
+            assert terminal['type'] == 'popup'
+            assert terminal['command'] == 'exec "$SHELL" -i'
+            assert (terminal['width'], terminal['height']) == ('80%', '80%')
+            assert commands['prefix+d']['type'] == 'popup'  # Hunk still composes.
             PY
             touch "$out"
           '';

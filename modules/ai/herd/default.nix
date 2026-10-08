@@ -22,52 +22,72 @@
         done
       '';
 
-      # Leave agent sidebar rows unset so Herdr uses its built-in layout.
       # Keep root settings before the integrations' TOML tables/keybindings.
       xdg.configFile."herdr/config.toml".text = lib.mkBefore ''
-                        onboarding = false
+        onboarding = false
 
-                        [theme]
-                        name = "catppuccin"
+        [theme]
+        name = "catppuccin"
 
-                        # Catppuccin foregrounds without painted chrome/row backgrounds.
-                        # Focus and navigation remain visible through text styling.
-                        [theme.custom]
-                        panel_bg = "reset"
-                        sidebar_bg = "reset"
-                        active_row_bg = "reset"
-                        selection_bg = "reset"
-                        accent = "#89b4fa"
-                        surface_dim = "#45475a"
-                        overlay0 = "#9399b2"
-                        overlay1 = "#bac2de"
-                        mauve = "#a6adc8"
-                        green = "#9399b2"
-                        yellow = "#f9e2af"
-                        red = "#f38ba8"
-                        teal = "#a6e3a1"
+        # Transparent chrome, with distinct active and navigation row fills.
+        [theme.custom]
+        panel_bg = "reset"
+        sidebar_bg = "reset"
+        active_row_bg = "#313244"
+        selection_bg = "#45475a"
+        accent = "#89b4fa"
+        surface_dim = "#45475a"
+        overlay0 = "#9399b2"
+        overlay1 = "#bac2de"
+        mauve = "#a6adc8"
+        green = "#9399b2"
+        yellow = "#f9e2af"
+        red = "#f38ba8"
+        teal = "#a6e3a1"
 
-                        [ui]
-                        status_indicators = "symbols"
-                        pane_borders = "auto"
-                        pane_outer_borders = true
+        [ui]
+        status_indicators = "symbols"
+        pane_borders = "auto"
+        pane_outer_borders = true
+        agent_panel_sort = "priority"
 
-                				agent_panel_sort = "priority"
-                				[ui.sidebar.agents]
-                				row_gap = 0
-                				rows = [
-                					["state_icon", {token = "terminal_title_stripped"}, dim = false],
-                					[{token = "workspace", dim = true, bold = false}],
-                				]
+        [ui.sidebar.agents]
+        row_gap = 0
+        rows = [
+          ["state_icon", {token = "terminal_title_stripped", dim = false}],
+          [{token = "workspace", dim = true, bold = false}],
+        ]
 
-                        [ui.toast]
-                        delivery = "system"
+        [ui.toast]
+        delivery = "system"
 
-        								switch_tab = "prefix+1..9"
+        [keys]
+        prefix = "ctrl+a"
+        workspace_picker = "prefix+w"
+        switch_tab = "prefix+1..9"
+        focus_pane_left = ["prefix+h", "prefix+left"]
+        focus_pane_down = ["prefix+j", "prefix+down"]
+        focus_pane_up = ["prefix+k", "prefix+up"]
+        focus_pane_right = ["prefix+l", "prefix+right"]
 
-        								[keys.indexed]
-        								workspaces = "ctrl"
-        								agents = "ctrl+shift"
+        [keys.indexed]
+        workspaces = "ctrl"
+        agents = "ctrl+shift"
+
+        # Explicitly exit the command shell when lazygit quits (including q).
+        [[keys.command]]
+        key = "ctrl+g"
+        type = "popup"
+        command = "${pkgs.lazygit}/bin/lazygit; exit"
+        width = "95%"
+        height = "90%"
+
+        [[keys.command]]
+        key = "prefix+shift+c"
+        type = "popup"
+        command = 'exec "$SHELL" -i'
+        width = "80%"
+        height = "80%"
       '';
     };
 }
