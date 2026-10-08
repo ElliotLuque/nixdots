@@ -100,32 +100,6 @@ in
       hostLua = pkgs.writeText "host.lua" laptopHome.xdg.configFile."hypr/host.lua".text;
     in
     {
-      checks.herdr-agent-usage =
-        pkgs.runCommand "herdr-agent-usage-integration-check" { nativeBuildInputs = [ pkgs.python3 ]; }
-          ''
-            export HOME=$TMPDIR
-            python ${./ai/herd/_test_usage.py} \
-              ${inputs.self.packages.${system}.herdr-agent-usage} \
-              ${desktopHome.xdg.configFile."herdr/config.toml".source}
-            touch $out
-          '';
-
-      checks.herdr-radar =
-        pkgs.runCommand "herdr-radar-integration-check"
-          {
-            nativeBuildInputs = [
-              pkgs.python3
-              pkgs.nodejs
-            ];
-          }
-          ''
-            export HOME=$TMPDIR
-            python ${./ai/herd/_test_radar.py} \
-              ${inputs.self.packages.${system}.herdr-radar} \
-              ${desktopHome.xdg.configFile."herdr/config.toml".source}
-            touch $out
-          '';
-
       checks.architecture =
         assert !base.programs.hyprland.enable;
         assert !base.services.xserver.enable;
@@ -156,11 +130,38 @@ in
           == inputs.pi-anthropic-auth;
         assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/auth.json");
         assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/settings.json");
+        assert
           toString ai.home-manager.users.ai-test.home.file.".pi/agent/extensions/terminal-statusline".source
           == "${inputs.pi-terminal-statusline}/extensions/statusline";
         assert builtins.pathExists "${inputs.pi-terminal-statusline}/extensions/statusline/index.ts";
         assert ai.home-manager.users.ai-test.programs.codex.profiles == { };
         assert ai.home-manager.users.ai-test.programs.opencode.settings == { };
+        assert builtins.all
+          (
+            home:
+            !(home.home.file ? ".agents/skills/terminal-browser")
+            && !(inputs.nixpkgs.lib.hasInfix "[ui.sidebar.agents" home.xdg.configFile."herdr/config.toml".text)
+            && builtins.all (
+              package:
+              !(builtins.elem (inputs.nixpkgs.lib.getName package) [
+                "herdr-agent-usage-profile"
+                "herdr-radar-profile"
+              ])
+            ) home.home.packages
+            &&
+              builtins.all
+                (plugin: !(inputs.nixpkgs.lib.hasInfix plugin home.xdg.configFile."herdr/config.toml".text))
+                [
+                  "herdr-agent-quota"
+                  "hhdebb.herdr-radar"
+                  "worktrunk"
+                ]
+          )
+          [
+            ai.home-manager.users.ai-test
+            desktopHome
+            laptopHome
+          ];
         assert builtins.isString ai.system.build.toplevel.drvPath;
         assert builtins.elem "vim" (map inputs.nixpkgs.lib.getName base.environment.systemPackages);
         assert builtins.elem "neovim" (map inputs.nixpkgs.lib.getName base.environment.systemPackages);
@@ -215,6 +216,34 @@ in
         pkgs.runCommand "architecture-check" { } ''
           touch "$out"
         '';
+
+      checks.herdr-theme =
+        pkgs.runCommand "herdr-theme-check" { nativeBuildInputs = [ pkgs.python3 ]; }
+          ''
+            python3 - '${desktopHome.xdg.configFile."herdr/config.toml".source}' <<'PY'
+            import pathlib, sys, tomllib
+            config = tomllib.loads(pathlib.Path(sys.argv[1]).read_text())
+            assert config['theme']['name'] == 'catppuccin'
+            theme = config['theme']['custom']
+            assert all(theme[key] == 'reset' for key in (
+                'panel_bg', 'sidebar_bg', 'active_row_bg', 'selection_bg'
+            ))
+            assert theme['accent'] == '#89b4fa'
+            assert theme['mauve'] == '#a6adc8'
+            assert theme['green'] == '#9399b2'  # Idle is muted, not successful.
+            assert theme['yellow'] == '#f9e2af'  # Working.
+            assert theme['red'] == '#f38ba8'  # Blocked.
+            assert theme['teal'] == '#a6e3a1'  # Done uses Catppuccin green.
+            assert config['ui']['status_indicators'] == 'symbols'
+            assert config['ui']['pane_borders'] == 'auto'
+            assert config['ui']['pane_outer_borders']
+            assert 'accent' not in config['ui']  # Keep the Catppuccin blue accent.
+            assert config['ui']['sidebar']['spaces']['row_gap'] == 1
+            assert 'rows' not in config['ui']['sidebar']['spaces']
+            assert 'agents' not in config['ui']['sidebar']
+            PY
+            touch "$out"
+          '';
 
       checks.desktop-scripts =
         assert builtins.length desktopScripts == 3;

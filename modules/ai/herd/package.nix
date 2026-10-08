@@ -3,14 +3,15 @@
   perSystem =
     { pkgs, config, ... }:
     {
-      # Plugin v1 cannot extend the native context menu. Keep this patch small
-      # and pinned to the upstream version in flake.lock.
+      # Native menu integrations and worktree spacing fixes are pinned to the
+      # upstream version in flake.lock.
       packages.herdr =
         inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
           (old: {
             patches = (old.patches or [ ]) ++ [
               ./_worktree-tools/context-menu.patch
               ./_terminal-browser-menu.patch
+              ./_sidebar-worktree-spacing.patch
             ];
           });
 
@@ -26,6 +27,20 @@
           "--bin"
           "herdr"
           "terminal_browser"
+        ];
+      });
+
+      checks.herdr-sidebar-spacing = config.packages.herdr.overrideAttrs (_: {
+        src = inputs.herdr;
+        doCheck = true;
+        preCheck = ''
+          export HOME="$TMPDIR/home"
+          mkdir -p "$HOME"
+        '';
+        cargoTestFlags = [
+          "--bin"
+          "herdr"
+          "row_gap"
         ];
       });
 

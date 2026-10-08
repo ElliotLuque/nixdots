@@ -1,0 +1,109 @@
+diff --git a/src/client/shell/sidebar.rs b/src/client/shell/sidebar.rs
+--- a/src/client/shell/sidebar.rs
++++ b/src/client/shell/sidebar.rs
+@@ -262,7 +262,7 @@
+         .map(|(index, _)| {
+             entries
+                 .get(index + 1)
+-                .map_or(0, |next| u16::from(!next.indented) * config.spaces.row_gap)
++                .map_or(0, |_| config.spaces.row_gap)
+         })
+         .collect::<Vec<_>>();
+     let mut metrics = super::scroll::list_scroll_metrics(
+@@ -351,6 +351,6 @@
+         });
+         let gap = entries
+             .get(entry_position + 1)
+-            .map_or(0, |next| u16::from(!next.indented) * config.spaces.row_gap);
++            .map_or(0, |_| config.spaces.row_gap);
+         y = y.saturating_add(row_height + gap);
+     }
+diff --git a/src/client/shell/endpoint_sidebar.rs b/src/client/shell/endpoint_sidebar.rs
+--- a/src/client/shell/endpoint_sidebar.rs
++++ b/src/client/shell/endpoint_sidebar.rs
+@@ -342,9 +342,9 @@
+                 Row::Workspace { endpoint, .. },
+                 Some(Row::Workspace {
+                     endpoint: next_endpoint,
+-                    entry,
++                    ..
+                 }),
+-            ) if endpoint == next_endpoint => u16::from(!entry.indented) * config.spaces.row_gap,
++            ) if endpoint == next_endpoint => config.spaces.row_gap,
+             _ => 0,
+         })
+         .collect::<Vec<_>>();
+diff --git a/src/client/shell/tests/endpoints.rs b/src/client/shell/tests/endpoints.rs
+--- a/src/client/shell/tests/endpoints.rs
++++ b/src/client/shell/tests/endpoints.rs
+@@ -927,7 +927,7 @@
+     assert_eq!(remote_workspaces[0].rect.y, remote_machine.rect.bottom());
+     assert_eq!(
+         remote_workspaces[1].rect.y,
+-        remote_workspaces[0].rect.bottom()
++        remote_workspaces[0].rect.bottom() + 1
+     );
+     assert_eq!(
+         remote_workspaces[2].rect.y,
+@@ -952,5 +952,7 @@
+-    assert_eq!(visible_remote.len(), 3);
+-    let gap_y = visible_remote[1].rect.bottom();
+-    assert_eq!(visible_remote[2].rect.y, gap_y + 1);
+-    assert!(visible_remote[2].rect.bottom() <= state.hits.workspace_body.bottom());
++    assert_eq!(visible_remote.len(), 2);
++    assert_eq!(visible_remote[0].workspace_id, "ws_2");
++    assert_eq!(visible_remote[1].workspace_id, "ws_3");
++    let gap_y = visible_remote[0].rect.bottom();
++    assert_eq!(visible_remote[1].rect.y, gap_y + 1);
++    assert!(visible_remote[1].rect.bottom() <= state.hits.workspace_body.bottom());
+     assert!(state
+diff --git a/src/client/shell/tests/agents_worktrees_notifications.rs b/src/client/shell/tests/agents_worktrees_notifications.rs
+--- a/src/client/shell/tests/agents_worktrees_notifications.rs
++++ b/src/client/shell/tests/agents_worktrees_notifications.rs
+@@ -1,1 +1,46 @@
++#[test]
++fn worktree_row_gap_applies_to_parent_children_and_standalone_spaces() {
++    for gap in [0, 1, 2] {
++        let mut config = ClientShellConfig::from_config(&Config::default());
++        config.spaces.row_gap = gap;
++        let mut state = ClientShellState::new(config);
++        let mut snapshot = snapshot();
++        snapshot.workspaces[0].worktree = Some(ClientShellWorktree {
++            key: "repo".into(),
++            label: "repo".into(),
++            is_linked_worktree: false,
++        });
++        for number in 2..=4 {
++            let mut workspace = snapshot.workspaces[0].clone();
++            workspace.workspace_id = format!("ws_{number}");
++            workspace.active_tab_id = format!("tab_{number}");
++            workspace.number = number;
++            workspace.label = format!("feature-{number}");
++            workspace.focused = false;
++            workspace.worktree = (number < 4).then(|| ClientShellWorktree {
++                key: "repo".into(),
++                label: "repo".into(),
++                is_linked_worktree: true,
++            });
++            snapshot.workspaces.push(workspace);
++        }
++        state.set_snapshot(Box::new(snapshot));
++        state.set_pane_surface(surface());
++        let frame = state.compose(106, 40).expect("spaced worktree group");
++        let buffer = frame.to_ratatui_buffer().expect("frame buffer");
++        let hits = &state.hits.workspaces;
++        assert_eq!(hits.len(), 4);
++        assert!(hits[1].indented && hits[2].indented);
++        assert!(!hits[0].indented && !hits[3].indented);
++        for pair in hits.windows(2) {
++            assert_eq!(pair[1].rect.y, pair[0].rect.bottom() + gap);
++            for y in pair[0].rect.bottom()..pair[1].rect.y {
++                for x in pair[0].rect.x..pair[0].rect.right() {
++                    assert_eq!(buffer[(x, y)].symbol(), " ");
++                }
++            }
++        }
++    }
++}
++
+ use super::*;

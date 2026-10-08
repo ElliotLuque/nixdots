@@ -12,7 +12,7 @@ This fix requires the rebuilt **server and client**. Reattaching only the client
 
 If the server already has the allowlist fix and the menu reports “split and zoomed plugin panes target an existing pane; use target_pane_id”, only the menu request needs updating. Rebuild/activate, then detach the client with `prefix+q` and reattach using the updated binary. **No server restart is needed for this parameter correction.**
 
-After activation, run `/reload` in Pi to discover the new skill, or start a new Pi session. The upstream portable skill is installed at `~/.agents/skills/terminal-browser/SKILL.md`, which Pi discovers natively. No Claude-specific plugin, Pi extension, or MCP server is required for browser control.
+No terminal-browser agent skill is installed. Activation removes the previously managed `~/.agents/skills/terminal-browser` link; reload your agent session to refresh its skill list.
 
 ## Usage
 
@@ -28,19 +28,13 @@ terminal-browser action -- eval 'document.title'
 terminal-browser action done
 ```
 
-In Pi, `/skill:terminal-browser` explicitly loads the instructions. You can then ask Pi to open a local preview or inspect an already-open browser. Always open in a split from an agent session rather than taking over its pane. The action CLI uses the active browser in the current terminal tab by default; use the browser/tab selectors from `terminal-browser ls` when there are multiple targets.
+The action CLI uses the active browser in the current terminal tab by default; use the browser/tab selectors from `terminal-browser ls` when there are multiple targets.
 
 Upstream already implements Herdr detection, splitting and graphics transport. A Kitty-graphics-capable terminal (for example Kitty or Ghostty) is still required for visual rendering. The package checks validate the CLI and native renderer loading, not live graphics, mouse input, or end-to-end browser control in a terminal.
 
-## Rendering performance in Herdr
+## Upstream rendering defaults
 
-The packaged browser applies a small release-bundle patch in `modules/ai/_terminal-browser-performance.patch`:
-
-- **Bounded frame rate:** `render.fps = display` uses at most **60 FPS in Herdr**. Electron can report a display frequency of `0` on Wayland or in headless mode; upstream treats this as uncapped rendering. Outside Herdr, an unknown frequency now falls back to 60 FPS rather than uncapped.
-- **Whole-frame file transport:** automatic presenter/transport settings use `full` and `file` for Herdr panes. Herdr can forward one native file upload per scene. A scene with many image patches spills the remaining images into inline base64 transfers, which can saturate the terminal and delay input. Whole-frame files keep the native forwarding path usable and avoid shared-memory capability probing.
-- **Per-session selection:** the profile follows the pane opening the browser, not the shared daemon's environment. Standalone and Herdr browsers can share a daemon without inheriting each other's defaults.
-
-Explicit numeric/`uncapped` FPS settings, nonautomatic presenter/transport settings, and `TERMINAL_BROWSER_PRESENT` / `TERMINAL_BROWSER_FRAMES` overrides remain supported. If you previously selected `patched`, `animation`, or `inline`, restore automatic rendering to use the Herdr profile:
+The package uses the unmodified upstream release bundle with only NixOS binary compatibility fixes. There is no custom frame-rate cap, presenter selection, or transport override for Herdr panes. If you previously changed rendering settings manually, restore upstream defaults with:
 
 ```bash
 terminal-browser config unset render.fps
@@ -48,21 +42,19 @@ terminal-browser config unset render.presenter
 terminal-browser config unset render.transport
 ```
 
-Activate the rebuilt package/plugin and reopen browser panes to apply the new presenter/transport defaults. **No Herdr server restart is needed for this performance patch.** Do not shut down a shared browser daemon if other panes are still using it.
-
-At 60 FPS, an isolated Herdr session with an animated 1744×2278 preview and a simulated Kitty host registered the browser in about 0.9 seconds, kept all uploads file-backed, and kept the main-loop API responsive over a 12-second sample. This exercises the rendering transport, not real Kitty GPU presentation; it does not establish a measured 15–20-second-to-subsecond improvement for the originally reported freeze.
+Activate the rebuilt package/plugin. Already-running browser processes continue using their loaded bundle; restart the browser daemon once its panes are no longer needed to load the upstream defaults. **No Herdr server restart is needed for this package change.** Do not shut down a shared browser daemon if other panes are still using it.
 
 Telemetry is disabled by default through `TERMINAL_BROWSER_NO_TELEMETRY=1` in the launcher. Browser settings and browsing state remain mutable in the normal upstream locations. Do not use `terminal-browser upgrade`, the curl installer, or `terminal-browser setup` to replace/reconfigure the Nix-managed installation; update the version and archive hashes here and rebuild instead. The Herdr manifest intentionally omits upstream's curl-based build step.
 
 ## Standalone selection and validation
 
-`modules.homeManager.terminal-browser` installs only the package and shared skill. `modules.homeManager.terminal-browser-herdr` adds plugin registration; `herdr` imports it automatically.
+`modules.homeManager.terminal-browser` installs only the package. `modules.homeManager.terminal-browser-herdr` adds plugin registration; `herdr` imports it automatically.
 
 ```bash
-nix build .#terminal-browser .#checks.x86_64-linux.terminal-browser .#checks.x86_64-linux.terminal-browser-performance --no-link
+nix build .#terminal-browser .#checks.x86_64-linux.terminal-browser --no-link
 nix build .#herdr .#checks.x86_64-linux.herdr-terminal-browser-menu --no-link
 nix build .#checks.x86_64-linux.architecture --no-link
 nix flake check --no-build
 ```
 
-The package check exercises version/help output, the bundled agent-browser, loading the native renderer, the skill's presence, and the installer-free Herdr manifest. The performance check executes the shipped bundle's render helpers and Session call sites without starting Chromium: it covers unknown/high/low display frequencies, explicit overrides, and alternating Herdr/standalone sessions in one daemon. The Herdr Rust check loads the server's actual advertised method list, verifies that the native pane menu dispatches an allowed right-split request targeting the clicked pane/workspace rather than the focused one, and checks the advertised plugin method's wire schema. ARM64 is packaged but has not been runtime-tested on the x86-64 workstation.
+The package check exercises version/help output, the bundled agent-browser, loading the native renderer, and the installer-free Herdr manifest. The architecture check verifies that the removed plugins and terminal-browser skill are no longer selected. The Herdr Rust check loads the server's actual advertised method list, verifies that the native pane menu dispatches an allowed right-split request targeting the clicked pane/workspace rather than the focused one, and checks the advertised plugin method's wire schema. ARM64 is packaged but has not been runtime-tested on the x86-64 workstation.

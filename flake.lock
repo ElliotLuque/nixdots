@@ -355,23 +355,6 @@
         "type": "github"
       }
     },
-    "herdr-agent-usage": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789875987,
-        "narHash": "sha256-RvbfJIVcxGCpsQMUqRkHKbUGyGu8VXanBmY5LyHnbjU=",
-        "owner": "levi-qiao",
-        "repo": "herdr-agent-usage",
-        "rev": "a3ceca48281b73d6e118c11cbcfbdf4c613fcb28",
-        "type": "github"
-      },
-      "original": {
-        "owner": "levi-qiao",
-        "ref": "v1.6.2",
-        "repo": "herdr-agent-usage",
-        "type": "github"
-      }
-    },
     "herdr-projects": {
       "flake": false,
       "locked": {
@@ -386,23 +369,6 @@
         "owner": "eliasstravik",
         "ref": "v0.2.34",
         "repo": "herdr-projects",
-        "type": "github"
-      }
-    },
-    "herdr-radar": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791044583,
-        "narHash": "sha256-fnpdFGVL2iltBDH2CLeyysr6B4w1I6aTXYIOTOaHMdo=",
-        "owner": "hhdebb",
-        "repo": "herdr-radar",
-        "rev": "1ba8cc4a3900191c9f1f4f850398c7dd10212df2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hhdebb",
-        "ref": "v1.4.2",
-        "repo": "herdr-radar",
         "type": "github"
       }
     },
@@ -1088,6 +1054,9 @@
         "owner": "gotgenes",
         "ref": "v3.4.2",
         "repo": "pi-anthropic-auth",
+        "type": "github"
+      }
+    },
     "pi-terminal-statusline": {
       "flake": false,
       "locked": {
@@ -1154,9 +1123,7 @@
         "catppuccin": "catppuccin",
         "flake-parts": "flake-parts",
         "herdr": "herdr",
-        "herdr-agent-usage": "herdr-agent-usage",
         "herdr-projects": "herdr-projects",
-        "herdr-radar": "herdr-radar",
         "home-manager": "home-manager",
         "hypr-dynamic-cursors": "hypr-dynamic-cursors",
         "hyprland": "hyprland",
