@@ -11,6 +11,8 @@
       # source tree together so relative imports and package metadata resolve.
       home.file.".pi/agent/extensions/pi-anthropic-auth".source = inputs.pi-anthropic-auth;
       home.file.".pi/agent/themes/catppuccin-mocha.json".source = ./catppuccin-mocha.json;
+      home.file.".pi/agent/extensions/terminal-statusline".source =
+        "${inputs.pi-terminal-statusline}/extensions/statusline";
 
       # Keep settings writable so Pi can save preferences and package registrations.
       home.activation.piCatppuccin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

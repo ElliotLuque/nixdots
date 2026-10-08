@@ -78,6 +78,10 @@
 
     pi-anthropic-auth = {
       url = "github:gotgenes/pi-anthropic-auth/v3.4.2";
+    };
+
+    pi-terminal-statusline = {
+      url = "github:ElliotLuque/pi-terminal-statusline";
       flake = false;
     };
 
