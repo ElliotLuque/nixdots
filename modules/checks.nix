@@ -186,6 +186,13 @@ in
         assert desktop.config.networking.firewall.allowedUDPPorts == [ ];
         assert desktop.config.networking.networkmanager.ensureProfiles.profiles == { };
         assert !(desktopHome.systemd.user.services ? proton-vpn);
+        assert builtins.all
+          (name: builtins.elem name (map inputs.nixpkgs.lib.getName desktopHome.home.packages))
+          [
+            "kooha"
+            "wf-recorder"
+            "slurp"
+          ];
         assert desktopHome.programs.swayimg.enable;
         assert desktopHome.xdg.configFile."swayimg/init.lua".text != "";
         assert builtins.elem "swayimg" (map inputs.nixpkgs.lib.getName desktopHome.home.packages);

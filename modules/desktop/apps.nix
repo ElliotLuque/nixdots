@@ -27,6 +27,7 @@
       sfizz-ui
       hyprpicker
       wf-recorder
+      kooha
       grim
       slurp
       nomacs

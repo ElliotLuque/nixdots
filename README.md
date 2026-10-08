@@ -105,6 +105,18 @@ The extension shapes Anthropic OAuth requests; API-key requests and other provid
 
 Update the extension by changing its version tag in `flake.nix` and running `nix flake update pi-anthropic-auth`.
 
+## Screen recording
+
+Both workstations include **Kooha**, a graphical screen recorder with screen/region selection and optional audio recording. Launch it from the app launcher after rebuilding.
+
+For command-line region recording, `wf-recorder` and `slurp` are also installed:
+
+```bash
+wf-recorder -g "$(slurp)" -f recording.mp4
+```
+
+Select a region by dragging, then press **Ctrl+C** in the terminal to stop and save the recording. Add `--audio` to capture default audio output.
+
 ## Image viewer
 
 Swayimg is the default image viewer on both workstations. Home Manager installs it and writes `~/.config/swayimg/init.lua` from `programs.swayimg.initLua` in `modules/desktop/apps.nix`; image MIME defaults live in `modules/desktop/xdg.nix`. Change these Nix declarations rather than editing the generated Lua file.
