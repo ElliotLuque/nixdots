@@ -25,39 +25,49 @@
       # Leave agent sidebar rows unset so Herdr uses its built-in layout.
       # Keep root settings before the integrations' TOML tables/keybindings.
       xdg.configFile."herdr/config.toml".text = lib.mkBefore ''
-        onboarding = false
+                        onboarding = false
 
-        [theme]
-        name = "catppuccin"
+                        [theme]
+                        name = "catppuccin"
 
-        # Catppuccin foregrounds without painted chrome/row backgrounds.
-        # Focus and navigation remain visible through text styling.
-        [theme.custom]
-        panel_bg = "reset"
-        sidebar_bg = "reset"
-        active_row_bg = "reset"
-        selection_bg = "reset"
-        accent = "#89b4fa"
-        surface_dim = "#45475a"
-        overlay0 = "#9399b2"
-        overlay1 = "#bac2de"
-        mauve = "#a6adc8"
-        green = "#9399b2"
-        yellow = "#f9e2af"
-        red = "#f38ba8"
-        teal = "#a6e3a1"
+                        # Catppuccin foregrounds without painted chrome/row backgrounds.
+                        # Focus and navigation remain visible through text styling.
+                        [theme.custom]
+                        panel_bg = "reset"
+                        sidebar_bg = "reset"
+                        active_row_bg = "reset"
+                        selection_bg = "reset"
+                        accent = "#89b4fa"
+                        surface_dim = "#45475a"
+                        overlay0 = "#9399b2"
+                        overlay1 = "#bac2de"
+                        mauve = "#a6adc8"
+                        green = "#9399b2"
+                        yellow = "#f9e2af"
+                        red = "#f38ba8"
+                        teal = "#a6e3a1"
 
-        [ui]
-        status_indicators = "symbols"
-        pane_borders = "auto"
-        pane_outer_borders = true
+                        [ui]
+                        status_indicators = "symbols"
+                        pane_borders = "auto"
+                        pane_outer_borders = true
 
-        [ui.sidebar.spaces]
-        # The client patch applies this gap to nested worktrees too.
-        row_gap = 1
+                				agent_panel_sort = "priority"
+                				[ui.sidebar.agents]
+                				row_gap = 0
+                				rows = [
+                					["state_icon", {token = "terminal_title_stripped"}, dim = false],
+                					[{token = "workspace", dim = true, bold = false}],
+                				]
 
-        [ui.toast]
-        delivery = "system"
+                        [ui.toast]
+                        delivery = "system"
+
+        								switch_tab = "prefix+1..9"
+
+        								[keys.indexed]
+        								workspaces = "ctrl"
+        								agents = "ctrl+shift"
       '';
     };
 }
