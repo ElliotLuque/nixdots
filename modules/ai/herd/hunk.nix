@@ -31,18 +31,22 @@
         # Run the same bundled source with Bun instead of embedding the runtime.
         buildPhase = ''
           runHook preBuild
-          bun build src/main.tsx --target=bun --packages=external --outfile=hunk.js
+          bun build packages/hunk/src/main.tsx --target=bun --packages=external --outfile=packages/hunk/hunk.js
           runHook postBuild
         '';
         installPhase = ''
           runHook preInstall
           mkdir -p $out/lib/hunk $out/bin $out/share/skills/hunk
-          cp hunk.js package.json $out/lib/hunk/
-          ln -s ${pkgs.hunk.node_modules}/node_modules $out/lib/hunk/node_modules
-          cp -R skills/hunk-review skills/hunk-extensions $out/share/skills/hunk/
+          # Keep workspace sources and relative dependency links together:
+          # external @hunk/* imports resolve to packages in this tree.
+          cp package.json $out/lib/hunk/
+          cp -R packages node_modules $out/lib/hunk/
+          cp -R packages/hunk/skills/hunk-review packages/hunk/skills/hunk-extensions $out/share/skills/hunk/
+          ln -s share/skills/hunk $out/skills
           cat > $out/bin/hunk <<EOF
           #!${pkgs.runtimeShell}
-          exec ${bun}/bin/bun $out/lib/hunk/hunk.js "\$@"
+          export HUNK_INSTALL_SOURCE=nix
+          exec ${bun}/bin/bun $out/lib/hunk/packages/hunk/hunk.js "\$@"
           EOF
           chmod +x $out/bin/hunk
           runHook postInstall

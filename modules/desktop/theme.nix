@@ -44,9 +44,11 @@
       };
     };
   };
-  flake.modules.homeManager.theme = { pkgs, ... }: {
+  flake.modules.homeManager.theme = { pkgs, config, ... }: {
     imports = [ inputs.catppuccin.homeModules.catppuccin ];
     xdg.dataFile."wallpapers".source = ../../wallpaper/mocha;
+    programs.rofi.settings.font =
+      "${config.stylix.fonts.monospace.name} ${toString config.stylix.fonts.sizes.popups}";
     catppuccin = {
       enable = true;
       autoEnable = true;
@@ -55,6 +57,14 @@
       gtk.icon.enable = false;
       kvantum.enable = false;
       hyprlock.enable = false;
+      # Move gui.authorColors into gui.theme without changing the rest of the YAML.
+      sources.lazygit =
+        inputs.catppuccin.packages.${pkgs.stdenv.hostPlatform.system}.lazygit.overrideAttrs
+          (old: {
+            postInstall = (old.postInstall or "") + ''
+              sed -i '/^  authorColors:/,+1s/^/  /' "$out"/*/*.yml
+            '';
+          });
     };
     stylix = {
       icons = {
@@ -75,6 +85,7 @@
         starship.enable = false;
         yazi.enable = false;
         opencode.enable = false; # Let Catppuccin own OpenCode's TUI theme.
+        rofi.enable = false; # Catppuccin owns Rofi; avoid Stylix's deprecated font option.
       };
     };
   };

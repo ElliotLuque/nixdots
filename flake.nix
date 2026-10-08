@@ -21,7 +21,8 @@
     hyprland.url = "github:hyprwm/Hyprland/34eb03bd8da01024596c367fba66485a8c9b8ca7";
 
     hypr-dynamic-cursors = {
-      url = "github:VirtCode/hypr-dynamic-cursors";
+      # Keep the plugin API aligned with the pinned Hyprland revision.
+      url = "github:VirtCode/hypr-dynamic-cursors/b9739b1db4a48616d66af29239ab0fe2756d28f6";
       inputs.hyprland.follows = "hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -54,6 +55,13 @@
     herdr = {
       url = "github:herdrdev/herdr/v0.9.3";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.follows = "rust-overlay";
+    };
+
+    # Herdr's older overlay uses deprecated stdenv platform attributes.
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     herdr-projects = {
@@ -78,6 +86,7 @@
 
     pi-anthropic-auth = {
       url = "github:gotgenes/pi-anthropic-auth/v3.4.2";
+      flake = false;
     };
 
     pi-terminal-statusline = {
