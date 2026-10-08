@@ -2,17 +2,27 @@
 {
   flake.modules.homeManager.herdr =
     { pkgs, lib, ... }:
+    let
+      herdr = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.herdr;
+    in
     {
       imports = with config.flake.modules.homeManager; [
         hunk-review
         terminal-browser-herdr
-        # Agent Usage imports Radar; importing it again duplicates keybindings.
-        herdr-agent-usage
         herdr-merge-delete
       ];
 
-      home.packages = [ inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.herdr ];
+      home.packages = [ herdr ];
 
+      # Local plugin registrations outlive the modules that originally linked them.
+      # Unlink is idempotent and leaves plugin configuration data intact.
+      home.activation.herdr-remove-retired-plugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        for plugin in herdr-agent-quota hhdebb.herdr-radar worktrunk; do
+          run ${herdr}/bin/herdr plugin unlink "$plugin"
+        done
+      '';
+
+      # Leave agent sidebar rows unset so Herdr uses its built-in layout.
       # Keep root settings before the integrations' TOML tables/keybindings.
       xdg.configFile."herdr/config.toml".text = lib.mkBefore ''
         onboarding = false
@@ -20,20 +30,31 @@
         [theme]
         name = "catppuccin"
 
-        # Catppuccin Mocha: keep chrome opaque and distinguish active spaces
-        # from the Navigate-mode cursor without changing agent status colours.
+        # Catppuccin foregrounds without painted chrome/row backgrounds.
+        # Focus and navigation remain visible through text styling.
         [theme.custom]
-        sidebar_bg = "#181825"
-        active_row_bg = "#313244"
-        selection_bg = "#45475a"
-        surface_dim = "#6c7086"
-        overlay0 = "#a6adc8"
+        panel_bg = "reset"
+        sidebar_bg = "reset"
+        active_row_bg = "reset"
+        selection_bg = "reset"
+        accent = "#89b4fa"
+        surface_dim = "#45475a"
+        overlay0 = "#9399b2"
         overlay1 = "#bac2de"
+        mauve = "#a6adc8"
+        green = "#9399b2"
+        yellow = "#f9e2af"
+        red = "#f38ba8"
+        teal = "#a6e3a1"
 
         [ui]
         status_indicators = "symbols"
-        pane_borders = "always"
+        pane_borders = "auto"
         pane_outer_borders = true
+
+        [ui.sidebar.spaces]
+        # The client patch applies this gap to nested worktrees too.
+        row_gap = 1
 
         [ui.toast]
         delivery = "system"

@@ -26,11 +26,6 @@
       command = ["${config.packages.terminal-browser}/bin/terminal-browser", "open"]
       EOF
     '';
-    checks.terminal-browser-performance = pkgs.runCommand "terminal-browser-performance-check" { } ''
-      ELECTRON_RUN_AS_NODE=1 ${config.packages.terminal-browser}/lib/terminal-browser/electron/pixel \
-        ${./_test_terminal_browser_performance.cjs} ${config.packages.terminal-browser}
-      touch $out
-    '';
     checks.terminal-browser =
       pkgs.runCommand "terminal-browser-check"
         {
@@ -49,8 +44,6 @@
           python3 - '${config.packages.terminal-browser}' '${config.packages.terminal-browser-herdr}' <<'PY'
           import pathlib, sys, tomllib
           browser, plugin = map(pathlib.Path, sys.argv[1:])
-          skill = browser / 'lib/terminal-browser/skills/default/terminal-browser/SKILL.md'
-          assert 'name: terminal-browser' in skill.read_text()
           manifest = tomllib.loads((plugin / 'herdr-plugin.toml').read_text())
           assert 'build' not in manifest
           assert manifest['panes'][0]['id'] == 'browser'
@@ -70,9 +63,6 @@
     in
     {
       home.packages = [ browser ];
-      # Pi discovers ~/.agents/skills natively; no Claude-only plugin is required.
-      home.file.".agents/skills/terminal-browser".source =
-        "${browser}/lib/terminal-browser/skills/default/terminal-browser";
     };
 
   flake.modules.homeManager.terminal-browser-herdr =

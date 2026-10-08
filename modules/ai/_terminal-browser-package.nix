@@ -51,7 +51,6 @@ stdenv.mkDerivation rec {
     url = "https://github.com/zenbu-labs/terminal-browser/releases/download/v${version}/terminal-browser-${target.name}.tar.gz";
     inherit (target) hash;
   };
-  patches = [ ./_terminal-browser-performance.patch ];
   nativeBuildInputs = [
     autoPatchelfHook
     makeWrapper

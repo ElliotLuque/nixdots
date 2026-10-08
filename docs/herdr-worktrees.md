@@ -67,9 +67,10 @@ there. Do not run this concurrently with other Git operations or active agents.
 Rebuild/activate the normal NixOS or Home Manager configuration. The `herdr`
 module installs the patched Herdr package and links the plugin automatically,
 without replacing Herdr's mutable plugin registry or TOML configuration.
-Restart Herdr with the newly installed binary to load the client-side menu
-change. The existing running client does not gain this item just by reloading
-configuration; plan a restart around active agents.
+Detach the client with `prefix+q` and reattach using the newly installed binary
+to load client-side menu and sidebar-spacing changes. Reloading configuration
+cannot update the running client code. No server restart is needed; do not stop
+Herdr's server while agents are running.
 
 To build the packages without activating the host:
 
@@ -78,6 +79,15 @@ nix build .#herdr .#herdr-worktree-tools --no-link
 ```
 
 Building alone does not install the plugin or update a running Herdr instance.
+
+## Spaces sidebar spacing
+
+`ui.sidebar.spaces.row_gap = 1` adds a blank line between entries, including
+nested worktrees. The client patch in
+`modules/ai/herd/_sidebar-worktree-spacing.patch` removes upstream's exception
+that keeps nested worktrees packed together. Both local and multi-machine
+sidebars use the gap in rendering and scroll calculations; group indentation
+and collapse behavior are preserved.
 
 ## Implementation and checks
 
@@ -96,6 +106,7 @@ Building alone does not install the plugin or update a running Herdr instance.
 ```bash
 nix build .#checks.x86_64-linux.herdr-worktree-tools --no-link
 nix build .#checks.x86_64-linux.herdr-worktree-menu --no-link
+nix build .#checks.x86_64-linux.herdr-sidebar-spacing --no-link
 nix flake check --no-build
 ```
 
@@ -105,7 +116,9 @@ merged worktrees, conflicts, dirty targets, changed contents, and hook/cleanup
 failures. It also runs headless Textual tests for clean/dirty confirmation,
 message validation, cancellation, keyboard focus, narrow panels, and error states. The second compiles the patched Herdr Rust unit tests
 and checks menu visibility and propagation of the clicked (not focused)
-workspace ID.
+workspace ID. The sidebar-spacing check covers gaps of 0, 1, and 2 lines between
+parents, sibling worktrees, and standalone spaces, plus remote-sidebar scrolling
+and noninteractive blank-row hitboxes.
 
 When updating the Herdr input, rebase the patch and rerun both checks. Remove the
 patch when upstream exposes an equivalent native action or context-menu plugin
