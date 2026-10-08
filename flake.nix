@@ -76,6 +76,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    pi-terminal-statusline = {
+      url = "github:ElliotLuque/pi-terminal-statusline";
+      flake = false;
+    };
+
     # shared skill sources (configured by modules/ai/skills.nix)
     agent-skills.url = "github:Kyure-A/agent-skills-nix";
     taste-skill = {

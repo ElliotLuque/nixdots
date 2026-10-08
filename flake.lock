@@ -1074,6 +1074,22 @@
         "type": "github"
       }
     },
+    "pi-terminal-statusline": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791452344,
+        "narHash": "sha256-VC/hAtLZ/qzNYRai8CFnnnOpAy/Bqp00c+/2NY4D8t4=",
+        "owner": "ElliotLuque",
+        "repo": "pi-terminal-statusline",
+        "rev": "6a4bb8ad1ce2c61808dea353d44554b5a2bddeab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ElliotLuque",
+        "repo": "pi-terminal-statusline",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -1137,6 +1153,7 @@
         "nixpkgs": "nixpkgs_4",
         "nixvim": "nixvim",
         "pi": "pi",
+        "pi-terminal-statusline": "pi-terminal-statusline",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",
         "taste-skill": "taste-skill"

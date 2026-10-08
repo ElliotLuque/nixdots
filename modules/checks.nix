@@ -151,6 +151,10 @@ in
         assert !ai.virtualisation.docker.enable;
         assert ai.networking.firewall.allowedTCPPorts == [ ];
         assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/models.json");
+        assert
+          toString ai.home-manager.users.ai-test.home.file.".pi/agent/extensions/terminal-statusline".source
+          == "${inputs.pi-terminal-statusline}/extensions/statusline";
+        assert builtins.pathExists "${inputs.pi-terminal-statusline}/extensions/statusline/index.ts";
         assert ai.home-manager.users.ai-test.programs.codex.profiles == { };
         assert ai.home-manager.users.ai-test.programs.opencode.settings == { };
         assert builtins.isString ai.system.build.toplevel.drvPath;

@@ -8,6 +8,8 @@
       ];
 
       home.file.".pi/agent/themes/catppuccin-mocha.json".source = ./catppuccin-mocha.json;
+      home.file.".pi/agent/extensions/terminal-statusline".source =
+        "${inputs.pi-terminal-statusline}/extensions/statusline";
 
       # Keep settings writable so Pi can save preferences and package registrations.
       home.activation.piCatppuccin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
