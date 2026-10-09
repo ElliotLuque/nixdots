@@ -258,13 +258,14 @@ in
             assert keys['indexed'] == {'workspaces': 'ctrl', 'agents': 'ctrl+shift'}
             commands = {command['key']: command for command in keys['command']}
             assert len(commands) == len(keys['command'])  # No duplicate command bindings.
-            git = commands['ctrl+g']
+            assert 'ctrl+g' not in commands  # Lazygit requires the prefix.
+            git = commands['prefix+ctrl+g']
             assert git['type'] == 'popup'
             assert git['command'].endswith('/bin/lazygit; exit')
             assert (git['width'], git['height']) == ('95%', '90%')
             terminal = commands['prefix+shift+c']
             assert terminal['type'] == 'popup'
-            assert terminal['command'] == 'exec "$SHELL" -i'
+            assert terminal['command'] == 'exec ${pkgs.fish}/bin/fish -i'
             assert (terminal['width'], terminal['height']) == ('80%', '80%')
             assert commands['prefix+d']['type'] == 'popup'  # Hunk still composes.
             PY

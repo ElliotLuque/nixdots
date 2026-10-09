@@ -76,16 +76,17 @@
 
         # Explicitly exit the command shell when lazygit quits (including q).
         [[keys.command]]
-        key = "ctrl+g"
+        key = "prefix+ctrl+g"
         type = "popup"
         command = "${pkgs.lazygit}/bin/lazygit; exit"
         width = "95%"
         height = "90%"
 
+        # The persistent server may not inherit SHELL from the attaching client.
         [[keys.command]]
         key = "prefix+shift+c"
         type = "popup"
-        command = 'exec "$SHELL" -i'
+        command = "exec ${pkgs.fish}/bin/fish -i"
         width = "80%"
         height = "80%"
       '';
