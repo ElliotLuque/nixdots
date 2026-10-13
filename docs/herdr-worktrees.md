@@ -25,7 +25,7 @@ their existing behavior.
    **Merge & delete**. If its commits are already in the target, the action just
    removes the checkout and closes its space.
 
-The popup is a compact, panel-based Textual terminal UI with **Catppuccin Mocha**
+The popup is a compact, panel-based Textual terminal UI with **Living Code Night**
 colors, rounded borders, colored branches/file statuses, and single-line buttons.
 It opens at **64 columns × 18 rows**, clamped to the Herdr window on smaller
 terminals, rather than growing proportionally on large screens. There is no

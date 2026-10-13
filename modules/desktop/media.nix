@@ -1,29 +1,12 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
+let
+  c = config.flake.lib.livingCode.colors;
+in
 {
-  flake.modules.homeManager.media = { pkgs, ... }: {
+  flake.modules.homeManager.media = { pkgs, lib, ... }: {
     imports = [ inputs.spicetify-nix.homeManagerModules.default ];
     programs.cava.enable = true;
-    programs.ncspot = {
-      enable = true;
-      settings."[theme]" = {
-        background = "#1E1E2E";
-        primary = "#CDD6F4";
-        secondary = "#CBA6F7";
-        title = "#CBA6F7";
-        playing = "#89B4FA";
-        playing_selected = "#F9E2AF";
-        playing_bg = "#1E1E2E";
-        highlight = "#1E1E2E";
-        highlight_bg = "#CBA6F7";
-        error = "#F38BA8";
-        error_bg = "#1E1E2E";
-        statusbar = "#1E1E2E";
-        statusbar_progress = "#A6E3A1";
-        statusbar_bg = "#A6E3A1";
-        cmdline = "#CDD6F4";
-        cmdline_bg = "#181825";
-      };
-    };
+    programs.ncspot.enable = true; # Stylix themes ncspot from the base16 scheme.
     programs.spicetify =
       let
         spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
@@ -39,8 +22,39 @@
           lyricsPlus
         ];
         enabledSnippets = [ ];
-        theme = spicePkgs.themes.catppuccin;
-        colorScheme = "mocha";
+        # Same color.ini slots as Stylix's target, mapped from the full palette.
+        theme = {
+          name = "living-code";
+          src = pkgs.writeTextFile {
+            name = "color.ini";
+            destination = "/color.ini";
+            text = lib.generators.toINI { } {
+              base = lib.mapAttrs (_: lib.removePrefix "#") {
+                text = c.text;
+                subtext = c.subtext;
+                main = c.base;
+                main-elevated = c.mantle;
+                highlight = c.surface1;
+                highlight-elevated = c.surface2;
+                sidebar = c.crust;
+                player = c.mantle;
+                card = c.surface0;
+                shadow = c.crust;
+                selected-row = c.text2;
+                button = c.teal;
+                button-active = c.mint;
+                button-disabled = c.overlay;
+                tab-active = c.surface1;
+                notification = c.surface1;
+                notification-error = c.flare;
+                equalizer = c.moss;
+                misc = c.surface2;
+              };
+            };
+          };
+          sidebarConfig = false;
+        };
+        colorScheme = "base";
       };
   };
 }

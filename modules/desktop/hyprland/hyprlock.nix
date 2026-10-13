@@ -2,6 +2,9 @@
 {
   flake.modules.homeManager.hyprlock =
     { config, ... }:
+    let
+      inherit (config.lib.stylix) colors;
+    in
     {
       programs.hyprlock = {
         enable = true;
@@ -31,11 +34,11 @@
               dots_size = 0.2;
               dots_spacing = 0.5;
               dots_center = true;
-              inner_color = "rgba(41, 44, 60, 0.6)";
-              font_color = "0xff${config.lib.stylix.colors.base05}";
-              fail_color = "rgba(41, 44, 60, 0.6)";
-              check_color = "rgba(41, 44, 60, 0.2)";
-              capslock_color = "0xff${config.lib.stylix.colors.base0A}";
+              inner_color = "rgba(${colors.base01}99)";
+              font_color = "0xff${colors.base05}";
+              fail_color = "rgba(${colors.base01}99)";
+              check_color = "rgba(${colors.base0C}33)";
+              capslock_color = "0xff${colors.base0A}";
               fade_on_empty = false;
               font_family = "JetBrainsMono Nerd Font Bold Italic";
               font_size = 16;
@@ -51,7 +54,7 @@
             {
               monitor = "";
               text = "cmd[update:1000] date +%H:%M";
-              color = "0xff${config.lib.stylix.colors.base05}";
+              color = "0xff${colors.base05}";
               font_size = 140;
               font_family = "JetBrainsMono Nerd Font Bold";
               position = "0,150";
@@ -61,7 +64,7 @@
             {
               monitor = "";
               text = "cmd[update:1000] echo \"\$USER@\$(hostname)\"";
-              color = "0xff${config.lib.stylix.colors.base0E}";
+              color = "0xff${colors.base0C}";
               font_size = 24;
               font_family = "JetBrainsMono Nerd Font Bold";
               position = "0,-10";

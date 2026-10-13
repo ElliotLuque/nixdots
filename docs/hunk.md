@@ -1,8 +1,8 @@
 # Hunk reviews with Pi and Herdr
 
 The `ai-clients` Home Manager feature includes `hunk-review`, which installs Hunk,
-its upstream agent skill, a Pi command, and a Herdr shortcut. Hunk uses Catppuccin
-Mocha; Herdr uses its Catppuccin theme. Ordinary Git output still uses Delta.
+its upstream agent skill, a Pi command, and a Herdr shortcut. Hunk and Herdr use
+Living Code colors from the shared palette. Ordinary Git output still uses Delta.
 
 ## Usage
 

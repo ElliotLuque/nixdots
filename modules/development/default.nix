@@ -7,7 +7,19 @@
 
   flake.modules.homeManager.development = { pkgs, ... }: {
     home.packages = with pkgs; [
-      inputs.nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default
+      (inputs.nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default.extend (
+        { pkgs, lib, ... }:
+        {
+          # Remove when nixpkgs corrects the 6.0.2 pnpm dependency hash.
+          plugins.lsp.servers.ts_ls.package = lib.mkForce (
+            pkgs.typescript-language-server.overrideAttrs (old: {
+              pnpmDeps = old.pnpmDeps.overrideAttrs {
+                outputHash = "sha256-xR/EF60lVBsITKgH7wCM2wHM46PFQevD51KfCENSUH4=";
+              };
+            })
+          );
+        }
+      ))
       cmake
       gcc
       gnumake

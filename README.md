@@ -11,7 +11,7 @@ This repository manages my desktop (`nixos-pc`) and laptop (`nixos-laptop`). It 
 - `nixos-unstable`, flake-parts and import-tree
 - Dendritic feature modules: related NixOS and Home Manager configuration lives together
 - Explicit role composition and host-specific hardware/display configuration
-- Hyprland, Caelestia, Stylix and Catppuccin
+- Hyprland, Caelestia and Stylix, themed with Living Code
 - Development tools, Nixvim and Docker
 - AI clients (Pi, Claude Code, Codex, OpenCode and Herdr)
 - Shared agent skills, usable independently of the desktop

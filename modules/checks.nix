@@ -1,6 +1,7 @@
 { inputs, config, ... }:
 let
   modules = config.flake.modules;
+  lc = config.flake.lib.livingCode.colors;
 in
 {
   perSystem =
@@ -222,24 +223,22 @@ in
             python3 - '${desktopHome.xdg.configFile."herdr/config.toml".source}' <<'PY'
             import pathlib, sys, tomllib
             config = tomllib.loads(pathlib.Path(sys.argv[1]).read_text())
-            assert config['theme']['name'] == 'catppuccin'
             theme = config['theme']['custom']
             assert all(theme[key] == 'reset' for key in (
                 'panel_bg', 'sidebar_bg'
             ))
-            assert theme['active_row_bg'] == '#313244'
-            assert theme['selection_bg'] == '#45475a'
+            assert theme['active_row_bg'] == '${lc.surface1}'
+            assert theme['selection_bg'] == '${lc.surface2}'
             assert theme['selection_bg'] != theme['active_row_bg']
-            assert theme['accent'] == '#89b4fa'
-            assert theme['mauve'] == '#a6adc8'
-            assert theme['green'] == '#9399b2'  # Idle is muted, not successful.
-            assert theme['yellow'] == '#f9e2af'  # Working.
-            assert theme['red'] == '#f38ba8'  # Blocked.
-            assert theme['teal'] == '#a6e3a1'  # Done uses Catppuccin green.
+            assert theme['accent'] == '${lc.teal}'
+            assert theme['green'] == '${lc.comment}'  # Idle is muted, not successful.
+            assert theme['yellow'] == '${lc.amber}'  # Working.
+            assert theme['red'] == '${lc.flare}'  # Blocked.
+            assert theme['teal'] == '${lc.moss}'  # Done.
             assert config['ui']['status_indicators'] == 'symbols'
             assert config['ui']['pane_borders'] == 'auto'
             assert config['ui']['pane_outer_borders']
-            assert 'accent' not in config['ui']  # Keep the Catppuccin blue accent.
+            assert 'accent' not in config['ui']  # The theme accent is the living-code teal.
             assert config['ui']['agent_panel_sort'] == 'priority'
             assert 'spaces' not in config['ui']['sidebar']  # Keep built-in space rows.
             agents = config['ui']['sidebar']['agents']

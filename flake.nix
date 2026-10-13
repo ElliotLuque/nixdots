@@ -34,7 +34,11 @@
     };
 
     stylix.url = "github:danth/stylix";
-    catppuccin.url = "github:catppuccin/nix";
+
+    living-code = {
+      url = "path:/home/elliot/dev/living-code";
+      flake = false;
+    };
 
     caelestia-shell = {
       url = "github:caelestia-dots/shell/6d3e6a96492b0e9c668464875ac34150113ede5f";

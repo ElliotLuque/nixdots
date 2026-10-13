@@ -5,9 +5,26 @@ from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
+from textual.theme import Theme
 from textual.widgets import Button, Input, RichLog, Static
 
 import merge_delete as workflow
+
+# Living Code Night; keep in step with the system theme (modules/desktop/theme.nix).
+LIVING_CODE_NIGHT = Theme(
+    name="living-code-night",
+    primary="#00a692",
+    secondary="#52d7c1",
+    accent="#80b6d3",
+    foreground="#e2e9ee",
+    background="#090e11",
+    surface="#1d2226",
+    panel="#2d3438",
+    success="#8acb83",
+    warning="#f0be6d",
+    error="#e96560",
+    dark=True,
+)
 
 
 class MergeDeleteApp(App):
@@ -71,7 +88,8 @@ class MergeDeleteApp(App):
 
     def __init__(self, herdr, workspace_id):
         super().__init__()
-        self.theme = "catppuccin-mocha"
+        self.register_theme(LIVING_CODE_NIGHT)
+        self.theme = LIVING_CODE_NIGHT.name
         self.herdr = herdr
         self.workspace_id = workspace_id
         self.plan = None

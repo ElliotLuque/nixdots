@@ -1,26 +1,69 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
+let
+  lc = config.flake.lib.livingCode;
+  c = lc.colors;
+  pluginId = "living-code-theme";
+  theme = {
+    id = lc.name;
+    name = lc.label;
+    appearance = "dark";
+    colors = {
+      background = c.base;
+      foreground = c.text;
+      raised = c.surface0;
+      control = c.surface1;
+      border = c.surface1;
+      accent = c.teal;
+      mutedForeground = c.subtext;
+      ring = c.overlay;
+    };
+  };
+in
 {
   perSystem =
     { pkgs, config, ... }:
     {
       packages = {
         paseo = pkgs.callPackage ./_paseo-package.nix { };
-        paseo-catppuccin = pkgs.runCommand "paseo-catppuccin-0.0.1" { } ''
+        # A directory plugin in the same shape as sleeyax/paseo-plugins' themes.
+        paseo-living-code = pkgs.runCommand "paseo-living-code-0.0.1" { } ''
           mkdir -p "$out"
-          cp -r ${
-            pkgs.fetchzip {
-              url = "https://github.com/sleeyax/paseo-plugins/archive/41ff25de85931953ace4daa1a7923e20823514c5.tar.gz";
-              hash = "sha256-HWS+Z/hd/zGlAN4p+zCHcQUs29X/xLL5PL2LJ2u+APc=";
+          cp ${
+            pkgs.writeText "paseo-plugin.json" (
+              builtins.toJSON {
+                id = pluginId;
+                description = "Adds ${lc.label} as a Paseo app theme.";
+                requirements.paseo = ">=0.9.0";
+              }
+            )
+          } "$out/paseo-plugin.json"
+          cp ${
+            pkgs.writeText "package.json" (
+              builtins.toJSON {
+                name = "@local/${pluginId}";
+                private = true;
+                version = "0.0.1";
+                type = "module";
+              }
+            )
+          } "$out/package.json"
+          cp ${pkgs.writeText "index.client.ts" ''
+            import type { PluginClientContext } from "@getpaseo/plugin/client";
+
+            export default function contribute(client: PluginClientContext) {
+              client.addTheme(${builtins.toJSON theme});
+              return () => {};
             }
-          }/plugins/catppuccin-theme/. "$out/"
+          ''} "$out/index.client.ts"
         '';
-        paseo-configure-catppuccin = pkgs.writeShellApplication {
-          name = "paseo-configure-catppuccin";
+        paseo-configure-theme = pkgs.writeShellApplication {
+          name = "paseo-configure-theme";
           runtimeInputs = [ pkgs.python3 ];
           text = ''
-            python3 ${./_paseo-catppuccin.py} \
+            python3 ${./_paseo-theme.py} \
               "''${PASEO_HOME:-$HOME/.paseo}/config.json" \
-              ${config.packages.paseo-catppuccin}
+              ${pluginId} \
+              ${config.packages.paseo-living-code}
           '';
         };
       };
@@ -34,8 +77,8 @@
     {
       home.packages = [ packages.paseo ];
       # Keep config.json writable: pairing, credentials and UI settings belong to Paseo.
-      home.activation.paseoCatppuccin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        run ${packages.paseo-configure-catppuccin}/bin/paseo-configure-catppuccin
+      home.activation.paseoTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        run ${packages.paseo-configure-theme}/bin/paseo-configure-theme
       '';
     };
 }

@@ -1,18 +1,43 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
+let
+  # One flavour selects every themed program. Values come from the theme's
+  # canonical palette, so a living-code update needs no copied hex here.
+  flavor = "night";
+  src = inputs.living-code;
+  scheme = (builtins.fromJSON (builtins.readFile "${src}/palette.json")).${flavor};
+  colors = lib.mapAttrs (_: c: c.hex) scheme.colors;
+  livingCode = {
+    inherit flavor src colors;
+    name = "living-code-${flavor}";
+    label = scheme.name;
+    roles = lib.mapAttrs (_: name: colors.${name}) scheme.roles;
+    inherit (scheme) ansi;
+    extra = path: "${src}/extras/${path}";
+    # Opaque `pct`% blend of `fg` over `bg`, for UIs without alpha support.
+    mix =
+      fg: bg: pct:
+      let
+        channel = hex: i: lib.fromHexString (builtins.substring (1 + 2 * i) 2 hex);
+        blend = i: (channel fg i * pct + channel bg i * (100 - pct) + 50) / 100;
+        toHex = n: lib.toLower (lib.fixedWidthString 2 "0" (lib.toHexString n));
+      in
+      "#"
+      + lib.concatMapStrings (i: toHex (blend i)) [
+        0
+        1
+        2
+      ];
+  };
+in
 {
+  flake.lib = { inherit livingCode; };
+
   flake.modules.nixos.theme = { pkgs, ... }: {
-    imports = [
-      inputs.stylix.nixosModules.stylix
-      inputs.catppuccin.nixosModules.catppuccin
-    ];
-    catppuccin = {
-      enable = true;
-      autoEnable = false;
-    };
+    imports = [ inputs.stylix.nixosModules.stylix ];
     stylix = {
       enable = true;
       autoEnable = true;
-      base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+      base16Scheme = livingCode.extra "base16/${livingCode.name}.yaml";
       image = ../../wallpaper/mocha/cottages-river.png;
       polarity = "dark";
       fonts = {
@@ -36,36 +61,17 @@
       };
       targets = {
         chromium.enable = false;
-        console.enable = false;
         fish.enable = false;
-        nixvim.enable = false;
-        plymouth.enable = false;
-        spicetify.enable = false;
+        nixvim.enable = false; # Neovim is themed by the external nixvim flake.
+        plymouth.enable = false; # boot-workstation keeps the firmware (bgrt) splash.
+        spicetify.enable = false; # media.nix themes Spotify from the full palette.
       };
     };
   };
+
   flake.modules.homeManager.theme = { pkgs, config, ... }: {
-    imports = [ inputs.catppuccin.homeModules.catppuccin ];
     xdg.dataFile."wallpapers".source = ../../wallpaper/mocha;
-    programs.rofi.settings.font =
-      "${config.stylix.fonts.monospace.name} ${toString config.stylix.fonts.sizes.popups}";
-    catppuccin = {
-      enable = true;
-      autoEnable = true;
-      flavor = "mocha";
-      accent = "mauve";
-      gtk.icon.enable = false;
-      kvantum.enable = false;
-      hyprlock.enable = false;
-      # Move gui.authorColors into gui.theme without changing the rest of the YAML.
-      sources.lazygit =
-        inputs.catppuccin.packages.${pkgs.stdenv.hostPlatform.system}.lazygit.overrideAttrs
-          (old: {
-            postInstall = (old.postInstall or "") + ''
-              sed -i '/^  authorColors:/,+1s/^/  /' "$out"/*/*.yml
-            '';
-          });
-    };
+    programs.rofi.settings.font = "${config.stylix.fonts.monospace.name} ${toString config.stylix.fonts.sizes.popups}";
     stylix = {
       icons = {
         enable = true;
@@ -73,19 +79,19 @@
         light = "Papirus";
         dark = "Papirus-Dark";
       };
+      # Programs with upstream living-code themes use them instead of the
+      # 16-colour approximation; see session.nix and shell/tools.nix.
       targets = {
-        hyprland.enable = false;
-        hyprlock.enable = false;
+        hyprland.enable = false; # Lua config; borders are disabled.
+        hyprlock.enable = false; # hyprlock.nix uses the palette directly.
         kitty.enable = false;
-        fish.enable = false;
+        fish.enable = false; # Fish uses the terminal's ANSI palette.
         spicetify.enable = false;
         bat.enable = false;
         btop.enable = false;
-        cava.enable = false;
+        lazygit.enable = false;
         starship.enable = false;
-        yazi.enable = false;
-        opencode.enable = false; # Let Catppuccin own OpenCode's TUI theme.
-        rofi.enable = false; # Catppuccin owns Rofi; avoid Stylix's deprecated font option.
+        rofi.enable = false; # Avoid Stylix's deprecated font option.
       };
     };
   };

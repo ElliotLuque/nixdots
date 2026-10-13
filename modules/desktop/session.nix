@@ -70,6 +70,7 @@
         cursor_trail = "1";
         disable_ligatures = "always";
       };
+      extraConfig = "include ${config.flake.lib.livingCode.extra "kitty/${config.flake.lib.livingCode.name}.conf"}";
       shellIntegration.enableFishIntegration = true;
     };
   };

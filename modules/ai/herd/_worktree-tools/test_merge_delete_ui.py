@@ -37,8 +37,8 @@ class MergeDeleteUITests(GitFixture, unittest.IsolatedAsyncioTestCase):
         with patch.object(workflow, "run", side_effect=self.herdr):
             async with app.run_test(size=(72, 22)) as pilot:
                 await self.loaded(app, pilot)
-                self.assertEqual(app.theme, "catppuccin-mocha")
-                self.assertEqual(app.screen.styles.background.hex, "#181825")
+                self.assertEqual(app.theme, "living-code-night")
+                self.assertEqual(app.screen.styles.background.hex, "#090E11")
                 self.assertEqual(app.focused.id, "cancel")
                 for key, expected in (("right", "confirm"), ("left", "cancel"),
                                       ("up", "confirm"), ("down", "cancel")):

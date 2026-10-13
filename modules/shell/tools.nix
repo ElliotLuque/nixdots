@@ -1,4 +1,8 @@
 { config, ... }:
+let
+  lc = config.flake.lib.livingCode;
+  c = lc.colors;
+in
 {
   flake.modules.homeManager.cli = { pkgs, ... }: {
     imports = [ config.flake.modules.homeManager.ssh-client ];
@@ -28,8 +32,23 @@
     ];
     home.sessionVariables.PF_INFO = "ascii title os cpu uptime pkgs memory shell";
     programs = {
-      bat.enable = true;
-      btop.enable = true;
+      # Delta reads the same theme from bat's cache.
+      bat = {
+        enable = true;
+        themes.${lc.name} = {
+          src = lc.src;
+          file = "extras/tmtheme/${lc.name}.tmTheme";
+        };
+        config.theme = lc.name;
+      };
+      btop = {
+        enable = true;
+        themes.${lc.name} = builtins.readFile (lc.extra "btop/${lc.name}.theme");
+        settings.color_theme = lc.name;
+      };
+      fish.interactiveShellInit = ''
+        source ${lc.extra "fzf/${lc.name}.fish"}
+      '';
       yazi = {
         enable = true;
         shellWrapperName = "yy";
@@ -54,6 +73,8 @@
       starship = {
         enable = true;
         enableFishIntegration = true;
+        settings.palette = "living_code";
+        settings.palettes.living_code = c;
         settings.character = {
           success_symbol = " [](bold blue)  [➜](bold green)";
           error_symbol = " [](bold blue)  [➜](bold red)";
@@ -66,6 +87,28 @@
       lazygit = {
         enable = true;
         enableFishIntegration = true;
+        # Mirrors extras/lazygit; Nix cannot import the upstream YAML directly.
+        settings.gui.theme = {
+          activeBorderColor = [
+            c.teal
+            "bold"
+          ];
+          authorColors."*" = c.aqua;
+          inactiveBorderColor = [ c.surface1 ];
+          searchingActiveBorderColor = [
+            c.amber
+            "bold"
+          ];
+          optionsTextColor = [ c.steel ];
+          selectedLineBgColor = [ c.surface0 ];
+          inactiveViewSelectedLineBgColor = [ c.mantle ];
+          cherryPickedCommitFgColor = [ c.base ];
+          cherryPickedCommitBgColor = [ c.orchid ];
+          markedBaseCommitFgColor = [ c.base ];
+          markedBaseCommitBgColor = [ c.amber ];
+          unstagedChangesColor = [ c.flare ];
+          defaultFgColor = [ c.text ];
+        };
         settings.git.diffRenderers = [
           {
             colorArg = "always";
@@ -92,7 +135,7 @@
           navigate = true;
           line-numbers = true;
           side-by-side = false;
-          syntax-theme = "Catppuccin Mocha";
+          syntax-theme = lc.name;
           hyperlinks = true;
           file-style = "omit";
           hunk-header-style = "file line-number";
