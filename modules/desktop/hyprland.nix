@@ -104,7 +104,7 @@
               border_size = 0,
               resize_on_border = false,
               allow_tearing = false,
-              layout = "scroll",
+              layout = "scrolling",
             },
             decoration = {
               rounding = 10,
