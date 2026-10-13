@@ -104,7 +104,7 @@
               border_size = 0,
               resize_on_border = false,
               allow_tearing = false,
-              layout = "dwindle",
+              layout = "scroll",
             },
             decoration = {
               rounding = 10,
@@ -113,7 +113,6 @@
               shadow = { enabled = false },
               blur = { enabled = true, size = 6, passes = 3, vibrancy = 0.1696 },
             },
-            dwindle = { preserve_split = true },
           })
 
           if hl.plugin.dynamic_cursors then
