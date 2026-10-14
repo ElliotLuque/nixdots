@@ -32,6 +32,8 @@ CUDA inference (`ollama-cuda`) is selected only on the desktop. The host selects
 
 Monitor Lua and PRIME PCI IDs live in their host definitions. Shared Hyprland configuration loads `hypr/host.lua` last, after shared defaults; the feature supplies a generic fallback which hosts can replace through the existing Home Manager file option. Caelestia host overrides use its normal settings options rather than hostname branches in the shared feature. The theme installs wallpaper assets under each user's XDG data directory, and the lock screen uses the declared Stylix image. No wallpaper configuration requires a repository checkout. Desktop scripts declare their runtime dependencies; clipboard tools belong to the desktop, not the NVIDIA module.
 
+Hyprland launches through `systemd-cat` from both greetd's login prompt and Elliot's autologin session. Startup stdout/stderr go to the journal rather than the login VT, keeping the quiet boot intact without disabling compositor logging. Inspect them with `journalctl -b -t hyprland`.
+
 ## Writing a feature
 
 Use the outer flake-parts module for inputs and registry references; use inner modules for system/user options:
