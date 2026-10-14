@@ -16,7 +16,7 @@ in
   };
 
   # Personal workstation permissions and autologin are not OS defaults.
-  flake.modules.nixos.elliot-workstation = {
+  flake.modules.nixos.elliot-workstation = { pkgs, ... }: {
     imports = [ modules.nixos.elliot ];
     users.users.elliot.extraGroups = [
       "networkmanager"
@@ -25,7 +25,8 @@ in
       "docker"
     ];
     services.greetd.settings.initial_session = {
-      command = "start-hyprland";
+      # Match the desktop login path: log to the journal, not the boot console.
+      command = "${pkgs.systemd}/bin/systemd-cat --identifier=hyprland start-hyprland";
       user = "elliot";
     };
   };

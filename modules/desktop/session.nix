@@ -43,7 +43,8 @@
     services.dbus.enable = true;
     services.greetd = {
       enable = true;
-      settings.default_session.command = "${pkgs.greetd}/bin/agreety --cmd 'start-hyprland'";
+      # Keep compositor output off the login VT without discarding diagnostics.
+      settings.default_session.command = "${pkgs.greetd}/bin/agreety --cmd '${pkgs.systemd}/bin/systemd-cat --identifier=hyprland start-hyprland'";
     };
   };
 
