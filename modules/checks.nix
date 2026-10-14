@@ -132,9 +132,13 @@ in
         assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/auth.json");
         assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/settings.json");
         assert
-          toString ai.home-manager.users.ai-test.home.file.".pi/agent/extensions/terminal-statusline".source
-          == "${inputs.pi-terminal-statusline}/extensions/statusline";
-        assert builtins.pathExists "${inputs.pi-terminal-statusline}/extensions/statusline/index.ts";
+          ai.home-manager.users.ai-test.home.file.".pi/agent/extensions/pi-statusbar".source
+          == inputs.pi-statusbar;
+        assert !(ai.home-manager.users.ai-test.home.file ? ".pi/agent/extensions/terminal-statusline");
+        assert
+          (builtins.fromJSON (builtins.readFile "${inputs.pi-statusbar}/package.json")).name
+          == "@elliotluque/pi-statusbar";
+        assert builtins.pathExists "${inputs.pi-statusbar}/extensions/statusline/index.ts";
         assert ai.home-manager.users.ai-test.programs.codex.profiles == { };
         assert ai.home-manager.users.ai-test.programs.opencode.settings == { };
         assert builtins.all

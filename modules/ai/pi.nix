@@ -85,8 +85,7 @@ in
       # source tree together so relative imports and package metadata resolve.
       home.file.".pi/agent/extensions/pi-anthropic-auth".source = inputs.pi-anthropic-auth;
       home.file.".pi/agent/themes/${lc.name}.json".text = builtins.toJSON piTheme;
-      home.file.".pi/agent/extensions/terminal-statusline".source =
-        "${inputs.pi-terminal-statusline}/extensions/statusline";
+      home.file.".pi/agent/extensions/pi-statusbar".source = inputs.pi-statusbar;
 
       # Keep settings writable so Pi can save preferences and package registrations.
       home.activation.piTheme = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

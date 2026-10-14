@@ -117,7 +117,7 @@ home-manager.users.some-user.imports = [
 ];
 ```
 
-Another flake can use `inputs.nixdots.modules.homeManager.agent-skills` in its Home Manager imports. It does not need Elliot's identity, GPU, or AI clients. `ai-clients` is a larger optional bundle that includes skills and client tooling. Pi's installation feature does not create a models file or select a provider. Its statusline extension lives in the separate [pi-terminal-statusline repository](https://github.com/ElliotLuque/pi-terminal-statusline), fetched through a non-flake input pinned in `flake.lock`; nixdots only installs the upstream extension directory. See [Pi statusline integration](pi-statusline.md) for updates and usage.
+Another flake can use `inputs.nixdots.modules.homeManager.agent-skills` in its Home Manager imports. It does not need Elliot's identity, GPU, or AI clients. `ai-clients` is a larger optional bundle that includes skills and client tooling. Pi's installation feature does not create a models file or select a provider. Its footer extension lives in the separate [pi-statusbar repository](https://github.com/elliotluque/pi-statusbar), also published as `npm:@elliotluque/pi-statusbar`. A non-flake input pinned in `flake.lock` installs the upstream package without runtime npm downloads. See [Pi Statusbar integration](pi-statusline.md) for updates and usage.
 
 ### Local inference profiles
 

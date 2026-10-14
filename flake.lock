@@ -1042,19 +1042,19 @@
         "type": "github"
       }
     },
-    "pi-terminal-statusline": {
+    "pi-statusbar": {
       "flake": false,
       "locked": {
-        "lastModified": 1791966458,
-        "narHash": "sha256-7gig02oq+pCCFJwacqx9HgNTV4VZ/TOMAr4QHbsoeBo=",
-        "owner": "ElliotLuque",
-        "repo": "pi-terminal-statusline",
-        "rev": "1c0006e2fb7fe6cccecd32700929a889ca25f776",
+        "lastModified": 1791979262,
+        "narHash": "sha256-0eHnGI8iPxoi3ExO4uMiVgb4uZlOOuugjkMlZj7fCR0=",
+        "owner": "elliotluque",
+        "repo": "pi-statusbar",
+        "rev": "8f78cb442a9ec2be52e1d144ee8761140046d2c5",
         "type": "github"
       },
       "original": {
-        "owner": "ElliotLuque",
-        "repo": "pi-terminal-statusline",
+        "owner": "elliotluque",
+        "repo": "pi-statusbar",
         "type": "github"
       }
     },
@@ -1120,7 +1120,7 @@
         "nixvim": "nixvim",
         "pi": "pi",
         "pi-anthropic-auth": "pi-anthropic-auth",
-        "pi-terminal-statusline": "pi-terminal-statusline",
+        "pi-statusbar": "pi-statusbar",
         "rust-overlay": "rust-overlay",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",

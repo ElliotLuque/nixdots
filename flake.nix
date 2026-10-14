@@ -83,8 +83,8 @@
       flake = false;
     };
 
-    pi-terminal-statusline = {
-      url = "github:ElliotLuque/pi-terminal-statusline";
+    pi-statusbar = {
+      url = "github:elliotluque/pi-statusbar";
       flake = false;
     };
 
