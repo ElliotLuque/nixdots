@@ -76,8 +76,8 @@ in
         settings.palette = "living_code";
         settings.palettes.living_code = c;
         settings.character = {
-          success_symbol = " [](bold blue)  [➜](bold green)";
-          error_symbol = " [](bold blue)  [➜](bold red)";
+          success_symbol = " [\\[el\\] ➜](bold teal)";
+          error_symbol = " [\\[el\\]](bold teal) [➜](bold red)";
         };
       };
       gh = {
