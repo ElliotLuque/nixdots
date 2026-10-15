@@ -140,7 +140,7 @@
           hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
           hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
           hl.animation({ leaf = "windows", enabled = true, speed = 4.79, bezier = "easeOutQuint" })
-          hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "easeOutQuint", style = "slide" })
+          hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "easeOutQuint", style = "slidevert" })
 
           hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
           hl.bind("SUPER + Q", hl.dsp.window.close())
