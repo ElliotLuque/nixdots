@@ -36,7 +36,7 @@
     stylix.url = "github:danth/stylix";
 
     living-code = {
-      url = "path:/home/elliot/dev/living-code";
+      url = "github:ElliotLuque/living-code";
       flake = false;
     };
 

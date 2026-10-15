@@ -1,75 +1,10 @@
 {
   inputs,
   config,
-  lib,
   ...
 }:
 let
   lc = config.flake.lib.livingCode;
-  c = lc.colors;
-  bg = lc.mix;
-  hunkTheme = {
-    base = "github-dark-default";
-    label = lc.label;
-    background = c.base;
-    panel = c.mantle;
-    panelAlt = c.surface0;
-    border = c.surface1;
-    accent = c.teal;
-    accentMuted = bg c.teal c.base 35;
-    text = c.text;
-    muted = c.subtext;
-    addedBg = bg c.moss c.base 10;
-    removedBg = bg c.flare c.base 10;
-    movedAddedBg = bg c.steel c.base 10;
-    movedRemovedBg = bg c.amber c.base 10;
-    contextBg = c.base;
-    addedContentBg = bg c.moss c.base 20;
-    removedContentBg = bg c.flare c.base 20;
-    contextContentBg = c.base;
-    addedSignColor = c.moss;
-    removedSignColor = c.flare;
-    lineNumberBg = c.base;
-    lineNumberFg = c.overlay;
-    selectedHunk = c.surface0;
-    badgeAdded = c.moss;
-    badgeRemoved = c.flare;
-    badgeNeutral = c.subtext;
-    fileNew = c.moss;
-    fileDeleted = c.flare;
-    fileRenamed = c.steel;
-    fileModified = c.amber;
-    fileUntracked = c.comment;
-    noteBorder = c.orchid;
-    noteBackground = c.mantle;
-    noteTitleBackground = c.surface1;
-    noteTitleText = c.text;
-  };
-  # Syntax follows the VS Code theme; TOML text keeps its rule order.
-  tokenColors =
-    (builtins.fromJSON (builtins.readFile (lc.extra "vscode/themes/${lc.name}-color-theme.json")))
-    .tokenColors;
-  scopeRules = builtins.concatMap (
-    rule:
-    let
-      scopes = if builtins.isList rule.scope then rule.scope else [ rule.scope ];
-      color = rule.settings.foreground or "";
-    in
-    # Hunk accepts only opaque #rrggbb colors.
-    if builtins.stringLength color == 7 then map (scope: { inherit scope color; }) scopes else [ ]
-  ) tokenColors;
-  # TOML rejects repeated keys; keep the last rule, which would win anyway.
-  scopeLines = lib.concatLists (
-    lib.imap0 (
-      i: rule:
-      lib.optional (
-        !lib.any (later: later.scope == rule.scope) (lib.drop (i + 1) scopeRules)
-      ) "${builtins.toJSON rule.scope} = \"${rule.color}\""
-    ) scopeRules
-  );
-  themeLines = builtins.attrValues (
-    builtins.mapAttrs (key: value: "${key} = ${builtins.toJSON value}") hunkTheme
-  );
 in
 {
   flake.modules.homeManager.hunk-review =
@@ -138,12 +73,8 @@ in
         agent_notes = true
         prompt_save_view_preferences = false
 
-        [themes.${lc.name}]
-        ${builtins.concatStringsSep "\n" themeLines}
-
-        [themes.${lc.name}.syntax_scopes]
-        ${builtins.concatStringsSep "\n" scopeLines}
-      '';
+      ''
+      + builtins.readFile (lc.extra "hunk/${lc.name}.toml");
       xdg.configFile."herdr/config.toml".text = ''
         [[keys.command]]
         key = "prefix+d"

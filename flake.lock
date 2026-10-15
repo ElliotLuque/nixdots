@@ -777,14 +777,17 @@
     "living-code": {
       "flake": false,
       "locked": {
-        "lastModified": 1791989778,
-        "narHash": "sha256-6YcHUri3y2P0nasHxYD36LLLOtcZH9TdE5VLl2+o5E4=",
-        "path": "/home/elliot/dev/living-code",
-        "type": "path"
+        "lastModified": 1792086095,
+        "narHash": "sha256-7bcj/4iLrYOeeVnGnI6XNCgj2AobYEnqroRjluICA3I=",
+        "owner": "ElliotLuque",
+        "repo": "living-code",
+        "rev": "47dc6b969694000df34cb29ac15fe385c5916712",
+        "type": "github"
       },
       "original": {
-        "path": "/home/elliot/dev/living-code",
-        "type": "path"
+        "owner": "ElliotLuque",
+        "repo": "living-code",
+        "type": "github"
       }
     },
     "m3shapes": {

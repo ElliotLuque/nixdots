@@ -1,7 +1,8 @@
 { inputs, config, ... }:
 let
   modules = config.flake.modules;
-  lc = config.flake.lib.livingCode.colors;
+  livingCode = config.flake.lib.livingCode;
+  lc = livingCode.colors;
 in
 {
   perSystem =
@@ -271,6 +272,46 @@ in
             assert terminal['command'] == 'exec ${pkgs.fish}/bin/fish -i'
             assert (terminal['width'], terminal['height']) == ('80%', '80%')
             assert commands['prefix+d']['type'] == 'popup'  # Hunk still composes.
+            PY
+            touch "$out"
+          '';
+
+      checks.diff-pager-themes =
+        pkgs.runCommand "diff-pager-themes-check"
+          {
+            nativeBuildInputs = [
+              pkgs.git
+              pkgs.python3
+            ];
+          }
+          ''
+            python3 - <<'PY'
+            import pathlib, subprocess, tomllib
+
+            def git_config(path, key):
+                return subprocess.check_output(
+                    ['git', 'config', '--file', path, '--includes', '--get', key], text=True
+                ).strip()
+
+            git = '${desktopHome.xdg.configFile."git/config".source}'
+            upstream = '${livingCode.extra "delta/living-code.gitconfig"}'
+            theme = '${livingCode.name}'
+            assert git_config(git, 'pager.diff').endswith('/bin/delta')
+            assert git_config(git, 'delta.features') == theme
+            for key in ('syntax-theme', 'minus-style', 'plus-style', 'hunk-header-style'):
+                key = f'delta.{theme}.{key}'
+                assert git_config(git, key) == git_config(upstream, key)
+
+            hunk = tomllib.loads(pathlib.Path('${
+              desktopHome.xdg.configFile."hunk/config.toml".source
+            }').read_text())
+            upstream = tomllib.loads(pathlib.Path('${livingCode.extra "hunk/${livingCode.name}.toml"}').read_text())
+            assert hunk['theme'] == theme
+            assert hunk['themes'] == upstream['themes']
+            assert hunk['themes'][theme]['syntax_scopes']
+            assert hunk['mode'] == 'auto'
+            assert hunk['agent_notes']
+            assert not hunk['prompt_save_view_preferences']
             PY
             touch "$out"
           '';

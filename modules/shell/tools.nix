@@ -118,6 +118,7 @@ in
       };
       git = {
         enable = true;
+        includes = [ { path = lc.extra "delta/living-code.gitconfig"; } ];
         settings = {
           init.defaultBranch = "main";
           pull.rebase = false;
@@ -131,17 +132,11 @@ in
         enable = true;
         enableGitIntegration = true;
         options = {
-          dark = true;
+          features = lc.name;
           navigate = true;
           line-numbers = true;
           side-by-side = false;
-          syntax-theme = lc.name;
           hyperlinks = true;
-          file-style = "omit";
-          hunk-header-style = "file line-number";
-          hunk-header-decoration-style = "black box";
-          hunk-header-file-style = "blue";
-          hunk-header-line-number-style = "magenta";
         };
       };
     };
