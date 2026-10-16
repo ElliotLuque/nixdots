@@ -2,7 +2,6 @@
 {
   flake.modules.homeManager.hyprland =
     {
-      config,
       pkgs,
       lib,
       ...
@@ -11,6 +10,29 @@
       hyprsplit = inputs.hyprsplit.packages.${pkgs.stdenv.hostPlatform.system}.hyprsplitlua;
       dynamicCursors =
         inputs.hypr-dynamic-cursors.packages.${pkgs.stdenv.hostPlatform.system}.hypr-dynamic-cursors;
+      lua = lib.generators.mkLuaInline;
+      bind = key: dispatcher: {
+        _args = [
+          key
+          (lua dispatcher)
+        ];
+      };
+      bindWith = key: dispatcher: flags: {
+        _args = [
+          key
+          (lua dispatcher)
+          flags
+        ];
+      };
+      curve = name: points: {
+        _args = [
+          name
+          {
+            type = "bezier";
+            inherit points;
+          }
+        ];
+      };
       bibataHyprcursor = pkgs.stdenvNoCC.mkDerivation {
         pname = "bibata-original-classic-hyprcursor";
         version = "1.0.0";
@@ -39,143 +61,275 @@
       };
     in
     {
-      # Home Manager's settings serializer does not yet produce valid Lua for all
-      # Hyprland keywords, so manage the native Lua configuration directly.
       home.packages = [ bibataHyprcursor ];
+      xdg.configFile."hypr/hyprsplit/init.lua".source = "${hyprsplit}/share/hyprsplit/init.lua";
 
-      wayland.windowManager.hyprland.enable = false;
+      wayland.windowManager.hyprland = {
+        enable = true;
+        configType = "lua";
+        # The NixOS module owns the compositor and portal packages.
+        package = null;
+        portalPackage = null;
+        systemd.enable = true;
+        plugins = [ dynamicCursors ];
 
-      xdg.configFile = {
-        "systemd/user/hyprland-session.target".text = ''
-          [Unit]
-          Description=Hyprland compositor session
-          Wants=graphical-session.target
-          Before=graphical-session.target
-        '';
-        "hypr/hyprsplit/init.lua".source = "${hyprsplit}/share/hyprsplit/init.lua";
-        "hypr/hyprsplit-config.lua".text = ''
-          local hs = require("hyprsplit")
+        # Curves must be defined before animations reference them.
+        importantPrefixes = [
+          "env"
+          "config"
+          "curve"
+        ];
 
-          hs.config({ num_workspaces = 4, persistent_workspaces = true })
+        extraLuaFiles = {
+          "hyprsplit-config" = ''
+            local hs = require("hyprsplit")
 
-          local function move_to_workspace(workspace, follow)
-            return function()
-              local target = hs.get_workspace_string(tostring(workspace))
-              hl.dispatch(hl.dsp.window.move({ workspace = target, follow = false }))
+            hs.config({ num_workspaces = 4, persistent_workspaces = true })
 
-              if follow then
-                hl.dispatch(hl.dsp.focus({ workspace = target, on_current_monitor = true }))
+            local function move_to_workspace(workspace, follow)
+              return function()
+                local target = hs.get_workspace_string(tostring(workspace))
+                hl.dispatch(hl.dsp.window.move({ workspace = target, follow = false }))
+
+                if follow then
+                  hl.dispatch(hl.dsp.focus({ workspace = target, on_current_monitor = true }))
+                end
               end
             end
-          end
 
-          for i = 1, 4 do
-            hl.bind("SUPER + " .. i, hs.dsp.focus({ workspace = i }))
-            hl.bind("SUPER + SHIFT + " .. i, move_to_workspace(i, true))
-            hl.bind("SUPER + CTRL + " .. i, move_to_workspace(i, false))
-          end
+            for i = 1, 4 do
+              hl.bind("SUPER + " .. i, hs.dsp.focus({ workspace = i }))
+              hl.bind("SUPER + SHIFT + " .. i, move_to_workspace(i, true))
+              hl.bind("SUPER + CTRL + " .. i, move_to_workspace(i, false))
+            end
 
-          hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
-          hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
-          hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
-          hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
-        '';
-        "hypr/hyprland.lua".text = ''
-          -- Generated from the Nix configuration. This is a native Hyprland Lua config.
-          local config_home = os.getenv("XDG_CONFIG_HOME") or "${config.home.homeDirectory}/.config"
-          package.path = config_home .. "/hypr/?.lua;" .. config_home .. "/hypr/?/init.lua;" .. package.path
+            hl.bind("SUPER + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
+            hl.bind("SUPER + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+            hl.bind("SUPER + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
+            hl.bind("SUPER + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
+          '';
+        };
 
-          hl.plugin.load("${dynamicCursors}/lib/libhypr-dynamic-cursors.so")
-          require("hyprsplit-config")
+        settings = {
+          env = map (args: { _args = args; }) [
+            [
+              "XCURSOR_SIZE"
+              "22"
+            ]
+            [
+              "XCURSOR_THEME"
+              "Bibata-Original-Classic"
+            ]
+            [
+              "HYPRCURSOR_SIZE"
+              "22"
+            ]
+            [
+              "HYPRCURSOR_THEME"
+              "Bibata-Original-Classic"
+            ]
+            [
+              "JDK_JAVA_OPTIONS"
+              "-Dawt.toolkit.name=WLToolkit"
+            ]
+          ];
 
-          hl.env("XCURSOR_SIZE", "22")
-          hl.env("XCURSOR_THEME", "Bibata-Original-Classic")
-          hl.env("HYPRCURSOR_SIZE", "22")
-          hl.env("HYPRCURSOR_THEME", "Bibata-Original-Classic")
-          hl.env("JDK_JAVA_OPTIONS", "-Dawt.toolkit.name=WLToolkit")
+          monitor = lib.mkDefault [
+            {
+              output = "";
+              mode = "preferred";
+              position = "auto";
+              scale = 1;
+            }
+          ];
 
-          hl.config({
-            cursor = { no_hardware_cursors = true, enable_hyprcursor = true },
-            debug = { disable_logs = false },
-            misc = { disable_hyprland_logo = true, font_family = "JetBrains Mono Nerd Font" },
+          config = {
+            cursor = {
+              no_hardware_cursors = true;
+              enable_hyprcursor = true;
+            };
+            debug.disable_logs = false;
+            misc = {
+              disable_hyprland_logo = true;
+              font_family = "JetBrains Mono Nerd Font";
+            };
+            input = {
+              kb_layout = lib.mkDefault "es";
+              kb_options = lib.mkDefault "caps:super";
+              follow_mouse = lib.mkDefault 1;
+            };
             general = {
-              gaps_in = 6,
-              gaps_out = 10,
-              border_size = 0,
-              resize_on_border = false,
-              allow_tearing = false,
-              layout = "scrolling",
-            },
+              gaps_in = 6;
+              gaps_out = 10;
+              border_size = 0;
+              resize_on_border = false;
+              allow_tearing = false;
+              layout = "scrolling";
+            };
             decoration = {
-              rounding = 10,
-              active_opacity = 1,
-              inactive_opacity = 0.8,
-              shadow = { enabled = false },
-              blur = { enabled = true, size = 6, passes = 3, vibrancy = 0.1696 },
-            },
-          })
-
-          if hl.plugin.dynamic_cursors then
-            hl.config({ plugin = { dynamic_cursors = {
-              enabled = true,
-              mode = "tilt",
-              tilt = { limit = 8000, activation = "quadratic", window = 100, full = 22 },
+              rounding = 10;
+              active_opacity = lib.mkDefault 1;
+              inactive_opacity = lib.mkDefault 0.8;
+              shadow.enabled = lib.mkDefault false;
+              blur = {
+                enabled = lib.mkDefault true;
+                size = 6;
+                passes = 3;
+                vibrancy = 0.1696;
+              };
+            };
+            plugin.dynamic_cursors = {
+              enabled = true;
+              mode = "tilt";
+              tilt = {
+                limit = 8000;
+                activation = "quadratic";
+                window = 100;
+                full = 22;
+              };
               shake = {
-                enabled = true,
-                threshold = 6.0,
-                base = 4.0,
-                speed = 4.0,
-                limit = 6.0,
-                timeout = 1200,
-                effects = false,
-              },
-              hyprcursor = { enabled = true, nearest = 1, resolution = -1, fallback = "clientside" },
-            }}})
-          end
+                enabled = true;
+                threshold = 6.0;
+                base = 4.0;
+                speed = 4.0;
+                limit = 6.0;
+                timeout = 1200;
+                effects = false;
+              };
+              hyprcursor = {
+                enabled = true;
+                nearest = 1;
+                resolution = -1;
+                fallback = "clientside";
+              };
+            };
+          };
 
-          hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
-          hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
-          hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
-          hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 } } })
-          hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
-          hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
-          hl.animation({ leaf = "windows", enabled = true, speed = 4.79, bezier = "easeOutQuint" })
-          hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "easeOutQuint", style = "slide" })
+          curve = [
+            (curve "easeOutQuint" [
+              [
+                0.23
+                1
+              ]
+              [
+                0.32
+                1
+              ]
+            ])
+            (curve "easeInOutCubic" [
+              [
+                0.65
+                0.05
+              ]
+              [
+                0.36
+                1
+              ]
+            ])
+            (curve "linear" [
+              [
+                0
+                0
+              ]
+              [
+                1
+                1
+              ]
+            ])
+            (curve "almostLinear" [
+              [
+                0.5
+                0.5
+              ]
+              [
+                0.75
+                1
+              ]
+            ])
+            (curve "quick" [
+              [
+                0.15
+                0
+              ]
+              [
+                0.1
+                1
+              ]
+            ])
+          ];
+          animation = [
+            {
+              leaf = "border";
+              enabled = true;
+              speed = 5.39;
+              bezier = "easeOutQuint";
+            }
+            {
+              leaf = "windows";
+              enabled = true;
+              speed = 4.79;
+              bezier = "easeOutQuint";
+            }
+            {
+              leaf = "workspaces";
+              enabled = true;
+              speed = 5;
+              bezier = "easeOutQuint";
+              style = "slide";
+            }
+          ];
 
-          hl.bind("SUPER + Return", hl.dsp.exec_cmd("kitty"))
-          hl.bind("SUPER + Q", hl.dsp.window.close())
-          hl.bind("SUPER + S", hl.dsp.exec_cmd("screenshot-area"))
-          hl.bind("SUPER + R", hl.dsp.exec_cmd("caelestia shell drawers toggle launcher"))
-          hl.bind("SUPER + V", hl.dsp.window.float({ action = "toggle" }))
-          hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
-          hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
-          hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
-          hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
-          hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }))
-          hl.bind("SUPER + down", hl.dsp.focus({ direction = "down" }))
-          hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
-          hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
-          hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pamixer --set-limit 140 -i 5"), { locked = true, repeating = true })
-          hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pamixer --set-limit 140 -d 5"), { locked = true, repeating = true })
-          hl.bind("XF86AudioMute", hl.dsp.exec_cmd("pamixer -t"), { locked = true })
-          hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightness-step up"), { locked = true, repeating = true })
-          hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightness-step down"), { locked = true, repeating = true })
+          bind = [
+            (bind "SUPER + Return" ''hl.dsp.exec_cmd("kitty")'')
+            (bind "SUPER + Q" "hl.dsp.window.close()")
+            (bind "SUPER + S" ''hl.dsp.exec_cmd("screenshot-area")'')
+            (bind "SUPER + R" ''hl.dsp.exec_cmd("caelestia shell drawers toggle launcher")'')
+            (bind "SUPER + V" ''hl.dsp.window.float({ action = "toggle" })'')
+            (bind "SUPER + F" ''hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })'')
+            (bind "SUPER + SHIFT + F" ''hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })'')
+            (bind "SUPER + left" ''hl.dsp.focus({ direction = "left" })'')
+            (bind "SUPER + right" ''hl.dsp.focus({ direction = "right" })'')
+            (bind "SUPER + up" ''hl.dsp.focus({ direction = "up" })'')
+            (bind "SUPER + down" ''hl.dsp.focus({ direction = "down" })'')
+            (bindWith "SUPER + mouse:272" "hl.dsp.window.drag()" { mouse = true; })
+            (bindWith "SUPER + mouse:273" "hl.dsp.window.resize()" { mouse = true; })
+            (bindWith "XF86AudioRaiseVolume" ''hl.dsp.exec_cmd("pamixer --set-limit 140 -i 5")'' {
+              locked = true;
+              repeating = true;
+            })
+            (bindWith "XF86AudioLowerVolume" ''hl.dsp.exec_cmd("pamixer --set-limit 140 -d 5")'' {
+              locked = true;
+              repeating = true;
+            })
+            (bindWith "XF86AudioMute" ''hl.dsp.exec_cmd("pamixer -t")'' { locked = true; })
+            (bindWith "XF86MonBrightnessUp" ''hl.dsp.exec_cmd("brightness-step up")'' {
+              locked = true;
+              repeating = true;
+            })
+            (bindWith "XF86MonBrightnessDown" ''hl.dsp.exec_cmd("brightness-step down")'' {
+              locked = true;
+              repeating = true;
+            })
+          ];
 
-          hl.window_rule({ name = "suppress-maximize", match = { class = ".*" }, suppress_event = "maximize" })
-          hl.window_rule({ name = "kitty-opacity", match = { class = "kitty" }, opacity = "0.85 override 0.45 override 0.85 override" })
-          hl.window_rule({ name = "paseo-opacity", match = { class = "^Paseo$" }, opacity = "0.85 override 0.85 override 0.85 override" })
-
-          hl.on("hyprland.start", function()
-            hl.exec_cmd("dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE && systemctl --user start hyprland-session.target")
-          end)
-
-          -- Apply host overrides last so shared defaults cannot overwrite them.
-          require("host")
-        '';
-        "hypr/host.lua".text = lib.mkDefault ''
-          hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
-          hl.config({ input = { kb_layout = "es", kb_options = "caps:super", follow_mouse = 1 } })
-        '';
+          window_rule = [
+            {
+              name = "suppress-maximize";
+              match.class = ".*";
+              suppress_event = "maximize";
+            }
+            {
+              name = "kitty-opacity";
+              match.class = "kitty";
+              opacity = "0.85 override 0.45 override 0.85 override";
+            }
+            {
+              name = "paseo-opacity";
+              match.class = "^Paseo$";
+              opacity = "0.85 override 0.85 override 0.85 override";
+            }
+          ];
+        };
       };
     };
 }

@@ -34,31 +34,38 @@ in
 
     home-manager.users.elliot = {
       imports = [ modules.homeManager.proton-vpn ];
-      xdg.configFile."hypr/host.lua".text = ''
-        hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
-
-        hl.env("AQ_DRM_DEVICES", "/dev/dri/card0:/dev/dri/card1")
-        hl.config({
-          debug = { damage_tracking = 0 },
+      wayland.windowManager.hyprland.settings = {
+        env = [
+          {
+            _args = [
+              "AQ_DRM_DEVICES"
+              "/dev/dri/card0:/dev/dri/card1"
+            ];
+          }
+        ];
+        config = {
           input = {
-            kb_layout = "es",
-            kb_options = "caps:super",
-            follow_mouse = 1,
-            sensitivity = 0,
-            touchpad = { natural_scroll = true },
-          },
-          device = {
-            { name = "type:touchpad", sensitivity = 0.5 },
-            { name = "type:mouse", sensitivity = 0 },
-          },
+            sensitivity = 0;
+            touchpad.natural_scroll = true;
+          };
+          device = [
+            {
+              name = "type:touchpad";
+              sensitivity = 0.5;
+            }
+            {
+              name = "type:mouse";
+              sensitivity = 0;
+            }
+          ];
           decoration = {
-            active_opacity = 1,
-            inactive_opacity = 1,
-            blur = { enabled = false },
-            shadow = { enabled = false },
-          },
-        })
-      '';
+            active_opacity = 1;
+            inactive_opacity = 1;
+            blur.enabled = false;
+            shadow.enabled = false;
+          };
+        };
+      };
     };
   };
 }

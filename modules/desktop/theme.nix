@@ -82,7 +82,7 @@ in
       # Programs with upstream living-code themes use them instead of the
       # 16-colour approximation; see session.nix and shell/tools.nix.
       targets = {
-        hyprland.enable = false; # Lua config; borders are disabled.
+        hyprland.enable = false; # Configure Hyprland explicitly; borders are disabled.
         hyprlock.enable = false; # hyprlock.nix uses the palette directly.
         kitty.enable = false;
         fish.enable = false; # Fish uses the terminal's ANSI palette.

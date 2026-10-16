@@ -95,11 +95,16 @@ in
         ]
       ) desktopHome.home.packages;
       laptopHome = config.flake.nixosConfigurations.nixos-laptop.config.home-manager.users.elliot;
+      pcHome = config.flake.nixosConfigurations.nixos-pc.config.home-manager.users.elliot;
       # Only Lua text is under test; do not build GPU plugins to stub their calls.
-      hyprlandLua = pkgs.writeText "hyprland.lua" (
-        builtins.unsafeDiscardStringContext laptopHome.xdg.configFile."hypr/hyprland.lua".text
-      );
-      hostLua = pkgs.writeText "host.lua" laptopHome.xdg.configFile."hypr/host.lua".text;
+      hyprlandLua =
+        home:
+        pkgs.writeText "hyprland.lua" (
+          builtins.unsafeDiscardStringContext home.xdg.configFile."hypr/hyprland.lua".text
+        );
+      hyprsplitLua =
+        pkgs.writeText "hyprsplit-config.lua"
+          laptopHome.xdg.configFile."hypr/hyprsplit-config.lua".text;
     in
     {
       checks.architecture =
@@ -324,6 +329,21 @@ in
         };
 
       checks.hyprland-overrides =
+        assert builtins.all
+          (
+            home:
+            home.wayland.windowManager.hyprland.enable
+            && home.wayland.windowManager.hyprland.configType == "lua"
+            && home.wayland.windowManager.hyprland.package == null
+            && home.wayland.windowManager.hyprland.portalPackage == null
+            && home.systemd.user.targets ? hyprland-session
+            && !(home.xdg.configFile ? "hypr/host.lua")
+            && !(home.xdg.configFile ? "hypr/hyprland.conf")
+          )
+          [
+            laptopHome
+            pcHome
+          ];
         pkgs.runCommand "hyprland-overrides-check"
           {
             nativeBuildInputs = [ pkgs.lua5_4 ];
@@ -331,8 +351,9 @@ in
           ''
             export XDG_CONFIG_HOME="$PWD/config"
             mkdir -p "$XDG_CONFIG_HOME/hypr"
-            cp ${hostLua} "$XDG_CONFIG_HOME/hypr/host.lua"
-            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua}
+            cp ${hyprsplitLua} "$XDG_CONFIG_HOME/hypr/hyprsplit-config.lua"
+            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua laptopHome} laptop
+            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua pcHome} pc
             touch "$out"
           '';
     };

@@ -31,16 +31,27 @@ in
         modules.homeManager.local-llm
         modules.homeManager.proton-vpn
       ];
-      xdg.configFile."hypr/host.lua".text = ''
-        hl.monitor({ output = "HDMI-A-2", mode = "3840x2160@60", position = "0x0", scale = 1.5 })
-        hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60", position = "2560x0", scale = 1.5 })
-        hl.config({
-          cursor = { default_monitor = "HDMI-A-1" },
-          debug = { damage_tracking = 0 },
-          input = { kb_layout = "es", kb_options = "caps:super", follow_mouse = 1, sensitivity = -1 },
-          opengl = { nvidia_anti_flicker = 0 },
-        })
-      '';
+      wayland.windowManager.hyprland.settings = {
+        monitor = [
+          {
+            output = "HDMI-A-2";
+            mode = "3840x2160@60";
+            position = "0x0";
+            scale = 1.5;
+          }
+          {
+            output = "HDMI-A-1";
+            mode = "3840x2160@60";
+            position = "2560x0";
+            scale = 1.5;
+          }
+        ];
+        config = {
+          cursor.default_monitor = "HDMI-A-1";
+          input.sensitivity = -1;
+          opengl.nvidia_anti_flicker = 0;
+        };
+      };
       programs.caelestia.settings = {
         appearance.transparency = {
           enabled = true;
