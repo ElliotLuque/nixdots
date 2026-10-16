@@ -275,7 +275,7 @@
               enabled = true;
               speed = 5;
               bezier = "easeOutQuint";
-              style = "slide";
+              style = "slidevert";
             }
           ];
 

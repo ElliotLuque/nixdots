@@ -1,5 +1,6 @@
 -- Exercise both generated configurations and the workspace helper without a compositor.
 local settings, monitors, env, curves, binds, hooks, rules = {}, {}, {}, {}, {}, {}, {}
+local animations = {}
 local pluginLoaded = false
 local function noop() end
 local dispatch = setmetatable({}, {
@@ -28,6 +29,8 @@ hl = {
   end,
   animation = function(value)
     assert(curves[value.bezier], "animation references a curve before its definition")
+    assert(not animations[value.leaf], "duplicate animation: " .. value.leaf)
+    animations[value.leaf] = value
   end,
   bind = function(key, action, flags)
     assert(type(key) == "string" and type(action) == "function")
@@ -50,6 +53,12 @@ package.preload["hyprsplit"] = function()
 end
 
 dofile(arg[1])
+for leaf, speed in pairs({ border = 5.39, windows = 4.79, workspaces = 5 }) do
+  local animation = assert(animations[leaf], "missing animation: " .. leaf)
+  assert(animation.enabled and animation.speed == speed and animation.bezier == "easeOutQuint",
+    "migration changed the " .. leaf .. " animation")
+end
+assert(animations.workspaces.style == "slidevert", "workspace transitions must slide vertically")
 assert(settings.debug.damage_tracking == nil, "keep upstream damage tracking; disabling it forces full redraws")
 assert(settings.general.gaps_in == 6, "host overrides discarded shared settings")
 assert(settings.general.layout == "scrolling", "migration changed the shared layout")
