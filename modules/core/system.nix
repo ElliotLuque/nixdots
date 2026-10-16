@@ -23,6 +23,15 @@
       hardwareClockInLocalTime = false;
     };
     nixpkgs.config.allowUnfree = true;
+    # Rebuild front-end: progress (nom), package diffs (nvd), --ask confirmation.
+    programs.nh = {
+      enable = true;
+      # Weekly GC of old generations/unreferenced paths (replaces nix.gc).
+      clean = {
+        enable = true;
+        extraArgs = "--keep 5 --keep-since 7d";
+      };
+    };
     # stateVersion is deliberately set by each host, not by this feature.
   };
 }

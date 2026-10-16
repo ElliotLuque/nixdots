@@ -120,6 +120,16 @@ in
         assert base.networking.firewall.allowedUDPPorts == [ ];
         assert !(base ? home-manager);
         assert builtins.isString base.system.build.toplevel.drvPath;
+        # Rebuild shortcuts depend on nh, its cleaner and the elliot checkout default.
+        assert base.programs.nh.enable;
+        assert base.programs.nh.clean.enable;
+        assert
+          config.flake.nixosConfigurations.nixos-pc.config.environment.variables.NH_FLAKE
+          == "/home/elliot/dotfiles/nixdots";
+        assert builtins.all (fn: laptopHome.programs.fish.functions ? ${fn}) [
+          "system-rebuild"
+          "system-test"
+        ];
         assert skillsHome.config.programs.agent-skills.enable;
         assert skillsHome.config.programs.agent-skills.targets.agents.enable;
         assert builtins.isString skillsHome.activationPackage.drvPath;

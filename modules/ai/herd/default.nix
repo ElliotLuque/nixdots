@@ -15,14 +15,6 @@
 
       home.packages = [ herdr ];
 
-      # Local plugin registrations outlive the modules that originally linked them.
-      # Unlink is idempotent and leaves plugin configuration data intact.
-      home.activation.herdr-remove-retired-plugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        for plugin in herdr-agent-quota hhdebb.herdr-radar worktrunk; do
-          run ${herdr}/bin/herdr plugin unlink "$plugin"
-        done
-      '';
-
       # Keep root settings before the integrations' TOML tables/keybindings.
       xdg.configFile."herdr/config.toml".text = lib.mkBefore ''
                                 onboarding = false

@@ -89,7 +89,7 @@ sudo nixos-rebuild switch --flake .#nixos-pc
 sudo nixos-rebuild switch --flake .#nixos-laptop
 ```
 
-The existing Fish `system-rebuild` shortcut is unchanged. See [Proposed rebuild improvements](docs/rebuilding.md) for options that preserve its convenience while adding clearer build output, action selection and future remote deployment.
+After the first rebuild, use the Fish shortcuts (backed by [`nh`](docs/rebuilding.md)): `system-rebuild` switches from `~/dotfiles/nixdots`; `system-test` activates the current checkout or worktree without changing the boot default.
 
 ## Claude subscriptions in Pi
 

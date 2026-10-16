@@ -5,6 +5,8 @@
     {
       boot = {
         loader.systemd-boot.enable = true;
+        # Bound boot menu/ESP growth; older generations are pruned by `nh clean`.
+        loader.systemd-boot.configurationLimit = 10;
         loader.timeout = 0;
         loader.efi.canTouchEfiVariables = true;
 

@@ -6,6 +6,8 @@ in
   flake.modules.nixos.elliot = { pkgs, ... }: {
     imports = [ modules.nixos.home-manager ];
     programs.fish.enable = true;
+    # Writable checkout used by `nh os` / `system-rebuild` when no flake is given.
+    programs.nh.flake = "/home/elliot/dotfiles/nixdots";
     users.users.elliot = {
       isNormalUser = true;
       description = "elliot";

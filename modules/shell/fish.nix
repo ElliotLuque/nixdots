@@ -7,6 +7,18 @@
         complete -c oc -w opencode
       '';
     };
+    xdg.configFile."fish/completions/system-rebuild.fish" = {
+      force = true;
+      text = ''
+        complete -c system-rebuild -w "nh os switch"
+      '';
+    };
+    xdg.configFile."fish/completions/system-test.fish" = {
+      force = true;
+      text = ''
+        complete -c system-test -w "nh os test"
+      '';
+    };
     programs.fish = {
       enable = true;
       generateCompletions = true;
@@ -25,11 +37,43 @@
         cat = "bat -p";
         top = "btop";
         mkdir = "mkdir -p";
-        system-rebuild = "sudo nixos-rebuild switch --flake ~/dotfiles/nixdots#(hostname) && notify-send \"NixOS Rebuild\" \"System rebuilt!\"";
         fm = "yazi";
         loc = "tokei";
       };
       functions = {
+        # Switch from the main checkout (programs.nh.flake); extra args go to nh,
+        # e.g. `system-rebuild --ask` or `system-rebuild -H nixos-laptop`.
+        system-rebuild = ''
+          nh os switch $argv
+          or return
+          set -q WAYLAND_DISPLAY; and notify-send "NixOS Rebuild" "System rebuilt!"; or true
+        '';
+        # Activate the current checkout/worktree without touching the boot default.
+        system-test = ''
+          set -l root (git rev-parse --show-toplevel 2>/dev/null)
+          or begin
+            echo "system-test: run inside a nixdots checkout/worktree"
+            return 1
+          end
+          set -l branch (git -C $root branch --show-current)
+          test -n "$branch"; or set branch (git -C $root rev-parse --short HEAD)
+          set_color --bold; echo "system-test: $root ($branch)"; set_color normal
+          # Git flakes ignore untracked files, so the build would silently miss them.
+          set -l untracked (git -C $root ls-files --others --exclude-standard)
+          if test (count $untracked) -gt 0
+            set_color yellow
+            echo "warning: "(count $untracked)" untracked file(s) are NOT part of this build (git add them):"
+            printf '  %s\n' $untracked[1..10]
+            test (count $untracked) -gt 10; and echo "  ..."
+            set_color normal
+          end
+          nh os test $root $argv
+          or return
+          set_color green
+          echo "Active (not boot default): $branch. Revert with `system-rebuild` or a reboot."
+          set_color normal
+          set -q WAYLAND_DISPLAY; and notify-send "NixOS Test" "Activated $branch (revert: system-rebuild/reboot)"; or true
+        '';
         compress = ''
           if test (count $argv) -lt 2
             echo "Uso: compress <archivo.tar.gz|archivo.zip> <fichero/directorio...>"
