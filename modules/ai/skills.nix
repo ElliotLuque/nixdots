@@ -18,6 +18,10 @@
           path = inputs.matt-skills;
           subdir = "skills/engineering";
         };
+        video = {
+          path = inputs.video-agent-skills;
+          subdir = "skills";
+        };
       };
       skills = {
         enable = [
@@ -25,6 +29,19 @@
           "codebase-design"
           "domain-modeling"
           "code-review"
+          "editing"
+          "studio-setup"
+          "studio-script"
+          "insta-audit"
+          "outliers"
+          "short-editing"
+          "steal"
+          "broll"
+          "clips"
+          "short-translate"
+          "vox"
+          "codex-images"
+          "publish"
         ];
         explicit.gpt-taste = {
           from = "taste";

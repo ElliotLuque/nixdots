@@ -1127,7 +1127,8 @@
         "rust-overlay": "rust-overlay",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",
-        "taste-skill": "taste-skill"
+        "taste-skill": "taste-skill",
+        "video-agent-skills": "video-agent-skills"
       }
     },
     "rust-overlay": {
@@ -1342,6 +1343,22 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
+        "type": "github"
+      }
+    },
+    "video-agent-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792629621,
+        "narHash": "sha256-2/nF2Rzl0d3e2gd0cWdAW4g/w4mfB7yVsY5gl4k26Xc=",
+        "owner": "Melvynx",
+        "repo": "video-agent-skills",
+        "rev": "4774fa4f2601baa822fd513387202c26e4587902",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Melvynx",
+        "repo": "video-agent-skills",
         "type": "github"
       }
     },

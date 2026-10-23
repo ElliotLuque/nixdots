@@ -102,6 +102,10 @@
       url = "github:mattpocock/skills";
       flake = false;
     };
+    video-agent-skills = {
+      url = "github:Melvynx/video-agent-skills";
+      flake = false;
+    };
   };
 
   outputs =

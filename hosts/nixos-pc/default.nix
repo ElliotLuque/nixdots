@@ -29,7 +29,6 @@ in
     home-manager.users.elliot = {
       imports = [
         modules.homeManager.local-llm
-        modules.homeManager.paperclip
         modules.homeManager.proton-vpn
       ];
       wayland.windowManager.hyprland.settings = {
