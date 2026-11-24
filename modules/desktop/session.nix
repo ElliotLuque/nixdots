@@ -54,7 +54,6 @@
       hyprland
       hyprlock
       hyprpaper
-      caelestia
       desktop-scripts
       desktop-xdg
       desktop-apps

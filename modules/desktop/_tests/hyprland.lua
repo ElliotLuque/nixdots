@@ -60,7 +60,13 @@ for leaf, speed in pairs({ border = 5.39, windows = 4.79, workspaces = 5 }) do
 end
 assert(animations.workspaces.style == "slidevert", "workspace transitions must slide vertically")
 assert(settings.debug.damage_tracking == nil, "keep upstream damage tracking; disabling it forces full redraws")
-assert(settings.general.gaps_in == 6, "host overrides discarded shared settings")
+local accent = assert(arg[3], "expected the canonical Living Code teal"):gsub("^#", "")
+assert(settings.general.col.active_border == "rgb(" .. accent .. ")",
+  "focused window borders must use the canonical Living Code teal")
+assert(settings.general.border_size == 1, "normal windows must retain a thin focus border")
+assert(settings.general.gaps_in == 6 and settings.general.gaps_out == 10,
+  "host overrides discarded shared gaps")
+assert(settings.decoration.rounding == 10, "host overrides discarded shared rounding")
 assert(settings.general.layout == "scrolling", "migration changed the shared layout")
 assert(settings.dwindle == nil, "shared configuration should not include dwindle settings")
 assert(settings.input.kb_layout == "es" and settings.input.kb_options == "caps:super")
@@ -68,6 +74,10 @@ assert(settings.plugin.dynamic_cursors.tilt.limit == 8000)
 assert(env.XCURSOR_THEME == "Bibata-Original-Classic")
 assert(env.JDK_JAVA_OPTIONS == "-Dawt.toolkit.name=WLToolkit")
 assert(binds["SUPER + Return"])
+assert(binds["SUPER + SHIFT + space"], "missing floating toggle shortcut")
+for _, key in ipairs({ "code:49", "SUPER + SPACE", "SUPER + V", "SUPER + L", "SUPER + S" }) do
+  assert(binds[key], "missing Veyl shortcut: " .. key)
+end
 assert(binds["SUPER + mouse:272"].flags.mouse)
 assert(binds.XF86AudioRaiseVolume.flags.locked and binds.XF86AudioRaiseVolume.flags.repeating)
 for i = 1, 4 do
@@ -77,7 +87,10 @@ for i = 1, 4 do
 end
 assert(hooks["hyprland.start"] and hooks["hyprland.shutdown"], "missing session lifecycle hooks")
 assert(rules["suppress-maximize"].suppress_event == "maximize")
+assert(rules["kitty-opacity"].match.class == "kitty")
 assert(rules["kitty-opacity"].opacity == "0.85 override 0.45 override 0.85 override")
+assert(settings.decoration.active_opacity == 1 and settings.decoration.inactive_opacity == 1,
+  "only terminals should dim when unfocused")
 
 if arg[2] == "laptop" then
   assert(settings.decoration.inactive_opacity == 1, "shared defaults overwrote laptop opacity")
@@ -87,7 +100,7 @@ if arg[2] == "laptop" then
   assert(env.AQ_DRM_DEVICES == "/dev/dri/card0:/dev/dri/card1")
   assert(#monitors == 1 and monitors[1].output == "" and monitors[1].scale == 1)
 elseif arg[2] == "pc" then
-  assert(settings.decoration.inactive_opacity == 0.8 and settings.decoration.blur.enabled)
+  assert(settings.decoration.blur.enabled)
   assert(settings.cursor.default_monitor == "HDMI-A-1")
   assert(settings.input.sensitivity == -1 and settings.opengl.nvidia_anti_flicker == 0)
   assert(#monitors == 2, "default monitor leaked into desktop configuration")

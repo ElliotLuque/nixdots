@@ -105,6 +105,7 @@ in
       hyprsplitLua =
         pkgs.writeText "hyprsplit-config.lua"
           laptopHome.xdg.configFile."hypr/hyprsplit-config.lua".text;
+      veylLua = pkgs.writeText "veyl.lua" laptopHome.xdg.configFile."hypr/veyl.lua".text;
     in
     {
       checks.architecture =
@@ -198,9 +199,6 @@ in
         assert
           (builtins.head desktopHome.programs.hyprlock.settings.background).path
           == toString desktopHome.stylix.image;
-        assert
-          desktopHome.programs.caelestia.settings.paths.wallpaperDir
-          == "${desktopHome.xdg.dataHome}/wallpapers";
         assert builtins.pathExists (desktopHome.xdg.dataFile.wallpapers.source + "/cottages-river.png");
         assert builtins.any (
           p: inputs.nixpkgs.lib.getName p == "wl-clipboard"
@@ -362,8 +360,9 @@ in
             export XDG_CONFIG_HOME="$PWD/config"
             mkdir -p "$XDG_CONFIG_HOME/hypr"
             cp ${hyprsplitLua} "$XDG_CONFIG_HOME/hypr/hyprsplit-config.lua"
-            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua laptopHome} laptop
-            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua pcHome} pc
+            cp ${veylLua} "$XDG_CONFIG_HOME/hypr/veyl.lua"
+            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua laptopHome} laptop '${lc.teal}'
+            lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua pcHome} pc '${lc.teal}'
             touch "$out"
           '';
     };

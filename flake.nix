@@ -40,11 +40,6 @@
       flake = false;
     };
 
-    caelestia-shell = {
-      url = "github:caelestia-dots/shell/6d3e6a96492b0e9c668464875ac34150113ede5f";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # applications
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
@@ -102,7 +97,6 @@
       url = "github:emilkowalski/skills";
       flake = false;
     };
-
     matt-skills = {
       url = "github:mattpocock/skills";
       flake = false;
@@ -111,7 +105,6 @@
       url = "github:remotion-dev/skills";
       flake = false;
     };
-
     video-agent-skills = {
       url = "github:Melvynx/video-agent-skills";
       flake = false;

@@ -1,7 +1,11 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
+let
+  c = config.flake.lib.livingCode.colors;
+in
 {
   flake.modules.homeManager.hyprland =
     {
+      config,
       pkgs,
       lib,
       ...
@@ -81,6 +85,12 @@
         ];
 
         extraLuaFiles = {
+          # Veyl, el shell, desde su repositorio; arranca él mismo veyld.
+          "veyl" = ''
+            hl.on("hyprland.start", function()
+              hl.exec_cmd("${config.home.homeDirectory}/dev/veyl/bin/veyl")
+            end)
+          '';
           "hyprsplit-config" = ''
             local hs = require("hyprsplit")
 
@@ -161,15 +171,17 @@
             general = {
               gaps_in = 6;
               gaps_out = 10;
-              border_size = 0;
+              border_size = 1;
+              col.active_border = "rgb(${lib.removePrefix "#" c.teal})";
               resize_on_border = false;
               allow_tearing = false;
               layout = "scrolling";
             };
+            scrolling.column_width = 1.0;
             decoration = {
               rounding = 10;
               active_opacity = lib.mkDefault 1;
-              inactive_opacity = lib.mkDefault 0.8;
+              inactive_opacity = lib.mkDefault 1;
               shadow.enabled = lib.mkDefault false;
               blur = {
                 enabled = lib.mkDefault true;
@@ -282,9 +294,12 @@
           bind = [
             (bind "SUPER + Return" ''hl.dsp.exec_cmd("kitty")'')
             (bind "SUPER + Q" "hl.dsp.window.close()")
-            (bind "SUPER + S" ''hl.dsp.exec_cmd("screenshot-area")'')
-            (bind "SUPER + R" ''hl.dsp.exec_cmd("caelestia shell drawers toggle launcher")'')
-            (bind "SUPER + V" ''hl.dsp.window.float({ action = "toggle" })'')
+            (bind "SUPER + S" ''hl.dsp.global("veyl:shot")'')
+            (bind "code:49" ''hl.dsp.global("veyl:listen")'')
+            (bind "SUPER + SPACE" ''hl.dsp.global("veyl:launcher")'')
+            (bind "SUPER + V" ''hl.dsp.global("veyl:clipboard")'')
+            (bind "SUPER + L" ''hl.dsp.global("veyl:lock")'')
+            (bind "SUPER + SHIFT + space" ''hl.dsp.window.float({ action = "toggle" })'')
             (bind "SUPER + F" ''hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" })'')
             (bind "SUPER + SHIFT + F" ''hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })'')
             (bind "SUPER + left" ''hl.dsp.focus({ direction = "left" })'')

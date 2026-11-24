@@ -53,43 +53,6 @@ in
           opengl.nvidia_anti_flicker = 0;
         };
       };
-      programs.caelestia.settings = {
-        appearance.transparency = {
-          enabled = true;
-          base = 0.6;
-          layers = 0.2;
-        };
-        bar.statusIcons = lib.mkForce [
-          {
-            id = "lockStatus";
-            enabled = false;
-          }
-          {
-            id = "audio";
-            enabled = true;
-          }
-          {
-            id = "microphone";
-            enabled = false;
-          }
-          {
-            id = "kbLayout";
-            enabled = false;
-          }
-          {
-            id = "network";
-            enabled = false;
-          }
-          {
-            id = "bluetooth";
-            enabled = true;
-          }
-          {
-            id = "battery";
-            enabled = false;
-          }
-        ];
-      };
     };
   };
 }
