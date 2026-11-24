@@ -14,9 +14,19 @@
           path = inputs.impeccable;
           subdir = ".agents/skills";
         };
+        emil = {
+          path = inputs.emil-skills;
+          subdir = "skills";
+        };
         matt = {
           path = inputs.matt-skills;
           subdir = "skills/engineering";
+          # Avoid collisions with Emil's prototype skill, even when unselected.
+          filter.nameRegex = "codebase-design|domain-modeling|code-review";
+        };
+        remotion = {
+          path = inputs.remotion-skills;
+          subdir = "skills";
         };
         video = {
           path = inputs.video-agent-skills;
@@ -26,26 +36,51 @@
       skills = {
         enable = [
           "impeccable"
+          "emil-design-eng"
+          "animate"
+          "review-animations"
+          "improve-animations"
+          "find-animation-opportunities"
+          "remove-animations"
+          "animation-performance"
+          "animation-vocabulary"
+          "apple-design"
+          "pick-ui-library"
+          "prototype"
+          "mobile-native"
+          "break-ui"
           "codebase-design"
           "domain-modeling"
           "code-review"
-          "editing"
-          "studio-setup"
-          "studio-script"
-          "insta-audit"
-          "outliers"
-          "short-editing"
-          "steal"
-          "broll"
-          "clips"
-          "short-translate"
-          "vox"
+          # "editing"
+          # "studio-setup"
+          # "studio-script"
+          # "insta-audit"
+          # "outliers"
+          # "short-editing"
+          # "steal"
+          # "broll"
+          # "clips"
+          # "short-translate"
+          # "vox"
           "codex-images"
-          "publish"
+          # "publish"
+          # "remotion-best-practices"
+          # "remotion-captions"
+          # "remotion-create"
+          # "remotion-docs"
+          # "remotion-interactivity"
+          # "remotion-maps"
+          # "remotion-markup"
+          # "remotion-multimedia"
+          # "remotion-render"
+          # "remotion-saas"
+          # "remotion-studio"
+          # "remotion-upgrade"
         ];
-        explicit.gpt-taste = {
+        explicit.design-taste-frontend = {
           from = "taste";
-          path = "gpt-tasteskill";
+          path = "taste-skill";
         };
       };
       targets.agents.enable = true;

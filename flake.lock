@@ -167,6 +167,22 @@
         "type": "github"
       }
     },
+    "emil-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793211928,
+        "narHash": "sha256-w97pQjOyN3ehZ6yjUo/MUQutWH9On00m9O1acssw5P0=",
+        "owner": "emilkowalski",
+        "repo": "skills",
+        "rev": "a81dbca07f2217b7103e510c0f13f8d5b017afc9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emilkowalski",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "firefox-gnome-theme": {
       "flake": false,
       "locked": {
@@ -1104,10 +1120,27 @@
         "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
       }
     },
+    "remotion-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792683076,
+        "narHash": "sha256-5CiYB1K0j5XiZ78Kn27rqf0Fmsupk7dFUYR7z1k+IMA=",
+        "owner": "remotion-dev",
+        "repo": "skills",
+        "rev": "6c67adcd9cdbe6eb84d76342da89b225f9161cb2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "remotion-dev",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agent-skills": "agent-skills",
         "caelestia-shell": "caelestia-shell",
+        "emil-skills": "emil-skills",
         "flake-parts": "flake-parts",
         "herdr": "herdr",
         "herdr-projects": "herdr-projects",
@@ -1124,6 +1157,7 @@
         "pi": "pi",
         "pi-anthropic-auth": "pi-anthropic-auth",
         "pi-statusbar": "pi-statusbar",
+        "remotion-skills": "remotion-skills",
         "rust-overlay": "rust-overlay",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",
@@ -1269,15 +1303,16 @@
     "taste-skill": {
       "flake": false,
       "locked": {
-        "lastModified": 1791928232,
-        "narHash": "sha256-3ggZ+1nUIGZpzm8KPd8MDVVoSdGEsXmGlk7vPLsJtAE=",
+        "lastModified": 1792885339,
+        "narHash": "sha256-RpdiP+9Rh1sfPTsGnrKMmCiNT7T9l0/jnDrDYoAJukY=",
         "owner": "Leonxlnx",
         "repo": "taste-skill",
-        "rev": "a60a36dc2bb3bb77ccf17f2f62041f5ca8a458b9",
+        "rev": "12af471f627f866411b4bd785b19646d3672784c",
         "type": "github"
       },
       "original": {
         "owner": "Leonxlnx",
+        "ref": "v2.1.5",
         "repo": "taste-skill",
         "type": "github"
       }

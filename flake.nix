@@ -91,17 +91,27 @@
     # shared skill sources (configured by modules/ai/skills.nix)
     agent-skills.url = "github:Kyure-A/agent-skills-nix";
     taste-skill = {
-      url = "github:Leonxlnx/taste-skill";
+      url = "github:Leonxlnx/taste-skill/v2.1.5";
       flake = false;
     };
     impeccable = {
       url = "github:pbakaus/impeccable";
       flake = false;
     };
+    emil-skills = {
+      url = "github:emilkowalski/skills";
+      flake = false;
+    };
+
     matt-skills = {
       url = "github:mattpocock/skills";
       flake = false;
     };
+    remotion-skills = {
+      url = "github:remotion-dev/skills";
+      flake = false;
+    };
+
     video-agent-skills = {
       url = "github:Melvynx/video-agent-skills";
       flake = false;
