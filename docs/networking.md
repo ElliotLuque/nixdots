@@ -9,13 +9,14 @@ Networking capabilities live in `modules/networking/`. Registering a feature doe
 | `network-manager` | NixOS | NetworkManager only; no private profiles or application firewall exceptions |
 | `localsend` | NixOS | LocalSend package and its native TCP/UDP port 53317 policy |
 | `campus-wifi` | NixOS | UPVNET Wi-Fi, NetworkManager, and runtime credential substitution |
+| `campus-vpn` | NixOS | UPV IKEv2/strongSwan, resolved DNS integration, and the `upv-vpn` CLI |
 | `mosh` | NixOS | Mosh client and server binaries, with UDP ports 60000–61000 open |
 | `ssh-server` | NixOS | OpenSSH listener; authentication policy is a separate host decision |
 | `ssh-client` | NixOS | SSH agent, without enabling an SSH listener |
 | `ssh-client` | Home Manager | Generic SSH client settings; no personal destinations or keys |
 | `proton-vpn` | Home Manager | Proton VPN GUI and graphical-session user unit |
 
-The workstation role selects NetworkManager and the SSH client, not LocalSend, private networks, or an SSH server. Both current hosts explicitly select `localsend`, `ssh-server`, and `mosh`. Elliot explicitly selects the Proton VPN GUI on both current hosts. It is no longer launched from shared Hyprland Lua or installed by the generic desktop-apps bundle.
+The workstation role selects NetworkManager and the SSH client, not LocalSend, private networks, or an SSH server. Both current hosts explicitly select `localsend`, `ssh-server`, and `mosh`. The desktop additionally selects `campus-vpn`; the laptop does not. Elliot explicitly selects the Proton VPN GUI on both current hosts. It is no longer launched from shared Hyprland Lua or installed by the generic desktop-apps bundle.
 
 A VPS importing `base` and `ssh-server` does not receive campus access, Proton VPN, LocalSend, or NetworkManager. A new workstation importing only `workstation` does not receive them either, except for NetworkManager.
 
@@ -122,11 +123,13 @@ services.openssh.settings = {
 
 Do not disable the only working login before testing the intended administrator account.
 
-## Adding a VPN
+## Campus VPN
 
-Use the same composition pattern: create a provider-specific feature such as `campus-vpn`, implement it with the actual protocol's native NixOS options (`networking.wg-quick.interfaces`, `services.openvpn.servers`, or an appropriate NetworkManager VPN profile), and select it only in the intended hosts.
+`campus-vpn` implements the UPV's documented IKEv2 service using native `services.strongswan-swanctl` options, not the campus Wi-Fi profile or a Fortinet/OpenVPN client. Only `nixos-pc` selects it. It enables systemd-resolved with NetworkManager and provides four manually initiated profiles (`ALUMNO`, `ALUMNO-BIB`, `UPVNET`, `UPVNET-BIB`). Credentials are supplied through a root-owned runtime include, never Nix values. No additional inbound firewall ports are opened.
 
-Campus VPN configuration is not fabricated here: it needs the provider's protocol, endpoint, routes, certificate requirements, and authentication method. A shared filename is useful; a generic VPN factory or hostname-switching implementation is not. Keep private keys/passwords in protected runtime files.
+See [VPN UPV en NixOS](upv-vpn.md) for the official source, exact adaptations, credential provisioning, 2FA, connection commands, Proton VPN conflicts, IPv4/LAN limitations and diagnostics.
+
+For another provider, use the same composition pattern: a provider-specific feature implemented with the protocol's native NixOS options, selected only in the intended hosts. Keep private keys/passwords in protected runtime files.
 
 ## Nix daemon access
 
@@ -147,4 +150,4 @@ Adding an identity or SSH destination must not silently change this policy.
 
 ## Checks
 
-`nix flake check` includes `networking-and-access`, which evaluates isolated feature combinations. It verifies that receiving ports belong to LocalSend, outbound-only LocalSend opens none, campus profiles do not appear in ordinary networking, SSH client/server selection stays separate, and Elliot's identity does not restrict other users' daemon access. It does not connect to a real campus network or VPN.
+`nix flake check` includes `networking-and-access`, which evaluates isolated feature combinations. It verifies that receiving ports belong to LocalSend, outbound-only LocalSend opens none, campus profiles do not appear in ordinary networking, SSH client/server selection stays separate, and Elliot's identity does not restrict other users' daemon access. It also evaluates UPV VPN profiles, runtime-only secrets, manual startup and unchanged firewall policy, and builds/checks the VPN CLI and DNS hook. It does not connect to a real campus network or VPN.

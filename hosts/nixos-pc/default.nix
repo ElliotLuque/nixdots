@@ -19,6 +19,7 @@ in
       localsend
       ssh-server
       mosh
+      campus-vpn
     ];
     networking.hostName = "nixos-pc";
     system.stateVersion = "24.11";
