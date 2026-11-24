@@ -21,6 +21,7 @@ in
       delta
       zip
       jq
+      libqalculate
       glow
       pfetch-rs
       nerdfetch
