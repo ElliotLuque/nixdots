@@ -10,7 +10,6 @@
         loader.timeout = 0;
         loader.efi.canTouchEfiVariables = true;
 
-        initrd.verbose = false;
         consoleLogLevel = 0;
 
         kernelParams = [
