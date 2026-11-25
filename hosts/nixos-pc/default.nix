@@ -24,7 +24,18 @@ in
     ];
     networking.hostName = "nixos-pc";
     system.stateVersion = "24.11";
+    # Dual-boot with Windows: keep the motherboard RTC in local time so Windows
+    # does not lose 1h (CET) / 2h (CEST) after booting Linux.
+    time.hardwareClockInLocalTime = true;
     hardware.nvidia.open = true;
+    # Prevent the MediaTek Wi-Fi driver from probing the Microsoft Xbox Wireless
+    # Adapter (045e:02fe) on usb 1-3, which fails with -110 and can wedge it.
+    boot.blacklistedKernelModules = [ "mt76x2u" ];
+    # Keep USB autosuspend off for the Xbox Wireless Adapter so it doesn't wedge
+    # across warm reboots.
+    services.udev.extraRules = ''
+      ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02fe", ATTR{power/control}="on"
+    '';
     powerManagement.cpuFreqGovernor = "performance";
     services.ollama.loadModels = [ "qwen3.8:27b-q4_k_m" ];
 

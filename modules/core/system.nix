@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.modules.nixos.system = { pkgs, ... }: {
+  flake.modules.nixos.system = { lib, pkgs, ... }: {
     # Keep NixOS defaults: all local users may use the daemon; only root is
     # trusted. Hosts can narrow access through nix.settings, independently of identity.
     nix.settings = {
@@ -20,7 +20,7 @@
     ];
     time = {
       timeZone = "Europe/Madrid";
-      hardwareClockInLocalTime = false;
+      hardwareClockInLocalTime = lib.mkDefault false;
     };
     nixpkgs.config.allowUnfree = true;
     # Rebuild front-end: progress (nom), package diffs (nvd), --ask confirmation.
