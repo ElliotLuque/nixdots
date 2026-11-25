@@ -12,7 +12,16 @@ let
     label = scheme.name;
     roles = lib.mapAttrs (_: name: colors.${name}) scheme.roles;
     inherit (scheme) ansi;
-    extra = path: "${src}/extras/${path}";
+    # Each application theme now lives in its own repository.
+    extra =
+      path:
+      let
+        parts = lib.splitString "/" path;
+        port = builtins.head parts;
+        source = inputs.${"living-code-${port}"};
+        relative = lib.concatStringsSep "/" (builtins.tail parts);
+      in
+      if relative == "" then "${source}" else "${source}/${relative}";
     # Opaque `pct`% blend of `fg` over `bg`, for UIs without alpha support.
     mix =
       fg: bg: pct:

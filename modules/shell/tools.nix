@@ -37,8 +37,8 @@ in
       bat = {
         enable = true;
         themes.${lc.name} = {
-          src = lc.src;
-          file = "extras/tmtheme/${lc.name}.tmTheme";
+          src = lc.extra "bat";
+          file = "${lc.name}.tmTheme";
         };
         config.theme = lc.name;
       };

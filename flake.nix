@@ -36,7 +36,35 @@
     stylix.url = "github:danth/stylix";
 
     living-code = {
-      url = "github:ElliotLuque/living-code";
+      url = "github:living-code-theme/palette";
+      flake = false;
+    };
+    living-code-base16 = {
+      url = "github:living-code-theme/base16";
+      flake = false;
+    };
+    living-code-kitty = {
+      url = "github:living-code-theme/kitty";
+      flake = false;
+    };
+    living-code-bat = {
+      url = "github:living-code-theme/bat";
+      flake = false;
+    };
+    living-code-btop = {
+      url = "github:living-code-theme/btop";
+      flake = false;
+    };
+    living-code-fzf = {
+      url = "github:living-code-theme/fzf";
+      flake = false;
+    };
+    living-code-delta = {
+      url = "github:living-code-theme/delta";
+      flake = false;
+    };
+    living-code-hunk = {
+      url = "github:living-code-theme/hunk";
       flake = false;
     };
 
