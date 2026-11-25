@@ -136,8 +136,18 @@ in
         ];
         assert skillsHome.config.programs.agent-skills.enable;
         assert skillsHome.config.programs.agent-skills.targets.agents.enable;
+        assert skillsHome.config.programs.agent-skills.targets.claude.enable;
+        assert skillsHome.config.programs.agent-skills.targets.claude.dest == ".claude/skills";
+        assert skillsHome.config.programs.agent-skills.targets.claude.structure == "link";
+        assert skillsHome.config.programs.agent-skills.targets.antigravity.enable;
+        assert skillsHome.config.programs.agent-skills.targets.antigravity.dest == ".gemini/config/skills";
+        assert skillsHome.config.programs.agent-skills.targets.antigravity.structure == "link";
+        assert skillsHome.config.home.file ? ".claude/skills";
+        assert skillsHome.config.home.file ? ".gemini/config/skills";
         assert builtins.isString skillsHome.activationPackage.drvPath;
         assert ai.home-manager.users.ai-test.programs.agent-skills.enable;
+        assert ai.home-manager.users.ai-test.home.file ? ".claude/skills/hunk-review";
+        assert ai.home-manager.users.ai-test.home.file ? ".gemini/config/skills/hunk-review";
         assert !ai.programs.hyprland.enable;
         assert !ai.services.xserver.enable;
         assert !ai.services.greetd.enable;

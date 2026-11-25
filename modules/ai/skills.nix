@@ -83,7 +83,24 @@
           path = "taste-skill";
         };
       };
-      targets.agents.enable = true;
+      targets = {
+        agents.enable = true;
+        # Claude Code and Antigravity ignore ~/.agents/skills globally; use
+        # link (Home Manager recursive symlinks) so unmanaged skills in
+        # ~/.claude/skills (e.g. Paseo, claude.ai synced) are preserved.
+        claude = {
+          enable = true;
+          dest = ".claude/skills";
+          structure = "link";
+        };
+        # Antigravity CLI and T3 Code read ~/.gemini/config/skills (not
+        # agent-skills-nix's default ~/.gemini/antigravity/skills).
+        antigravity = {
+          enable = true;
+          dest = ".gemini/config/skills";
+          structure = "link";
+        };
+      };
     };
   };
 }

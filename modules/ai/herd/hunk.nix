@@ -66,6 +66,8 @@ in
         builtins.replaceStrings [ "@herdr@" "@hunk@" ] [ "${herdr}/bin/herdr" "${hunk}/bin/hunk" ]
           (builtins.readFile ./_hunk.ts);
       home.file.".agents/skills/hunk-review".source = "${hunk}/share/skills/hunk/hunk-review";
+      home.file.".claude/skills/hunk-review".source = "${hunk}/share/skills/hunk/hunk-review";
+      home.file.".gemini/config/skills/hunk-review".source = "${hunk}/share/skills/hunk/hunk-review";
 
       xdg.configFile."hunk/config.toml".text = ''
         theme = "${lc.name}"
