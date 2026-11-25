@@ -15,6 +15,7 @@ in
       boot-workstation
       nvidia
       nvidia-desktop
+      rgb
       ollama-cuda
       localsend
       ssh-server
