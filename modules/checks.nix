@@ -86,6 +86,9 @@ in
       localHome = localAi.config.home-manager.users.ai-test;
       piModels = (builtins.fromJSON localHome.home.file.".pi/agent/models.json".text).providers.ollama;
       desktopHome = desktop.config.home-manager.users.desktop-test;
+      t3codeDesktopEntry = builtins.head (
+        builtins.filter (package: package.name == "t3code.desktop") desktopHome.home.packages
+      );
       desktopScripts = inputs.nixpkgs.lib.filter (
         package:
         builtins.elem (inputs.nixpkgs.lib.getName package) [
@@ -234,6 +237,32 @@ in
         pkgs.runCommand "architecture-check" { } ''
           touch "$out"
         '';
+
+      checks.t3code-url-handler =
+        pkgs.runCommand "t3code-url-handler-check"
+          {
+            nativeBuildInputs = [
+              pkgs.desktop-file-utils
+              pkgs.glib
+            ];
+          }
+          ''
+            export HOME="$TMPDIR/home"
+            export XDG_CONFIG_HOME="$HOME/.config"
+            export XDG_DATA_HOME="$HOME/.local/share"
+            export XDG_CONFIG_DIRS="$TMPDIR/empty-config"
+            export XDG_DATA_DIRS="$TMPDIR/empty-data"
+            export LC_ALL=C
+            mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME/applications" \
+              "$XDG_CONFIG_DIRS" "$XDG_DATA_DIRS"
+            cp ${desktopHome.xdg.configFile."mimeapps.list".source} "$XDG_CONFIG_HOME/mimeapps.list"
+            cp ${t3codeDesktopEntry}/share/applications/t3code.desktop "$XDG_DATA_HOME/applications/"
+            desktop-file-validate "$XDG_DATA_HOME/applications/t3code.desktop"
+            update-desktop-database "$XDG_DATA_HOME/applications"
+            gio mime x-scheme-handler/t3code > association.txt
+            head -n 1 association.txt | grep -F 't3code.desktop'
+            touch "$out"
+          '';
 
       checks.herdr-theme =
         pkgs.runCommand "herdr-theme-check" { nativeBuildInputs = [ pkgs.python3 ]; }
