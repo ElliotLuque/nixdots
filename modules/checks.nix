@@ -108,7 +108,9 @@ in
       hyprsplitLua =
         pkgs.writeText "hyprsplit-config.lua"
           laptopHome.xdg.configFile."hypr/hyprsplit-config.lua".text;
-      veylLua = pkgs.writeText "veyl.lua" laptopHome.xdg.configFile."hypr/veyl.lua".text;
+      pcVeylManifest = builtins.fromJSON (
+        builtins.unsafeDiscardStringContext pcHome.xdg.configFile."veyl/nix.json".text
+      );
     in
     {
       checks.architecture =
@@ -243,6 +245,19 @@ in
             "image/bmp"
             "image/tiff"
           ];
+        assert desktopHome.programs.veyl.enable;
+        assert desktopHome.programs.veyl.acceleration == null;
+        assert desktopHome.systemd.user.services.veyl.Unit.PartOf == [ "hyprland-session.target" ];
+        assert laptopHome.programs.veyl.enable;
+        assert laptopHome.programs.veyl.acceleration == null;
+        assert pcHome.programs.veyl.enable;
+        assert pcHome.programs.veyl.acceleration == "cuda";
+        assert pcHome.programs.veyl.cudaCapabilities == [ "8.9" ];
+        assert pcVeylManifest.flake == "/home/elliot/dotfiles/nixdots";
+        assert pcVeylManifest.rebuild == "nh os switch /home/elliot/dotfiles/nixdots";
+        assert pcVeylManifest.settings.scheme == livingCode.name;
+        assert pcVeylManifest.settings.monitors."HDMI-A-1".scale == 1.5;
+        assert builtins.length pcVeylManifest.files >= 2;
         assert builtins.isString desktop.config.system.build.toplevel.drvPath;
         pkgs.runCommand "architecture-check" { } ''
           touch "$out"
@@ -399,7 +414,6 @@ in
             export XDG_CONFIG_HOME="$PWD/config"
             mkdir -p "$XDG_CONFIG_HOME/hypr"
             cp ${hyprsplitLua} "$XDG_CONFIG_HOME/hypr/hyprsplit-config.lua"
-            cp ${veylLua} "$XDG_CONFIG_HOME/hypr/veyl.lua"
             lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua laptopHome} laptop '${lc.teal}'
             lua ${./desktop/_tests/hyprland.lua} ${hyprlandLua pcHome} pc '${lc.teal}'
             touch "$out"

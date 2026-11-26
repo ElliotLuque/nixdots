@@ -44,6 +44,22 @@ in
         modules.homeManager.local-llm
         modules.homeManager.proton-vpn
       ];
+      programs.veyl = {
+        acceleration = "cuda";
+        cudaCapabilities = [ "8.9" ];
+        settings.monitors = {
+          "HDMI-A-1" = {
+            mode = "3840x2160@60.00";
+            scale = 1.5;
+            position = "2560x0";
+          };
+          "HDMI-A-2" = {
+            mode = "3840x2160@60.00";
+            scale = 1.5;
+            position = "0x0";
+          };
+        };
+      };
       wayland.windowManager.hyprland.settings = {
         monitor = [
           {

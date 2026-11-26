@@ -85,12 +85,6 @@ in
         ];
 
         extraLuaFiles = {
-          # Veyl, el shell, desde su repositorio; arranca él mismo veyld.
-          "veyl" = ''
-            hl.on("hyprland.start", function()
-              hl.exec_cmd("${config.home.homeDirectory}/dev/veyl/bin/veyl")
-            end)
-          '';
           "hyprsplit-config" = ''
             local hs = require("hyprsplit")
 

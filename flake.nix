@@ -33,6 +33,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    veyl = {
+      # Switch to github:ElliotLuque/veyl once the local Nix improvements are pushed.
+      url = "path:/home/elliot/dev/veyl";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix.url = "github:danth/stylix";
 
     living-code = {

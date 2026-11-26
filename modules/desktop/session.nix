@@ -52,6 +52,7 @@
     imports = with config.flake.modules.homeManager; [
       theme
       hyprland
+      veyl
       hyprlock
       hyprpaper
       desktop-scripts
