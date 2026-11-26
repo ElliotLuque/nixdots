@@ -1451,14 +1451,17 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1795652475,
-        "narHash": "sha256-JIS5PCqPgDuJdEF0uUmsBOKX0s9foDstsCKm2RRwCpc=",
-        "path": "/home/elliot/dev/veyl",
-        "type": "path"
+        "lastModified": 1795653635,
+        "narHash": "sha256-EWyWjfJFspAWsp+PCYn1bC/XrwVp/wJI2J4tQdEUEHE=",
+        "owner": "ElliotLuque",
+        "repo": "veyl",
+        "rev": "9a9a74123ed0ee57998b36178e5b5ea7f544dee8",
+        "type": "github"
       },
       "original": {
-        "path": "/home/elliot/dev/veyl",
-        "type": "path"
+        "owner": "ElliotLuque",
+        "repo": "veyl",
+        "type": "github"
       }
     },
     "video-agent-skills": {

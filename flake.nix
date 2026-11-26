@@ -34,8 +34,7 @@
     };
 
     veyl = {
-      # Switch to github:ElliotLuque/veyl once the local Nix improvements are pushed.
-      url = "path:/home/elliot/dev/veyl";
+      url = "github:ElliotLuque/veyl";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
