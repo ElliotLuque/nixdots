@@ -1451,11 +1451,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1795655674,
-        "narHash": "sha256-wlHw+5PIlGxG5VrlieK0FjJbgaIxjTH9gm/Zc2iGDhU=",
+        "lastModified": 1795657031,
+        "narHash": "sha256-/6paJl5M4BebtjIPfkOkAEIvLaLwA6Ok20o0YNgEmmY=",
         "owner": "ElliotLuque",
         "repo": "veyl",
-        "rev": "d8ca44fe51e74883bbab09a360cf32664828f090",
+        "rev": "b0a3e69c9f46bbf248c62ef081cd992d3ac944c1",
         "type": "github"
       },
       "original": {
